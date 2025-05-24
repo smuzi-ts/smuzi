@@ -1,0 +1,22 @@
+{
+  "name": "juravel-native-js-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "serve": "node --watch --env-file=.env app/start/httpServer.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "imports": {
+    "#app/*": "./app/*.js",
+    "#config/*": "./config/*.js",
+    "#jrl/*": "./juravel/*.js"
+  },
+  "dependencies": {
+    "typescript": "^5.8.3"
+  }
+}

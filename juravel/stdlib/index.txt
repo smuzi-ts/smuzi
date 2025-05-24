@@ -1,0 +1,13 @@
+declare module "juravel/stdlib" {
+    export function readonly<T>(obj: T): Readonly<T>
+
+    export function isEmpty(value): boolean
+
+    export function isString(value): boolean
+
+    export function isNumber(value): boolean
+
+    export function isArray(value): boolean
+
+    export function isFunction(value): boolean
+}
