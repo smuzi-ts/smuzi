@@ -10,13 +10,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
   "imports": {
     "#app/*": "./app/*.js",
-    "#config/*": "./config/*.js",
-    "#jrl/*": "./juravel/*.js"
+    "#config/*": "./config/*.js"
   },
   "dependencies": {
-    "typescript": "^5.8.3"
+    "@juravel/core": "workspace:*"
   }
 }

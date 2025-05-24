@@ -9,8 +9,27 @@ class ValidationError {
     }
 }
 
+const isString = (val, msg =  "") => {
+    return typeof val === "string"
+}
+
+const isNumber = (val, msg = "") => {
+    return typeof val === "number"
+}
+
+
+schema.check(
+    {
+        a: 2,
+        b: 2
+    },
+    {
+        a: isString,
+        b: isNumber,
+    })
+
 export const schema = {
-    syncCheck(
+    check(
         obj = {},
         schema = {}
     ) {
