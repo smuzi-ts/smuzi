@@ -1,6 +1,6 @@
 import {IContainer} from "./container";
-import {ILogger} from "./logger";
 import {IConfig} from "./config";
+import {ILogger} from "./logger";
 
 export interface ICore {
     container: IContainer

@@ -1,5 +1,8 @@
 export function isEmpty(value) {
-    return value === null || value === undefined || value === '' || value === 'undefined' || (isArray(value) && value.length == 0);
+    return value === null ||
+        value === undefined ||
+        value === '' ||
+        (isArray(value) && value.length == 0);
 }
 
 export function isString(value) {

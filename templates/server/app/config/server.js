@@ -1,4 +1,5 @@
 export const server =  readonly({
     port: 3000,
-    certificateKeyPath: ''
+    certificateKeyPath: '',
+    certificateCertPath: '',
 })

@@ -1,4 +1,4 @@
-import {FSLogger} from "./fsLogger.js";
+import {FSLogger} from "./fsLogger.ts";
 
 export function providerLogger() {
     let instance = undefined;

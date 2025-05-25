@@ -1,6 +1,6 @@
 import * as bootstrap from "#app/bootstrap/index"
 
-core.logger().debug("text")
+core.logger().debug("maricha")
 
 // function* ggg() {
 //     yield 1
