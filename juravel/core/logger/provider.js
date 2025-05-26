@@ -1,13 +1,6 @@
-import {FSLogger} from "./fsLogger.ts";
+import {ConsoleLogger} from "./ConsoleLogger.ts";
+import {LOGGER_CONTAINER_KEY} from "../types/logger.ts";
 
-export function providerLogger(
-    instance = "",
-    options = [],
-) {
-    switch (core.config.logger.instance) {
-        case "fs":
-            instance = new FSLogger(core.config.logger.options)
-    }
-
-    core.container.bindOnce('ILogger', instance)
+export function loggerProvider(firstOption) {
+    core.container.singleton(LOGGER_CONTAINER_KEY, new ConsoleLogger(firstOption))
 }

@@ -1,7 +1,3 @@
-import stdlib from "juravel/stdlib";
-
-import {HttpContext, HttpMethod, HttpResponse, HttpRouteHandler} from "#juravel/http/types";
-
 let routes =  {};
 
 function generateRouteKey(routeItem) {
@@ -14,11 +10,10 @@ function addRoute(routeItem , handler)
     routes[key] = Object.assign(routeItem, {handler});
 }
 
-
 /**
  * Add route with method "GET"
  */
-function get(path: string, handler: HttpRouteHandler)
+function get(path, handler)
 {
     addRoute({method: HttpMethod.GET, path}, handler);
 }

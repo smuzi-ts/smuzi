@@ -1,6 +1,5 @@
-import {providerLogger} from "@juravel/core/logger/provider.js";
+import {loggerProvider} from "@juravel/core/logger/provider.js";
 
 export const providers = [
-    providerLogger,
-
+    () => loggerProvider(config.logger.console.firstOption),
 ]

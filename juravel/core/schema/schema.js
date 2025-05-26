@@ -4,11 +4,6 @@ const ErrorTypes = {
     IsNotFunctionError: 1,
 }
 
-class ValidationError {
-    constructor() {
-    }
-}
-
 const isString = (val, msg =  "") => {
     return typeof val === "string"
 }
@@ -16,17 +11,6 @@ const isString = (val, msg =  "") => {
 const isNumber = (val, msg = "") => {
     return typeof val === "number"
 }
-
-
-schema.check(
-    {
-        a: 2,
-        b: 2
-    },
-    {
-        a: isString,
-        b: isNumber,
-    })
 
 export const schema = {
     check(

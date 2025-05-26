@@ -1,16 +1,27 @@
 import * as bootstrap from "#app/bootstrap/index"
 
-class TT {
-    accessor readr = 3
-    constructor(read) {
-        this.read = 3
+core.logger().debug("string")
+
+class Schema {
+    isString(value) {
+        return typeof value === "string"
+    }
+
+    isNumber(value) {
+        return typeof value === "number"
     }
 }
 
-const t = new TT
+function f1(...d) {
+    console.log(...d)
+}
 
-core.logger().debug("string")
+function f2(...d) {
+    f1(...d)
+}
 
+
+f2('a', 'b', 'c')
 
 // function* ggg() {
 //     yield 1

@@ -1,4 +1,4 @@
-export const LOGGER_SERVICE_KEY = 'ILogger';
+export const LOGGER_CONTAINER_KEY = 'ILogger';
 
 export type ILoggerConfig = {
     instance: string,
@@ -6,6 +6,6 @@ export type ILoggerConfig = {
 }
 
 export interface ILogger {
-    debug(msg: string): void
+    debug(...data: any[]): void;
 }
 
