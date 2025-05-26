@@ -1,6 +1,16 @@
 import * as bootstrap from "#app/bootstrap/index"
 
-core.logger().debug("maricha")
+class TT {
+    accessor readr = 3
+    constructor(read) {
+        this.read = 3
+    }
+}
+
+const t = new TT
+
+core.logger().debug("string")
+
 
 // function* ggg() {
 //     yield 1
