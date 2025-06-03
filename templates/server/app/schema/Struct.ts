@@ -1,8 +1,15 @@
+import {SchemaMode} from "./Mode.js";
+
 export const Struct =
     (schema: {}, validation = validationSchema) =>
         <S extends Record<string, any>>(obj: S): [ValidationErrors|undefined, Readonly<S>] =>
         {
-            return [validation(schema, obj), Object.freeze(obj)];
+            const err = validation(schema, obj);
+            if (err !== undefined && SchemaMode.mode === 'strict') {
+                throw new Error(JSON.stringify(err))
+            }
+
+            return [err, Object.freeze(obj)];
         };
 
 
@@ -21,7 +28,6 @@ export const validationSchema = (schema: Schema, data: Record<string, any>) => {
 
     return isValid ? undefined : err;
 };
-
 
 /**
  * Declare additional types

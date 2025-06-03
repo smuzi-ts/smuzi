@@ -1,19 +1,17 @@
 export const T = {
     String: () => ({
-        zeroVal: "",
         check: checkBaseType("string")
     }),
     Boolean: () => ({
-        zeroVal: false,
         check: checkBaseType("boolean")
     })
 }
 
-const checkBaseType = (expectedType) => (variablePath, val) => {
+const checkBaseType = (expectedType) => (val) => {
     const realType = typeof val;
-    return realType === expectedType ? true : mistmatchedTypes(variablePath, realType, expectedType)
+    return realType === expectedType ? true : mistmatchedTypes(realType, expectedType)
 }
 
-const mistmatchedTypes = (variablePath, realType, expectedType) => {
-    return `${variablePath} expected ${expectedType}, found ${realType}`
+const mistmatchedTypes = (realType, expectedType) => {
+    return `expected ${expectedType}, found ${realType}`
 }
