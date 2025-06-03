@@ -15,25 +15,24 @@ function addRoute(routeItem , handler)
  */
 function get(path, handler)
 {
-    addRoute({method: HttpMethod.GET, path}, handler);
+    addRoute({method: "GET", path}, handler);
 }
 
-export const routesHandler: HttpRouteHandler = (context: HttpContext): HttpResponse | {} | string  => {
+export function routesHandler(context, response) {
     const routeKey = generateRouteKey({
-        method: context.request().method ?? HttpMethod.GET,
+        method: context.request().method ?? "GET",
         path: context.request().path ?? ''
     });
 
-    const handler: HttpRouteHandler|undefined = routes[routeKey]?.handler;
+    const handler = routes[routeKey]?.handler;
 
     if (handler !== undefined) {
-        return handler(context)
+        return handler(context, response)
     } else {
         throw new Error('Not Found 404')
     }
 
 }
-
 
 export const router = {
     get,

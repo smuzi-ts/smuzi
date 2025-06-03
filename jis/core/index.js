@@ -5,6 +5,6 @@ const container = new Container();
 
 export const core = {
     container,
-    config: {},
-    logger: () => container.resolve(LOGGER_CONTAINER_KEY),
 }
+
+export const logger = () => container.resolve(LOGGER_CONTAINER_KEY)

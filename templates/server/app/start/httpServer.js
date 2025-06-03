@@ -1,27 +1,6 @@
-import * as bootstrap from "#app/bootstrap/index"
-
-core.logger().debug("string")
-
-class Schema {
-    isString(value) {
-        return typeof value === "string"
-    }
-
-    isNumber(value) {
-        return typeof value === "number"
-    }
-}
-
-function f1(...d) {
-    console.log(...d)
-}
-
-function f2(...d) {
-    f1(...d)
-}
+// import * as bootstrap from "#app/bootstrap/index"
 
 
-f2('a', 'b', 'c')
 
 // function* ggg() {
 //     yield 1
@@ -29,9 +8,14 @@ f2('a', 'b', 'c')
 //     yield 3
 // }
 //
-// console.log(ggg())
+// const g1 = ggg()
 //
-// console.log(ggg())
+// const g2 = ggg()
 //
-// console.log(ggg())
+// g2.next()
+// g1.next()
+
+
+
+
 

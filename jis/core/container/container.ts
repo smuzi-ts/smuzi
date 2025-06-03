@@ -12,13 +12,12 @@ export class Container implements IContainer {
         return true;
     }
 
-    resolve(abstract = "") {
-        return containerStorage.get(abstract);
+    bind(abstract: string, concrete: any): boolean {
+        containerStorage.set(abstract, concrete)
+        return true;
     }
 
-    loadServices(providers:(() => void)[]): void {
-        for (const provider of providers) {
-            provider()
-        }
+    resolve(abstract = "") {
+        return containerStorage.get(abstract);
     }
 }

@@ -6,6 +6,6 @@ export type ILoggerConfig = {
 }
 
 export interface ILogger {
-    debug(...data: any[]): void;
+    debug(...vars: any[]): void;
 }
 

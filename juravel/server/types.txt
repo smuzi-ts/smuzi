@@ -1,7 +1,0 @@
-declare module "jrl/server" {
-    export function startServer()
-
-    export interface ServerConfig {
-        port: string
-    }
-}

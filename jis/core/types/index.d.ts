@@ -3,9 +3,9 @@ import {ILogger} from "./logger";
 
 export interface ICore {
     container: IContainer
-    logger: () => ILogger
 }
 
 declare global {
     const core: ICore
+    const logger: ILogger
 }

@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "dev": "node --watch --env-file=.env app/start/httpServer.js"
+    "dev": "node --trace-gc --env-file=.env app/fp/config.js"
   },
   "type": "module",
   "keywords": [],
@@ -20,6 +20,5 @@
     "#config/*": "./config/*.js"
   },
   "dependencies": {
-    "@juravel/core": "workspace:*"
   }
 }
