@@ -1,17 +1,17 @@
-import {Schema, type, validation} from "./types.ts"
-
-
+import {T} from "./Types.js"
+import {Struct} from "./Struct.ts";
 
 const EventStruct = Struct({
-    name: type.String,
-    active: type.Boolean,
+    name: T.String(),
+    active: T.Boolean(),
 });
 
-const [err, event] = EventStruct({name: "t"})
+let sourceData = {name: 1};
 
-event.name = "t";
+const [err, event] = EventStruct(sourceData)
 
-console.log(event)
+console.log("err", err)
+console.log("event", event)
 
 //
 // const Func = Schema({name: type.String, active: type.Boolean})
