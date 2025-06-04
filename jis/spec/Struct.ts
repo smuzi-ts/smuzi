@@ -1,11 +1,23 @@
 import {SchemaMode} from "./Mode.js";
 
+const Result = {
+    Ok: (data: any) => ({
+        isOk: true,
+        value: data,
+    }),
+    Err: (error: any) => ({
+        isOk: false,
+        value: error,
+    })
+};
+
+
 export const Struct =
     (schema: {}, validation = validationSchema) =>
-        <S extends Record<string, any>>(obj: S): [ValidationErrors|undefined, Readonly<S>] =>
+        <S extends Record<string, any>>(obj: S): [ValidationErrors|null, Readonly<S>] =>
         {
             const err = validation(schema, obj);
-            if (err !== undefined && SchemaMode.mode === 'strict') {
+            if (err !== null && SchemaMode.mode === 'strict') {
                 throw new Error(JSON.stringify(err))
             }
 
@@ -26,11 +38,11 @@ export const validationSchema = (schema: Schema, data: Record<string, any>) => {
         }
     }
 
-    return isValid ? undefined : err;
+    return isValid ? null : err;
 };
 
 /**
- * Declare additional types
+ * Declare types
  */
 
 type CheckResult = true | string;

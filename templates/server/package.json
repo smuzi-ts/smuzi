@@ -20,5 +20,6 @@
     "#config/*": "./config/*.js"
   },
   "dependencies": {
+    "pg": "^8.16.0"
   }
 }

@@ -1,1 +1,0 @@
-declare const readonly: <T>(obj: T) => Readonly<T>;
