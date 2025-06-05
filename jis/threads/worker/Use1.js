@@ -7,15 +7,6 @@ const taskPath = path.join(__dirname, '../tasks/task1.js');
 
 const worker = new Worker(path.join(__dirname, './worker.js'));
 
-setInterval(() => {
-    console.log('eventLoopUtilization', worker.performance.eventLoopUtilization());
-}, 100).unref();
-
-worker.postMessage({
-    taskPath,
-    args: [2, 4,]
-})
-
 worker.on('message', (msg) => console.log('Worker Message', msg));
 worker.on('error', (error) => console.log('Worker Error', error))
 worker.on('exit', (code) => {

@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^22.15.21",
     "noroutine": "^0.0.7"
   }
 }
