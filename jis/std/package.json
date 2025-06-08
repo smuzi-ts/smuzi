@@ -1,5 +1,5 @@
 {
-  "name": "@jis/threads",
+  "name": "@jis/std",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -8,11 +8,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "files": [
+    "./src"
+  ],
+  "exports": {
+    "./path": "./src/path.js",
+    "./fn": "./src/fn.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.21"
-  },
-  "dependencies": {
-    "noroutine": "^0.0.7",
-    "@jis/std": "workspace:*"
   }
 }

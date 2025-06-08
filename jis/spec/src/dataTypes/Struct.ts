@@ -1,5 +1,3 @@
-import {SchemaMode} from "./Mode.js";
-
 const Result = {
     Ok: (data: any) => ({
         isOk: true,
@@ -13,12 +11,12 @@ const Result = {
 
 
 export const Struct =
-    (schema: {}, validation = validationSchema) =>
+    (schema: {}, {validation = validationSchema, strictMode = true} = {}) =>
         <S extends Record<string, any>>(obj: S): [ValidationErrors|null, Readonly<S>] =>
         {
             const err = validation(schema, obj);
-            if (err !== null && SchemaMode.mode === 'strict') {
-                throw new Error(JSON.stringify(err))
+            if (err !== null && strictMode) {
+                throw new ValidationException(err);
             }
 
             return [err, Object.freeze(obj)];
@@ -31,7 +29,7 @@ export const validationSchema = (schema: Schema, data: Record<string, any>) => {
 
     for (const varName in schema) {
         const handler = schema[varName];
-        const check = handler.check(varName, data[varName]);
+        const check = handler.check(data[varName]);
         if (check !== true) {
             isValid = false;
             err[varName] = check;
@@ -54,3 +52,16 @@ type SchemaItem = {
 type Schema = Record<string, SchemaItem>;
 
 type ValidationErrors = Record<string, string>;
+
+class ValidationException extends Error {
+    #err = {};
+
+    constructor(err: ValidationErrors) {
+        super(JSON.stringify(err));
+        this.#err = err;
+    }
+
+    get err() {
+        return this.#err;
+    }
+}

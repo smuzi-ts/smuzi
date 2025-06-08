@@ -1,6 +1,4 @@
-const Pipe = (...fns) => (input) => fns.reduce((prevResult, fn) => fn(prevResult), input);
-
-
+import {Utils} from "../Utils.js";
 
 const a = ar => {ar.push("a");return ar}
 const b = ar => {ar.push("b");return ar}
@@ -15,16 +13,14 @@ const sB2 = (s,c) => s + "_B_"
 const sC2 = (s,c) => s + "_C_"
 
 
-const arrABC = Pipe(a, b, c)
+const arrABC = Utils(a, b, c)
 
 let result = arrABC(["Z"])
 
 console.log("result arrABC", result)
 
-const stringABC = Pipe(sA, sB, sC)
+const stringABC = Utils(sA, sB, sC)
 
 result = stringABC("Z")
 
 console.log("result stringABC", result)
-
-
