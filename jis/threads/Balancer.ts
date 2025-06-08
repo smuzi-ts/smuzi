@@ -58,35 +58,3 @@ const runRoutine = async (path, method, args) => {
         getFreeWorker().postMessage({taskId, path, method, args})
     });
 }
-
-const BTransformModule = <M>(module: M, runInMainThread: boolean = false) =>
-    (path: string): M => {
-        if (! isMainThread || runInMainThread) return module;
-
-        for (const method in module) {
-            if (typeof module[method] !== 'function') continue;
-            // @ts-ignore
-            module[method] = (...args) => runRoutine(path, method, args);
-        }
-
-        return module;
-    }
-
-
-const existsModule = (path: string): string => {
-    if (! fs.existsSync(path)) {
-        throw new Error(`File ${path} is not exists`)
-    }
-
-    return path;
-}
-
-export const Routine = <M>(url: string, module: M, runInMainThread = false): M => {
-    const transformModuleConcrete = BTransformModule(module, runInMainThread);
-
-    return pipeIn(url)(fileURLToPath, existsModule, transformModuleConcrete);
-}
-
-
-
-//Declare:

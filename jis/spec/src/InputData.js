@@ -1,4 +1,4 @@
-export const inputData = {
-    name: "test",
-    marsha: "bred",
+export const correctData = {
+    s: "test",
+    b: true,
 }

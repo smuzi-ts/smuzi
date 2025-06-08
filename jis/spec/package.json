@@ -11,6 +11,10 @@
   "files": [
     "./src"
   ],
+  "exports": {
+    "./dataTypes": "./src/path.js",
+    "./fn": "./src/fn.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.21"
   },

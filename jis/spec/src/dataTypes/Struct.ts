@@ -1,26 +1,25 @@
-const Result = {
-    Ok: (data: any) => ({
-        isOk: true,
-        value: data,
-    }),
-    Err: (error: any) => ({
-        isOk: false,
-        value: error,
-    })
-};
+export const STRUCT_ID = Symbol('STRUCT_ID');
 
+export const Struct = (schema: {}, {validation = validationSchema, strictMode = true} = {}) => {
+        const structUID = Symbol('structUID');
 
-export const Struct =
-    (schema: {}, {validation = validationSchema, strictMode = true} = {}) =>
-        <S extends Record<string, any>>(obj: S): [ValidationErrors|null, Readonly<S>] =>
+        const builder = <S extends Record<string, any>>(obj: S): [ValidationErrors|null, Readonly<S>] =>
         {
+            const newObj = Object.freeze(Object.assign({[STRUCT_ID]: structUID}, obj));
+
             const err = validation(schema, obj);
             if (err !== null && strictMode) {
                 throw new ValidationException(err);
             }
 
-            return [err, Object.freeze(obj)];
+            return [err, newObj];
         };
+
+        builder[STRUCT_ID] = structUID;
+
+        return builder;
+    }
+
 
 
 export const validationSchema = (schema: Schema, data: Record<string, any>) => {
@@ -38,6 +37,9 @@ export const validationSchema = (schema: Schema, data: Record<string, any>) => {
 
     return isValid ? null : err;
 };
+
+
+
 
 /**
  * Declare types
