@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "files": [
-    "./src"
+    "./src",
+    "./tests"
   ],
   "devDependencies": {
     "@types/node": "^22.15.21",

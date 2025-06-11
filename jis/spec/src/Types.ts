@@ -2,7 +2,7 @@ import {Result} from "./dataTypes/Result.ts";
 
 const integer = (mistmatchedTypes = baseMistmatchedTypes) =>
     (val) => {
-        return Number.isSafeInteger(val) ? true : mistmatchedTypes(typeof val, "integer")
+        return Number.isInteger(val) ? true : mistmatchedTypes(typeof val, "integer")
     }
 
 const number = (mistmatchedTypes = baseMistmatchedTypes) =>

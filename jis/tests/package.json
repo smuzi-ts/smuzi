@@ -1,6 +1,6 @@
 {
   "name": "@jis/tests",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "",
   "scripts": {},
@@ -8,9 +8,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "main": "./src/index.js",
   "files": [
     "./src"
   ],
+  "exports": {
+    ".": "./src/index.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.21"
   }
