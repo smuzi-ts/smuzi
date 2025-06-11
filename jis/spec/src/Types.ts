@@ -1,26 +1,34 @@
+import {Result} from "./dataTypes/Result.ts";
+
+const integer = (mistmatchedTypes = baseMistmatchedTypes) =>
+    (val) => {
+        return Number.isSafeInteger(val) ? true : mistmatchedTypes(typeof val, "integer")
+    }
+
+const number = (mistmatchedTypes = baseMistmatchedTypes) =>
+    baseCheckType('number', mistmatchedTypes)
+
+const string = (mistmatchedTypes = baseMistmatchedTypes) =>
+    baseCheckType('string', mistmatchedTypes)
+
+const bool = (mistmatchedTypes = baseMistmatchedTypes) =>
+    baseCheckType('boolean', mistmatchedTypes)
+
+
 export const Schema = {
-    String: (mistmatchedTypes = baseMistmatchedTypes) => ({
-        check: baseCheckType("string", mistmatchedTypes)
-    }),
-    Boolean: (mistmatchedTypes = baseMistmatchedTypes) => ({
-        check: baseCheckType("boolean", mistmatchedTypes)
-    })
+    string,
+    bool,
+    integer,
+    number,
 }
 
-const baseCheckType: IBaseCheckType = (expectedType, mistmatchedTypes) => (val) => {
-    const realType = typeof val;
-    return realType === expectedType ? true : mistmatchedTypes(realType, expectedType)
+const baseCheckType =
+    (expectedType, mistmatchedTypes) =>
+        (val) => {
+            const realType = typeof val;
+            return realType === expectedType ? Result.Ok(true) : Result.Err(mistmatchedTypes(realType, expectedType))
+        }
+
+const baseMistmatchedTypes = (realType, expectedType) => {
+    return `Expected ${expectedType}, found ${realType}`
 }
-
-const baseMistmatchedTypes: IHandlerMistmatchedTypes = (realType, expectedType) => {
-    return `expected ${expectedType}, found ${realType}`
-}
-
-
-/**
- * Declare Types
- */
-
-type IHandlerMistmatchedTypes = (realType: string, expectedType: string) => string;
-type IBaseCheckType = (realType: string, mistmatchedTypes: IHandlerMistmatchedTypes) => (val: any) => true|string;
-type IType = (mistmatchedTypes: IHandlerMistmatchedTypes) => {check: IBaseCheckType}

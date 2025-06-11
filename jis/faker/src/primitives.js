@@ -1,0 +1,22 @@
+
+export function string(length = 10) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
+export function boolean() {
+    return Math.random() < 0.5;
+}
+
+export function integer(min = 0, max = 100) {
+    if (min > max) throw new Error('min must be less than or equal to max');
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function float(min = 0, max = 100, decimals = 2) {
+    if (min > max) throw new Error('min must be less than or equal to max');
+    const factor = 10 ** decimals;
+    const raw = Math.random() * (max - min) + min;
+    return Math.round(raw * factor) / factor;
+}

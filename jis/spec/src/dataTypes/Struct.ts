@@ -1,69 +1,90 @@
-export const STRUCT_ID = Symbol('STRUCT_ID');
+import {type IResult, Result} from "./Result.ts";
 
-export const Struct = (schema: {}, {validation = validationSchema, strictMode = true} = {}) => {
-        const structUID = Symbol('structUID');
+export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
 
-        const builder = <S extends Record<string, any>>(obj: S): [ValidationErrors|null, Readonly<S>] =>
-        {
-            const newObj = Object.freeze(Object.assign({[STRUCT_ID]: structUID}, obj));
+export const isStruct = (obj: any) => {
+    return obj.hasOwnProperty(STRUCT_NAME_FIELD);
+}
 
-            const err = validation(schema, obj);
-            if (err !== null && strictMode) {
-                throw new ValidationException(err);
-            }
+export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = validationSchema} = {}) => {
+    const structNameUnique = Symbol(structName)
 
-            return [err, newObj];
-        };
+    const builder: IStructBuilder = (obj) => {
+        const newObj = Object.freeze(Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
 
-        builder[STRUCT_ID] = structUID;
+        const validationResult = validation(schema, obj);
 
-        return builder;
-    }
+        if (! validationResult.isOk) {
+            throw new StructValidationException(structName, validationResult.err);
+        }
+
+        return newObj;
+    };
+
+    builder[STRUCT_NAME_FIELD] = structNameUnique;
+
+    return builder;
+}
+
+export const UnsafeStruct = (schema: {}, structName = 'NoNamedUnsafeStruct' , {validation = validationSchema} = {}) => {
+    const structNameUnique = Symbol(structName)
+
+    const builder: IUnsafeStructBuilder = (obj) => {
+        const newObj = Object.freeze(Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
+
+        const err = validation(schema, obj);
+        if (err !== null) {
+            return Result.Err(err);
+        }
+
+        return Result.Ok(newObj);
+    };
+
+    builder[STRUCT_NAME_FIELD] = structNameUnique;
+
+    return builder;
+}
 
 
-
-export const validationSchema = (schema: Schema, data: Record<string, any>) => {
+export const validationSchema = (schema, data) => {
     const err: ValidationErrors = {};
     let isValid = true;
 
     for (const varName in schema) {
-        const handler = schema[varName];
-        const check = handler.check(data[varName]);
-        if (check !== true) {
+        const check = schema[varName](data[varName]);
+
+        if (! check.isOk) {
             isValid = false;
-            err[varName] = check;
+            err[varName] = check.err;
         }
     }
 
-    return isValid ? null : err;
+    return isValid ? Result.Ok(null) : Result.Err(err);
 };
-
-
 
 
 /**
  * Declare types
  */
 
+type IStructBuilder = <S extends Record<string, any>>(obj: S) => Readonly<S>
+type IUnsafeStructBuilder = <S extends Record<string, any>>(obj: S) => IResult<Readonly<S>, any>
+
 type CheckResult = true | string;
-
-type SchemaItem = {
-    check: (key: string, value?: any) => CheckResult;
-};
-
-type Schema = Record<string, SchemaItem>;
 
 type ValidationErrors = Record<string, string>;
 
-class ValidationException extends Error {
-    #err = {};
+class StructValidationException extends Error {
+    #errDetails = {};
+    #structName = "";
 
-    constructor(err: ValidationErrors) {
-        super(JSON.stringify(err));
-        this.#err = err;
+    constructor(structName, err: ValidationErrors) {
+        super(`Struct '${structName}' : ` +  JSON.stringify(err));
+        this.#errDetails = err;
+        this.#structName = structName;
     }
 
-    get err() {
-        return this.#err;
+    get errDetails() {
+        return this.#errDetails;
     }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@jis/spec",
+  "name": "@jis/faker",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -9,17 +9,9 @@
   "author": "",
   "license": "ISC",
   "files": [
-    "./src",
-    "./tests"
+    "./src"
   ],
   "devDependencies": {
     "@types/node": "^22.15.21"
-  },
-  "dependencies": {
-    "@jis/std": "workspace:*"
-  },
-  "imports": {
-    "#lib/*": "./src/*",
-    "#tests/*": "./tests/*"
   }
 }
