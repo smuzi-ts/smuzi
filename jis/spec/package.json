@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "test": "node --test --no-warnings"
+    "test": "node --test --no-warnings --stack-trace-limit=5"
   },
   "type": "module",
   "keywords": [],

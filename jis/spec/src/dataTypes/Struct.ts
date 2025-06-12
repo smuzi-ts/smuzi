@@ -11,7 +11,23 @@ export const isStructInstance = (obj: any, struct = undefined) => {
     return obj[STRUCT_NAME_FIELD] === struct[STRUCT_NAME_FIELD];
 }
 
-export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = validationSchema} = {}) => {
+export const validationSchema = (schema) => (obj) => {
+    const err: ValidationErrors = {};
+    let isValid = true;
+
+    for (const varName in schema) {
+        const check = schema[varName]()(obj[varName]);
+
+        if (! check.isOk) {
+            isValid = false;
+            err[varName] = check.err;
+        }
+    }
+
+    return isValid ? Result.Ok(obj) : Result.Err(err);
+};
+
+const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct') => {
     const structNameUnique = Symbol(structName)
 
     const builder: IStructBuilder = pipe(
@@ -29,6 +45,8 @@ export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = 
 
     return builder;
 }
+
+export const Struct = BStruct(validationSchema);
 
 // export const UnsafeStruct = (schema: {}, structName = 'NoNamedUnsafeStruct' , {validation = validationSchema} = {}) => {
 //     const structNameUnique = Symbol(structName)
@@ -48,23 +66,6 @@ export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = 
 //
 //     return builder;
 // }
-
-
-export const validationSchema = (schema) => (data) => {
-    const err: ValidationErrors = {};
-    let isValid = true;
-
-    for (const varName in schema) {
-        const check = schema[varName]()(data[varName]);
-
-        if (! check.isOk) {
-            isValid = false;
-            err[varName] = check.err;
-        }
-    }
-
-    return isValid ? Result.Ok(null) : Result.Err(err);
-};
 
 const assignStructName = (structNameUnique) => (obj) => Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj);
 
