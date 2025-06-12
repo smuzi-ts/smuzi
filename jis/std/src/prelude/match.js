@@ -42,13 +42,13 @@ const Result = Enum({
         isOk: false,
         value: err
     }),
-    Un: (err) => ({
+    Unhandle: (err) => ({
         isOk: false,
         value: err
     }),
 })
 
-const real = Result.Un("TEST");
+const real = Result.Unhandle("TEST");
 
 match(real, [
     [Result.Ok, (res) => {console.log("OK=>", res)}],
