@@ -21,3 +21,7 @@ export function float(min = 0, max = 100, decimals = 2) {
     const raw = Math.random() * (max - min) + min;
     return Math.round(raw * factor) / factor;
 }
+
+export function number(min = 0, max = 100, decimals = 2) {
+    return float(min, max, decimals);
+}

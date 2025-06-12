@@ -1,2 +1,2 @@
-export * from "#lib/Types.js";
-export * from "#lib/dataTypes/Struct.js";
+export * from "#lib/Types.ts";
+export * from "#lib/dataTypes/Struct.ts";

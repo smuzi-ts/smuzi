@@ -21,7 +21,7 @@ describe("Faker-Primitives", () => {
 
     it('integer', () => {
         const fakeInteger = faker.integer();
-        assert.isInteger("fakeInteger");
+        assert.isInteger(fakeInteger);
 
         const [min, max] = [2, 100];
 

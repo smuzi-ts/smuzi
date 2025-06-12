@@ -54,8 +54,9 @@ export const validationSchema = (schema, data) => {
     let isValid = true;
 
     for (const varName in schema) {
-        const check = schema[varName](data[varName]);
+        const check = schema[varName]()(data[varName]);
 
+        console.log(`check varName=${varName}|value=${data[varName]}`, check)
         if (! check.isOk) {
             isValid = false;
             err[varName] = check.err;
