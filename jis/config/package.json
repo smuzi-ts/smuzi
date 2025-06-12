@@ -1,5 +1,5 @@
 {
-  "name": "@jis/std",
+  "name": "@jis/config",
   "version": "0.0.1",
   "private": true,
   "description": "",
@@ -9,13 +9,9 @@
   "author": "",
   "license": "ISC",
   "files": [
-    "./src"
+    "./ts"
   ],
   "exports": {
-    ".": "./src/prelude.js",
-    "./utils": "./src/utils.js"
-  },
-  "devDependencies": {
-    "@types/node": "^22.15.21"
+    "./ts/pack": "./ts/tsconfig.pack.json"
   }
 }

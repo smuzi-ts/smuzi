@@ -1,6 +1,6 @@
 import * as path from "node:path"
 import {fileURLToPath} from "node:url";
-import {pipeIn} from "./fn.js";
+import {pipeIn} from "./fp.js";
 
 export const relativeToUrl = (fromUrl, toPath) => {
     return pipeIn(fromUrl)

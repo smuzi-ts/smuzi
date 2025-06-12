@@ -2,7 +2,10 @@ import * as _assert from "node:assert/strict";
 import {isStructInstance, validationSchema} from "@jis/spec";
 
 export const assert = {
+    //Native
     equal: _assert.equal,
+    deepEqual: _assert.deepEqual,
+
     //Booleans
     isTrue: (actual) => _assert.equal(actual, true),
     isFalse: (actual) => _assert.equal(actual, true),
@@ -19,8 +22,8 @@ export const assert = {
     isFloat: (actual) => _assert.equal(typeof actual, "number"),
 
     //Structures
-    isStructInstance: (actual, struct) => {
-        _assert.ok(isStructInstance(actual, struct), `Bad structure`);
+    isStructInstance: (actualInstance, structInterface) => {
+        _assert.ok(isStructInstance(actualInstance, structInterface), `Bad structure`);
     },
     //Schema
     objIsValidBySchema: (schema, obj) => {

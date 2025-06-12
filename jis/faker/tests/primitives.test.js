@@ -1,6 +1,5 @@
 import {assert, describe, it} from "@jis/tests";
-
-import {faker} from "../src/index.js";
+import {faker} from "#lib/index.js";
 
 describe("Faker-Primitives", () => {
     it('string', () => {

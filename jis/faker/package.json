@@ -1,9 +1,11 @@
 {
   "name": "@jis/faker",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test --no-warnings"
+  },
   "type": "module",
   "keywords": [],
   "author": "",
@@ -12,12 +14,19 @@
     "./src",
     "./tests"
   ],
+  "exports": {
+    ".": "./src/index.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "@jis/tests": "workspace:*"
   },
   "dependencies": {
     "@jis/spec": "workspace:*",
-    "@jis/std": "workspace:*"
+    "@jis/std": "workspace:*",
+    "@jis/config": "workspace:*"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
   }
 }

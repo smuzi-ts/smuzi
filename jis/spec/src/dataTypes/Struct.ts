@@ -1,4 +1,6 @@
 import {type IResult, Result} from "./Result.ts";
+import {readonly, clone} from "@jis/std";
+import {pipeIn} from "@jis/std/utils";
 
 export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
 
@@ -13,7 +15,8 @@ export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = 
     const structNameUnique = Symbol(structName)
 
     const builder: IStructBuilder = (obj) => {
-        const newObj = Object.freeze(Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
+        return pipeIn(obj)()
+        const newObj = readonly(clone({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
 
         const validationResult = validation(schema, obj);
 
@@ -33,7 +36,7 @@ export const UnsafeStruct = (schema: {}, structName = 'NoNamedUnsafeStruct' , {v
     const structNameUnique = Symbol(structName)
 
     const builder: IUnsafeStructBuilder = (obj) => {
-        const newObj = Object.freeze(Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
+        const newObj = readonly(clone({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
 
         const err = validation(schema, obj);
         if (err !== null) {
