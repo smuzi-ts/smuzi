@@ -2,8 +2,11 @@ import {type IResult, Result} from "./Result.ts";
 
 export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
 
-export const isStruct = (obj: any) => {
-    return obj.hasOwnProperty(STRUCT_NAME_FIELD);
+export const isStructInstance = (obj: any, struct = undefined) => {
+    const isStructInstance = obj.hasOwnProperty(STRUCT_NAME_FIELD);
+    if (struct === undefined) return isStructInstance;
+
+    return obj[STRUCT_NAME_FIELD] === struct[STRUCT_NAME_FIELD];
 }
 
 export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = validationSchema} = {}) => {

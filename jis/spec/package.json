@@ -12,6 +12,9 @@
     "./src",
     "./tests"
   ],
+  "exports": {
+    ".": "./src/index.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.21"
   },

@@ -8,6 +8,10 @@ const integer = (mistmatchedTypes = baseMistmatchedTypes) =>
 const number = (mistmatchedTypes = baseMistmatchedTypes) =>
     baseCheckType('number', mistmatchedTypes)
 
+//TODO
+const float = (mistmatchedTypes = baseMistmatchedTypes) =>
+    baseCheckType('number', mistmatchedTypes)
+
 const string = (mistmatchedTypes = baseMistmatchedTypes) =>
     baseCheckType('string', mistmatchedTypes)
 
@@ -15,11 +19,12 @@ const bool = (mistmatchedTypes = baseMistmatchedTypes) =>
     baseCheckType('boolean', mistmatchedTypes)
 
 
-export const Schema = {
+export const S = {
     string,
     bool,
     integer,
     number,
+    float,
 }
 
 const baseCheckType =
