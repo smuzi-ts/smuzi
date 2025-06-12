@@ -1,5 +1,5 @@
 import * as _assert from "node:assert/strict";
-import {isStructInstance} from "@jis/spec";
+import {isStructInstance, validationSchema} from "@jis/spec";
 
 export const assert = {
     equal: _assert.equal,
@@ -20,6 +20,13 @@ export const assert = {
 
     //Structures
     isStructInstance: (actual, struct) => {
-        if (isStructInstance(actual, struct)) _assert.fail(`Bad structure`);
+        _assert.ok(isStructInstance(actual, struct), `Bad structure`);
+    },
+    //Schema
+    objIsValidBySchema: (schema, obj) => {
+        if (! validationSchema(schema, obj).isOk) _assert.fail('Object does not match schema');
+    },
+    objIsInvalidBySchema: (schema, obj) => {
+        if (validationSchema(schema, obj).isOk) _assert.fail('Object unexpectedly matched schema');
     }
 }

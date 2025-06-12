@@ -6,9 +6,7 @@ export function schema(minFields = 1, maxFields = 5) {
     const fieldCount = faker.integer(minFields, maxFields);
 
     for (let i = 0; i < fieldCount; i++) {
-        const fieldName = `field${i + 1}`;
-        const randomTypeKey = faker.obj.getProperty(S);
-        schema[fieldName] = S[randomTypeKey];
+        schema[`field${i + 1}`] = faker.obj.getPropertyValue(S);
     }
 
     return schema;

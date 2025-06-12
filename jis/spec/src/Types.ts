@@ -8,7 +8,7 @@ export const TYPE_BOOL = Symbol('bool');
 
 const integer = (mistmatchedTypes = baseMistmatchedTypes) =>
     (val) => {
-        return Number.isInteger(val) ? true : mistmatchedTypes(typeof val, "integer")
+        return Number.isInteger(val) ? Result.Ok(true) : Result.Err(mistmatchedTypes(typeof val, "integer"))
     }
 integer[TYPE_NAME_FIELD] = TYPE_INTEGER;
 
