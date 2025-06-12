@@ -1,6 +1,6 @@
 import {type IResult, Result} from "./Result.ts";
 import {readonly, clone} from "@jis/std";
-import {pipeIn} from "@jis/std/utils";
+import {pipe} from "@jis/std/utils";
 
 export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
 
@@ -14,45 +14,43 @@ export const isStructInstance = (obj: any, struct = undefined) => {
 export const Struct = (schema: {}, structName = 'NoNamedStruct' , {validation = validationSchema} = {}) => {
     const structNameUnique = Symbol(structName)
 
-    const builder: IStructBuilder = (obj) => {
-        return pipeIn(obj)()
-        const newObj = readonly(clone({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
+    const builder: IStructBuilder = pipe(
+        assignStructName(structNameUnique),
+        readonly,
+        validation(schema),
+        (result) => {
+            throwIfFailValidation(result, structName);
 
-        const validationResult = validation(schema, obj);
-
-        if (! validationResult.isOk) {
-            throw new StructValidationException(structName, validationResult.err);
+            return result.ok;
         }
-
-        return newObj;
-    };
+    );
 
     builder[STRUCT_NAME_FIELD] = structNameUnique;
 
     return builder;
 }
 
-export const UnsafeStruct = (schema: {}, structName = 'NoNamedUnsafeStruct' , {validation = validationSchema} = {}) => {
-    const structNameUnique = Symbol(structName)
+// export const UnsafeStruct = (schema: {}, structName = 'NoNamedUnsafeStruct' , {validation = validationSchema} = {}) => {
+//     const structNameUnique = Symbol(structName)
+//
+//     const builder: IUnsafeStructBuilder = (obj) => {
+//         const newObj = readonly(clone({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
+//
+//         const err = validation(schema, obj);
+//         if (err !== null) {
+//             return Result.Err(err);
+//         }
+//
+//         return Result.Ok(newObj);
+//     };
+//
+//     builder[STRUCT_NAME_FIELD] = structNameUnique;
+//
+//     return builder;
+// }
 
-    const builder: IUnsafeStructBuilder = (obj) => {
-        const newObj = readonly(clone({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
 
-        const err = validation(schema, obj);
-        if (err !== null) {
-            return Result.Err(err);
-        }
-
-        return Result.Ok(newObj);
-    };
-
-    builder[STRUCT_NAME_FIELD] = structNameUnique;
-
-    return builder;
-}
-
-
-export const validationSchema = (schema, data) => {
+export const validationSchema = (schema) => (data) => {
     const err: ValidationErrors = {};
     let isValid = true;
 
@@ -68,6 +66,13 @@ export const validationSchema = (schema, data) => {
     return isValid ? Result.Ok(null) : Result.Err(err);
 };
 
+const assignStructName = (structNameUnique) => (obj) => Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj);
+
+const throwIfFailValidation = (validationResult, structName) => {
+    if (! validationResult.isOk) {
+        throw new StructValidationException(structName, validationResult.err);
+    }
+}
 
 /**
  * Declare types
