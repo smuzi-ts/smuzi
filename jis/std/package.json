@@ -1,6 +1,6 @@
 {
   "name": "@jis/std",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "",
   "scripts": {},
@@ -12,8 +12,8 @@
     "./src"
   ],
   "exports": {
-    "./path": "./src/path.js",
-    "./fn": "./src/fn.js"
+    ".": "./src/index.js",
+    "./path": "./src/path.js"
   },
   "devDependencies": {
     "@types/node": "^22.15.21"

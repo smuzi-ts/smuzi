@@ -1,4 +1,5 @@
 import * as _assert from "node:assert/strict";
+import {isStructInstance} from "@jis/spec";
 
 export const assert = {
     equal: _assert.equal,
@@ -19,8 +20,6 @@ export const assert = {
 
     //Structures
     isStructInstance: (actual, struct) => {
-
-        _assert.fail(``);
-        _assert(actual)
+        if (isStructInstance(actual, struct)) _assert.fail(`Bad structure`);
     }
 }

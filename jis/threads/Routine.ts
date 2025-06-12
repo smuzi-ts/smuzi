@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url';
 import {Worker, isMainThread} from "node:worker_threads";
 import * as fs from 'fs';
 import {relativeToUrl} from "@jis/std/path";
-import {pipeIn} from "@jis/std/fn";
+import {pipeIn} from "@jis/std";
 
 const worker = new Worker(relativeToUrl(import.meta.url, "./worker.js"));
 

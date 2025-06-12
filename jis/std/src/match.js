@@ -3,7 +3,7 @@ const defaultHandlerUnmatched = (real) => {
     throw new Error('Unmatched value')
 }
 
-export const match = (baseEnum) => (value, handlers, defaultHandler = defaultHandlerUnmatched) => {
+export const match = (value, handlers, defaultHandler = defaultHandlerUnmatched) => {
     for (const handler of handlers) {
         if (handler[0][ENUM_UID] === value[ENUM_UID]) {
             defaultHandler = handler[1];
@@ -48,11 +48,9 @@ const Result = Enum({
     }),
 })
 
-const ResultMatch = match(Result);
-
 const real = Result.Un("TEST");
 
-ResultMatch(real, [
+match(real, [
     [Result.Ok, (res) => {console.log("OK=>", res)}],
     [Result.Err, (res) => {console.log("Err=>", res)}],
 ], (d) => console.log("DEF=>", d))

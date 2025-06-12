@@ -1,2 +1,2 @@
-export {S} from "#lib/Types.js";
-export {Struct} from "#lib/dataTypes/Struct.js";
+export * from "#lib/Types.js";
+export * from "#lib/dataTypes/Struct.js";
