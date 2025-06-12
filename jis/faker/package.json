@@ -14,8 +14,9 @@
   ],
   "devDependencies": {
     "@types/node": "^22.15.21",
-    "@jis/tests": "workspace:*",
+    "@jis/tests": "workspace:*"
+  },
+  "dependencies": {
     "@jis/spec": "workspace:*"
-
   }
 }
