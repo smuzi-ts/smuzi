@@ -1,5 +1,5 @@
 import {type IResult, Result} from "./Result.ts";
-import {readonly, clone} from "@jis/std";
+import {readonly} from "@jis/std";
 import {pipe} from "@jis/std/utils";
 
 export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
@@ -27,11 +27,11 @@ export const validationSchema = (schema) => (obj) => {
     return isValid ? Result.Ok(obj) : Result.Err(err);
 };
 
-const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct') => {
-    const structNameUnique = Symbol(structName)
+export const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct') => {
+    const structNameUnique = generateStructNameUnique(structName)
 
-    const builder: IStructBuilder = pipe(
-        assignStructName(structNameUnique),
+    const instanceBuilder: IStructBuilder = pipe(
+        assignStructNameToObj(structNameUnique),
         readonly,
         validation(schema),
         (result) => {
@@ -41,9 +41,9 @@ const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct') => {
         }
     );
 
-    builder[STRUCT_NAME_FIELD] = structNameUnique;
+    instanceBuilder[STRUCT_NAME_FIELD] = structNameUnique;
 
-    return builder;
+    return instanceBuilder;
 }
 
 export const Struct = BStruct(validationSchema);
@@ -67,7 +67,9 @@ export const Struct = BStruct(validationSchema);
 //     return builder;
 // }
 
-const assignStructName = (structNameUnique) => (obj) => Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj);
+const generateStructNameUnique = (structName = "") => Symbol(structName);
+
+const assignStructNameToObj = (structNameUnique) => (obj) => Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj);
 
 const throwIfFailValidation = (validationResult, structName) => {
     if (! validationResult.isOk) {
