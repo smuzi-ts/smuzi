@@ -1,0 +1,11 @@
+{
+  "$schema": "https://nodejs.org/dist/v24.1.0/docs/node-config-schema.json",
+  "nodeOptions": {
+    "import": [
+      "amaro/strip"
+    ],
+    "watch-path": "src",
+    "watch-preserve-output": true,
+    "test-isolation": "process"
+  }
+}

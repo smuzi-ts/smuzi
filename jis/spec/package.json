@@ -23,7 +23,8 @@
   "dependencies": {
     "@jis/std": "workspace:*",
     "@jis/faker": "workspace:*",
-    "@jis/tests": "workspace:*"
+    "@jis/tests": "workspace:*",
+    "@jis/config": "workspace:*"
   },
   "imports": {
     "#lib/*": "./src/*"
