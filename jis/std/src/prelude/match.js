@@ -33,25 +33,26 @@ const Enum = (options) => {
 
     return newOptions;
 }
-const Result = Enum({
-    Ok: (result) => ({
-        isOk: true,
-        value: result
-    }),
-    Err: (err) => ({
-        isOk: false,
-        value: err
-    }),
-    Unhandle: (err) => ({
-        isOk: false,
-        value: err
-    }),
-})
 
-const real = Result.Unhandle("TEST");
-
-match(real, [
-    [Result.Ok, (res) => {console.log("OK=>", res)}],
-    [Result.Err, (res) => {console.log("Err=>", res)}],
-], (d) => console.log("DEF=>", d))
-
+// const Result = Enum({
+//     Ok: (result) => ({
+//         isOk: true,
+//         value: result
+//     }),
+//     Err: (err) => ({
+//         isOk: false,
+//         value: err
+//     }),
+//     Unhandle: (err) => ({
+//         isOk: false,
+//         value: err
+//     }),
+// })
+//
+// const real = Result.Unhandle("TEST");
+//
+// match(real, [
+//     [Result.Ok, (res) => {console.log("OK=>", res)}],
+//     [Result.Err, (res) => {console.log("Err=>", res)}],
+// ], (d) => console.log("DEF=>", d))
+//
