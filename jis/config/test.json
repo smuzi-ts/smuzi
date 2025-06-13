@@ -1,0 +1,73 @@
+{
+  "Company": null,
+  "Owner": {
+    "name": "CRM Admin",
+    "id": "570000000221025",
+    "email": "crm.admin@epower.ie"
+  },
+  "Email": "pemacd@gmail.com",
+  "$currency_symbol": "\u20ac",
+  "Config": null,
+  "Tax": {
+    "Tax_Authority_Id": null,
+    "Tax_Percentage": null,
+    "Tax_Exemption_Code": null,
+    "Tax_Authority": null,
+    "Tax_Id": null,
+    "Tax_Name": null,
+    "Tax_Exemption_Id": null,
+    "Taxable": false
+  },
+  "ZBilling_Id": "175901000097310152",
+  "Salutation": null,
+  "First_Name": "Peter",
+  "Full_Name": "Peter MacDonald",
+  "Modified_By": {
+    "name": "CRM Admin",
+    "id": "570000000221025",
+    "email": "crm.admin@epower.ie"
+  },
+  "Exchange_Rate": 1,
+  "Phone": "0851575129",
+  "Currency": "EUR",
+  "$inactive": false,
+  "Service_Address": {
+    "State": "Cork",
+    "name": "AD-45624",
+    "Country": "Ireland",
+    "Zip_Code": "T12 T6C4",
+    "id": "570000001323748",
+    "City": "CORK",
+    "Address_Name": "",
+    "Street_2": "DOUGLAS ROAD",
+    "Street_1": "33 ENDSLEIGH ESTATE"
+  },
+  "id": "570000000948851",
+  "Modified_Time": "2025-06-04T18:34:45+03:00",
+  "Created_Time": "2024-10-30T12:16:01+02:00",
+  "$editable": true,
+  "Mobile": null,
+  "$permissions": {
+    "read": true,
+    "edit": true,
+    "delete": true
+  },
+  "ZBooks_Contact_Person": false,
+  "Last_Name": "MacDonald",
+  "Billing_Address": {
+    "State": "Cork",
+    "name": "AD-36988",
+    "Country": "Ireland",
+    "Zip_Code": "T12 T6C4",
+    "id": "570000000948166",
+    "City": "CORK",
+    "Address_Name": "",
+    "Street_2": "DOUGLAS ROAD",
+    "Street_1": "33 ENDSLEIGH ESTATE"
+  },
+  "Created_By": {
+    "name": "CRM Admin",
+    "id": "570000000221025",
+    "email": "crm.admin@epower.ie"
+  }
+}
