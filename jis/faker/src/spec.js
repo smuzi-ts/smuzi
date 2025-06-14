@@ -1,12 +1,13 @@
-import {S} from "@jis/spec";
+import {S, TYPE_BOOL, TYPE_FLOAT, TYPE_INTEGER, TYPE_NAME_FIELD, TYPE_STRING, TYPE_STRUCT} from "@jis/spec";
 import {faker} from "./index.js";
+import {match} from "@jis/std";
 
 export function schema(minFields = 1, maxFields = 5) {
     const schema = {};
     const fieldCount = faker.integer(minFields, maxFields);
 
     for (let i = 0; i < fieldCount; i++) {
-        schema[`field${i + 1}`] = faker.obj.getPropertyValue(S);
+        schema[`field${i + 1}`] = faker.obj.getPropertyValue(S)();
     }
 
     return schema;
@@ -15,14 +16,45 @@ export function schema(minFields = 1, maxFields = 5) {
 export function objBySchema(schema) {
     const result = {};
 
-    for (const [key, typeFn] of Object.entries(schema)) {
-        if (typeFn === S.string) result[key] = faker.string();
-        else if (typeFn === S.bool) result[key] = faker.boolean();
-        else if (typeFn === S.integer) result[key] = faker.integer();
-        else if (typeFn === S.float) result[key] = faker.float();
-        else {
-            throw new Error(`Undefined schema type [key=${key}][type=${typeFn}]`)
+    for (const [key, type] of Object.entries(schema)) {
+        if (typeof type === "object") {
+            result[key] = objBySchema(type);
+            continue;
         }
+        match(type[TYPE_NAME_FIELD], [
+                [TYPE_STRING, () => result[key] = faker.string()],
+                [TYPE_INTEGER, () => result[key] = faker.integer()],
+                [TYPE_BOOL, () => result[key] = faker.boolean()],
+                [TYPE_FLOAT, () => result[key] = faker.float()],
+            ],
+            () => {
+                throw new Error(`Undefined schema type [key=${key}][type=${type}]`)
+            },
+        )
+    }
+
+    return result;
+}
+
+export function instanceOfStruct(struct) {
+    if (struct[TYPE_NAME_FIELD] !== TYPE_STRUCT) {
+
+    }
+
+    const result = {};
+
+    for (const [key, type] of Object.entries(schema)) {
+        match(type[TYPE_NAME_FIELD], [
+                [TYPE_STRING, () => result[key] = faker.string()],
+                [TYPE_INTEGER, () => result[key] = faker.integer()],
+                [TYPE_BOOL, () => result[key] = faker.boolean()],
+                [TYPE_FLOAT, () => result[key] = faker.float()],
+                [TYPE_STRUCT, () => result[key] = instanceOfStruct(type)],
+            ],
+            () => {
+                throw new Error(`Undefined schema type [key=${key}][type=${type}]`)
+            },
+        )
     }
 
     return result;

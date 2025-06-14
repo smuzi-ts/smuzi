@@ -5,12 +5,14 @@ const defaultHandlerUnmatched = (real) => {
 
 export const match = (value, handlers, defaultHandler = defaultHandlerUnmatched) => {
     for (const handler of handlers) {
-        if (handler[0][ENUM_UID] === value[ENUM_UID]) {
+
+        if (handler[0] === value || (handler[0].hasOwnProperty(ENUM_UID) ? handler[0][ENUM_UID] === value[ENUM_UID] : false)) {
             defaultHandler = handler[1];
+            return defaultHandler(value);
         }
     }
 
-    defaultHandler(value);
+    return defaultHandler(value);
 }
 
 const ENUM_UID = Symbol("ENUM_UID");

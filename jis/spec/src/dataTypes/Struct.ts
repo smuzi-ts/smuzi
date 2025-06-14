@@ -1,22 +1,33 @@
 import {type IResult, Result} from "./Result.ts";
 import {readonly} from "@jis/std";
 import {pipe} from "@jis/std/utils";
+import {TYPE_NAME_FIELD} from "#lib/Types.ts";
 
-export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
+export const TYPE_STRUCT = Symbol('struct');
+export const TYPE_STRUCT_INSTANCE = Symbol('struct_instance');
+export const STRUCT_NAME_FIELD = Symbol('struct');
 
 export const isStructInstance = (obj: any, struct = undefined) => {
-    const isStructInstance = obj.hasOwnProperty(STRUCT_NAME_FIELD);
+    const isStructInstance = obj?.[TYPE_NAME_FIELD] === TYPE_STRUCT;
     if (struct === undefined) return isStructInstance;
 
     return obj[STRUCT_NAME_FIELD] === struct[STRUCT_NAME_FIELD];
 }
+
+const assignStructNameToObj = (structNameUnique) => (obj) =>
+    Object.assign({
+        [TYPE_NAME_FIELD]: TYPE_STRUCT_INSTANCE,
+        [STRUCT_NAME_FIELD]: structNameUnique,
+    }, obj);
 
 export const validationSchema = (schema) => (obj) => {
     const err: ValidationErrors = {};
     let isValid = true;
 
     for (const varName in schema) {
-        const check = schema[varName]()(obj[varName]);
+        const check = isStructInstance(schema[varName]) ?
+            validationSchema(schema[varName])(obj[varName]) :
+            schema[varName](obj[varName]);
 
         if (! check.isOk) {
             isValid = false;
@@ -40,7 +51,7 @@ export const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct'
             return result.ok;
         }
     );
-
+    instanceBuilder[TYPE_NAME_FIELD] = TYPE_STRUCT;
     instanceBuilder[STRUCT_NAME_FIELD] = structNameUnique;
 
     return instanceBuilder;
@@ -69,10 +80,8 @@ export const Struct = BStruct(validationSchema);
 
 const generateStructNameUnique = (structName = "") => Symbol(structName);
 
-const assignStructNameToObj = (structNameUnique) => (obj) => Object.assign({[STRUCT_NAME_FIELD]: structNameUnique}, obj);
-
 const throwIfFailValidation = (validationResult, structName) => {
-    if (! validationResult.isOk) {
+    if (! validationResult.isOk && validationResult.panic) {
         throw new StructValidationException(structName, validationResult.err);
     }
 }

@@ -6,32 +6,52 @@ export const TYPE_FLOAT = Symbol('float');
 export const TYPE_STRING = Symbol('string');
 export const TYPE_BOOL = Symbol('bool');
 
-const integer = (mistmatchedTypes = baseMistmatchedTypes) =>
-    (val) => {
-        return Number.isInteger(val) ? Result.Ok(true) : Result.Err(mistmatchedTypes(typeof val, "integer"))
-    }
-integer[TYPE_NAME_FIELD] = TYPE_INTEGER;
+const assignTypeName = (typeId, checker) => {
+    checker[TYPE_NAME_FIELD] = typeId;
+
+    return checker;
+}
+
+const integer = (mistmatchedTypes = baseMistmatchedTypes)  => {
+    return assignTypeName(
+        TYPE_INTEGER,
+        (val) => Number.isInteger(val) ? Result.Ok(val) : Result.Err(mistmatchedTypes(typeof val, "integer"))
+    )
+}
+
 
 //TODO
-const float = (mistmatchedTypes = baseMistmatchedTypes) =>
-    baseCheckType('number', mistmatchedTypes)
-float[TYPE_NAME_FIELD] = TYPE_FLOAT;
+const float = (mistmatchedTypes = baseMistmatchedTypes) => {
+    const checker = baseCheckType('number', mistmatchedTypes);
 
-const string = (mistmatchedTypes = baseMistmatchedTypes) =>
-    baseCheckType('string', mistmatchedTypes)
-string[TYPE_NAME_FIELD] = TYPE_STRING;
+    return assignTypeName(TYPE_FLOAT, checker);
+}
 
-const bool = (mistmatchedTypes = baseMistmatchedTypes) =>
-    baseCheckType('boolean', mistmatchedTypes)
-bool[TYPE_NAME_FIELD] = TYPE_BOOL;
+const string = (mistmatchedTypes = baseMistmatchedTypes) => {
+    const checker = (val) => {
+        const realType = typeof val;
+        return realType === "string" ? Result.Ok(true) : Result.Err(mistmatchedTypes(realType, "string"))
+    }
 
+    assignTypeName(TYPE_STRING, checker);
 
-export const S = {
+    return checker;
+}
+
+const bool = (mistmatchedTypes = baseMistmatchedTypes) => {
+    const checker = baseCheckType('boolean', mistmatchedTypes);
+
+    return assignTypeName(TYPE_BOOL, checker);
+}
+
+export const Schema = {
     string,
     bool,
     integer,
     float,
 }
+
+export const S = Schema;
 
 const baseCheckType =
     (expectedType, mistmatchedTypes) =>
