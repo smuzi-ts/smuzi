@@ -1,18 +1,11 @@
 import {type IResult, Result} from "#lib/dataTypes/result.ts";
 import {failIf, readonly} from "#lib/prelude.js";
-import {isEmpty, pipe} from "#lib/utils.js";
+import {isEmpty, isString, pipe} from "#lib/utils.js";
 import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
 export const TYPE_STRUCT = Symbol('struct');
 export const TYPE_STRUCT_INSTANCE = Symbol('struct_instance');
 export const STRUCT_NAME_FIELD = Symbol('struct');
-
-export const isStructInstance = (obj: any, struct = undefined) => {
-    const isStructInstance = obj?.[TYPE_NAME_FIELD] === TYPE_STRUCT;
-    if (struct === undefined) return isStructInstance;
-
-    return obj[STRUCT_NAME_FIELD] === struct[STRUCT_NAME_FIELD];
-}
 
 const assignStructNameToObj = (structNameUnique) => (obj) =>
     Object.assign({
@@ -58,7 +51,7 @@ export const BUnsafeStruct = (validation) => (structName = '', schema: {},) => {
 export const UnsafeStruct = BUnsafeStruct(validationSchema);
 
 const generateStructNameUnique = (structName = "") => {
-    failIf(isEmpty(structName), `Struct name is required then declare the structure`);
+    failIf(! isString(structName) || isEmpty(structName), `Struct name is required then declare the structure`);
     return Symbol(structName);
 }
 

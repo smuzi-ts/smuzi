@@ -1,6 +1,6 @@
 import {S, TYPE_BOOL, TYPE_FLOAT, TYPE_INTEGER, TYPE_NAME_FIELD, TYPE_STRING, TYPE_STRUCT} from "@jis/std/spec";
 import {faker} from "./index.js";
-import {match} from "@jis/std";
+import {failIf, match} from "@jis/std";
 
 export function schema(minFields = 1, maxFields = 5) {
     const schema = {};
@@ -38,7 +38,7 @@ export function objBySchema(schema) {
 
 export function instanceOfStruct(struct) {
     if (struct[TYPE_NAME_FIELD] !== TYPE_STRUCT) {
-
+        failIf(isStru)
     }
 
     const result = {};
@@ -58,4 +58,8 @@ export function instanceOfStruct(struct) {
     }
 
     return result;
+}
+
+export function structName() {
+    return faker.string({max: 5, suffix: "Struct"});
 }

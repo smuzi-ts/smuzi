@@ -1,4 +1,5 @@
-import {isStructInstance, Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE, TYPE_NAME_FIELD, S} from "#lib/spec.js";
+import {Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE, TYPE_NAME_FIELD, S} from "#lib/spec.js";
+import {isStructInstance} from "#lib/utils.js";
 import {faker} from "@jis/faker";
 import {assert, describe, it, repeatIt} from "@jis/tests";
 
@@ -37,8 +38,8 @@ describe("Spec-Struct", () => {
     it("One schema, different structures",() => {
         const schema = faker.spec.schema(5,10);
 
-        const StructInterface1 = Struct(schema, "Struct1");
-        const StructInterface2 = Struct(schema, 'Struct2');
+        const StructInterface1 = Struct(faker.spec.structName(), schema);
+        const StructInterface2 = Struct(faker.spec.structName(), schema);
 
         const inputData = faker.spec.objBySchema(schema);
 
@@ -52,7 +53,7 @@ describe("Spec-Struct", () => {
 })
 
 function checkStructureBySchema(schema) {
-    const StructInterface = Struct(schema);
+    const StructInterface = Struct(faker.spec.structName(), schema);
     const inputData = faker.spec.objBySchema(schema);
     const resultInstance = StructInterface(inputData);
 

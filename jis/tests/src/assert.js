@@ -1,7 +1,7 @@
 import * as _assert from "node:assert/strict";
-import {isStructInstance, validationSchema} from "@jis/std/spec";
+import {validationSchema} from "@jis/std/spec";
 import {AssertionError} from "node:assert";
-import {isEmpty, isNone} from "@jis/std/utils";
+import {isEmpty, isNone, isStructInstance} from "@jis/std/utils";
 
 export const assert = {
     //Native

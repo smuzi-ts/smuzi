@@ -1,6 +1,5 @@
-import {readonly, Result} from "#lib/prelude.js";
-import {isInteger, pipe} from "#lib/utils.js";
-import {isStructInstance, TYPE_STRUCT} from "#lib/spec/struct.ts";
+import {Result} from "#lib/prelude.js";
+import {isInteger, isStructInstance} from "#lib/utils.js";
 
 export const TYPE_NAME_FIELD = Symbol('TYPE_NAME_FIELD');
 export const TYPE_INTEGER = Symbol('integer');
@@ -40,14 +39,14 @@ export const Schema = {
 export const S = Schema;
 
 const baseCheckType =
-    (expectedType, mistmatchedTypes) =>
+    (expected, mistmatchedTypes) =>
         (val) => {
-            const realType = typeof val;
-            return realType === expectedType ? Result.Ok(true) : mistmatchedTypes(realType, expectedType);
+            const actual = typeof val;
+            return actual === expected ? Result.Ok(true) : mistmatchedTypes(actual, expected);
         }
 
-const baseMistmatchedTypes = (realType, expectedType) => {
-    return Result.Err({realType, expectedType});
+const baseMistmatchedTypes = (actual, expected) => {
+    return Result.Err({actual, expected});
 }
 
 export function validationSchema(schema){

@@ -1,3 +1,6 @@
+import {TYPE_NAME_FIELD} from "#lib/spec/schema.ts";
+import {STRUCT_NAME_FIELD, TYPE_STRUCT, TYPE_STRUCT_INSTANCE} from "#lib/spec/struct.ts";
+
 export function isNone(val) {
     return val === undefined || val === null;
 }
@@ -20,4 +23,15 @@ export function isInteger(val) {
 
 export function isFunction(val) {
     return typeof val === "function";
+}
+
+export const isStruct = (val) => {
+    return val?.[TYPE_NAME_FIELD] === TYPE_STRUCT;
+}
+
+export const isStructInstance = (val, struct = undefined) => {
+    const isStructInstance = val?.[TYPE_NAME_FIELD] === TYPE_STRUCT_INSTANCE;
+    if (struct === undefined) return isStructInstance;
+
+    return val[STRUCT_NAME_FIELD] === struct[STRUCT_NAME_FIELD];
 }
