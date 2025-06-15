@@ -9,7 +9,7 @@ describe("Spec-StructDeep", () => {
             const childSchema = faker.spec.schema(5);
             const unionSchema = Object.assign({child: childSchema}, parentSchema);
 
-            const ChildStruct = Struct('ChildStruct',childSchema);
+            const ChildStruct = Struct('ChildStruct', childSchema);
             const ParentStruct = Struct('ParentStruct', Object.assign(
                     {child: ChildStruct},
                     parentSchema,
