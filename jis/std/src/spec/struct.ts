@@ -30,7 +30,7 @@ export const BStruct = (validation) => (structName = '', schema: {},) => {
         (result) => {
             throwIfFailValidation(result, structName);
 
-            return result.ok;
+            return result.val;
         }
     );
     instanceBuilder[TYPE_NAME_FIELD] = TYPE_STRUCT;
@@ -46,7 +46,7 @@ export const BUnsafeStruct = (validation) => (structName = '', schema: {},) => {
     const instanceBuilder: IUnsafeStructBuilder = pipe(
         assignStructNameToObj(structNameUnique),
         readonly,
-        validation(schema)
+        validation(schema),
     );
 
     instanceBuilder[TYPE_NAME_FIELD] = TYPE_STRUCT;
@@ -64,7 +64,7 @@ const generateStructNameUnique = (structName = "") => {
 
 const throwIfFailValidation = (validationResult, structName) => {
     if (! validationResult.isOk && validationResult.panic) {
-        throw new StructValidationException(structName, validationResult.err);
+        throw new StructValidationException(structName, validationResult);
     }
 }
 

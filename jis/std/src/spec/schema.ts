@@ -1,5 +1,5 @@
 import {readonly, Result} from "#lib/prelude.js";
-import {pipe} from "#lib/utils.js";
+import {isInteger, pipe} from "#lib/utils.js";
 import {isStructInstance, TYPE_STRUCT} from "#lib/spec/struct.ts";
 
 export const TYPE_NAME_FIELD = Symbol('TYPE_NAME_FIELD');
@@ -10,40 +10,25 @@ export const TYPE_BOOL = Symbol('bool');
 
 const assignTypeName = (typeId, checker) => {
     checker[TYPE_NAME_FIELD] = typeId;
-
     return checker;
 }
 
 const integer = (mistmatchedTypes = baseMistmatchedTypes)  => {
     return assignTypeName(
         TYPE_INTEGER,
-        (val) => Number.isInteger(val) ? Result.Ok(val) : Result.Err(mistmatchedTypes(typeof val, "integer"))
-    )
+        (val) => isInteger(val) ? Result.Ok(true) : mistmatchedTypes(typeof val, "integer")
+    );
 }
 
 //TODO
-const float = (mistmatchedTypes = baseMistmatchedTypes) => {
-    const checker = baseCheckType('number', mistmatchedTypes);
+const float = (mistmatchedTypes = baseMistmatchedTypes) =>
+     assignTypeName(TYPE_FLOAT, baseCheckType('number', mistmatchedTypes));
 
-    return assignTypeName(TYPE_FLOAT, checker);
-}
+const string = (mistmatchedTypes = baseMistmatchedTypes) =>
+     assignTypeName(TYPE_STRING, baseCheckType('string', mistmatchedTypes));
 
-const string = (mistmatchedTypes = baseMistmatchedTypes) => {
-    const checker = (val) => {
-        const realType = typeof val;
-        return realType === "string" ? Result.Ok(true) : Result.Err(mistmatchedTypes(realType, "string"))
-    }
-
-    assignTypeName(TYPE_STRING, checker);
-
-    return checker;
-}
-
-const bool = (mistmatchedTypes = baseMistmatchedTypes) => {
-    const checker = baseCheckType('boolean', mistmatchedTypes);
-
-    return assignTypeName(TYPE_BOOL, checker);
-}
+const bool = (mistmatchedTypes = baseMistmatchedTypes) =>
+    assignTypeName(TYPE_BOOL, baseCheckType('boolean', mistmatchedTypes));
 
 export const Schema = {
     string,
@@ -58,11 +43,11 @@ const baseCheckType =
     (expectedType, mistmatchedTypes) =>
         (val) => {
             const realType = typeof val;
-            return realType === expectedType ? Result.Ok(true) : Result.Err(mistmatchedTypes(realType, expectedType))
+            return realType === expectedType ? Result.Ok(true) : mistmatchedTypes(realType, expectedType);
         }
 
 const baseMistmatchedTypes = (realType, expectedType) => {
-    return `Expected ${expectedType}, found ${realType}`
+    return Result.Err({realType, expectedType});
 }
 
 export function validationSchema(schema){
@@ -71,13 +56,13 @@ export function validationSchema(schema){
         let isValid = true;
 
         for (const varName in schema) {
-            const check = isStructInstance(schema[varName]) ?
+            const checkResult = isStructInstance(schema[varName]) ?
                 validationSchema(schema[varName])(obj[varName]) :
                 schema[varName](obj[varName]);
 
-            if (! check.isOk) {
+            if (! checkResult.isOk) {
                 isValid = false;
-                err[varName] = check.err;
+                err[varName] = checkResult.val;
             }
         }
 

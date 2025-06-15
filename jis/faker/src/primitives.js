@@ -1,6 +1,6 @@
 import {isEmpty} from "@jis/std/utils";
 
-export function string({min = 5, max = 10, prefix = '', suffix = ''}) {
+export function string({min = 5, max = 10, prefix = '', suffix = ''} = {}) {
     if (min > max) throw new Error('min must be less than or equal to max');
     const length = Math.floor(Math.random() * (max - min + 1)) + min;
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

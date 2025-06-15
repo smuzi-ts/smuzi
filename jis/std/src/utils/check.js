@@ -17,3 +17,7 @@ export function isBool(val) {
 export function isInteger(val) {
     return Number.isInteger(val);
 }
+
+export function isFunction(val) {
+    return typeof val === "function";
+}
