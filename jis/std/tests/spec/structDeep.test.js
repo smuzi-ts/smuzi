@@ -1,8 +1,6 @@
-import {isStructInstance, Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE} from "#lib/dataTypes/Struct.ts";
-import {S, TYPE_NAME_FIELD} from "#lib/Types.ts";
+import {Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE, TYPE_NAME_FIELD} from "#lib/spec.js";
 import {faker} from "@jis/faker";
 import {assert, describe, it, repeatIt} from "@jis/tests";
-import _assert from "node:assert/strict";
 
 describe("Spec-StructDeep", () => {
     repeatIt(2,"Structure with One-level nesting", (name) => {

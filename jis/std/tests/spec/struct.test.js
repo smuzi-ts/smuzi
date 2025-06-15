@@ -1,8 +1,6 @@
-import {isStructInstance, Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE} from "#lib/dataTypes/Struct.ts";
-import {S, TYPE_NAME_FIELD} from "#lib/Types.ts";
+import {isStructInstance, Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE, TYPE_NAME_FIELD, S} from "#lib/spec.js";
 import {faker} from "@jis/faker";
 import {assert, describe, it, repeatIt} from "@jis/tests";
-import _assert from "node:assert/strict";
 
 describe("Spec-Struct", () => {
 
@@ -49,7 +47,7 @@ describe("Spec-Struct", () => {
         inputData[STRUCT_NAME_FIELD] = resultInstance[STRUCT_NAME_FIELD];
 
         assert.isStructInstance(resultInstance, StructInterface1);
-        _assert.ok(! isStructInstance(resultInstance, StructInterface2), `Expected that resultInstance implementing ${StructInterface1[STRUCT_NAME_FIELD].description}, but actual structure ${StructInterface2[STRUCT_NAME_FIELD.description]}`);
+        assert.ok(! isStructInstance(resultInstance, StructInterface2), `Expected that resultInstance implementing ${StructInterface1[STRUCT_NAME_FIELD].description}, but actual structure ${StructInterface2[STRUCT_NAME_FIELD.description]}`);
     })
 })
 

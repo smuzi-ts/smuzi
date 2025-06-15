@@ -1,7 +1,7 @@
-import {type IResult, Result} from "./Result.ts";
-import {readonly} from "@jis/std";
-import {pipe} from "@jis/std/utils";
-import {TYPE_NAME_FIELD} from "#lib/Types.ts";
+import {type IResult, Result} from "#lib/dataTypes/result.ts";
+import {failIf, readonly} from "#lib/prelude.js";
+import {isEmpty, pipe} from "#lib/utils.js";
+import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
 export const TYPE_STRUCT = Symbol('struct');
 export const TYPE_STRUCT_INSTANCE = Symbol('struct_instance');
@@ -20,25 +20,7 @@ const assignStructNameToObj = (structNameUnique) => (obj) =>
         [STRUCT_NAME_FIELD]: structNameUnique,
     }, obj);
 
-export const validationSchema = (schema) => (obj) => {
-    const err: ValidationErrors = {};
-    let isValid = true;
-
-    for (const varName in schema) {
-        const check = isStructInstance(schema[varName]) ?
-            validationSchema(schema[varName])(obj[varName]) :
-            schema[varName](obj[varName]);
-
-        if (! check.isOk) {
-            isValid = false;
-            err[varName] = check.err;
-        }
-    }
-
-    return isValid ? Result.Ok(obj) : Result.Err(err);
-};
-
-export const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct') => {
+export const BStruct = (validation) => (structName = '', schema: {},) => {
     const structNameUnique = generateStructNameUnique(structName)
 
     const instanceBuilder: IStructBuilder = pipe(
@@ -56,29 +38,29 @@ export const BStruct = (validation) => (schema: {}, structName = 'NoNamedStruct'
 
     return instanceBuilder;
 }
-
 export const Struct = BStruct(validationSchema);
 
-// export const UnsafeStruct = (schema: {}, structName = 'NoNamedUnsafeStruct' , {validation = validationSchema} = {}) => {
-//     const structNameUnique = Symbol(structName)
-//
-//     const builder: IUnsafeStructBuilder = (obj) => {
-//         const newObj = readonly(clone({[STRUCT_NAME_FIELD]: structNameUnique}, obj));
-//
-//         const err = validation(schema, obj);
-//         if (err !== null) {
-//             return Result.Err(err);
-//         }
-//
-//         return Result.Ok(newObj);
-//     };
-//
-//     builder[STRUCT_NAME_FIELD] = structNameUnique;
-//
-//     return builder;
-// }
+export const BUnsafeStruct = (validation) => (structName = '', schema: {},) => {
+    const structNameUnique = generateStructNameUnique(structName)
 
-const generateStructNameUnique = (structName = "") => Symbol(structName);
+    const instanceBuilder: IUnsafeStructBuilder = pipe(
+        assignStructNameToObj(structNameUnique),
+        readonly,
+        validation(schema)
+    );
+
+    instanceBuilder[TYPE_NAME_FIELD] = TYPE_STRUCT;
+    instanceBuilder[STRUCT_NAME_FIELD] = structNameUnique;
+
+    return instanceBuilder;
+}
+
+export const UnsafeStruct = BUnsafeStruct(validationSchema);
+
+const generateStructNameUnique = (structName = "") => {
+    failIf(isEmpty(structName), `Struct name is required then declare the structure`);
+    return Symbol(structName);
+}
 
 const throwIfFailValidation = (validationResult, structName) => {
     if (! validationResult.isOk && validationResult.panic) {
@@ -95,13 +77,12 @@ type IUnsafeStructBuilder = <S extends Record<string, any>>(obj: S) => IResult<R
 
 type CheckResult = true | string;
 
-type ValidationErrors = Record<string, string>;
 
 class StructValidationException extends Error {
     #errDetails = {};
     #structName = "";
 
-    constructor(structName, err: ValidationErrors) {
+    constructor(structName, err) {
         super(`Struct '${structName}' : ` +  JSON.stringify(err));
         this.#errDetails = err;
         this.#structName = structName;

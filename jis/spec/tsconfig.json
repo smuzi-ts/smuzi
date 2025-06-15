@@ -1,4 +1,0 @@
-{
-  "extends": "@jis/config/tsconfig.pack.json",
-  "include": ["./src/*.ts"]
-}

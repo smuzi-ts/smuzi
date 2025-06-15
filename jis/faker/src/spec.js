@@ -1,4 +1,4 @@
-import {S, TYPE_BOOL, TYPE_FLOAT, TYPE_INTEGER, TYPE_NAME_FIELD, TYPE_STRING, TYPE_STRUCT} from "@jis/spec";
+import {S, TYPE_BOOL, TYPE_FLOAT, TYPE_INTEGER, TYPE_NAME_FIELD, TYPE_STRING, TYPE_STRUCT} from "@jis/std/spec";
 import {faker} from "./index.js";
 import {match} from "@jis/std";
 

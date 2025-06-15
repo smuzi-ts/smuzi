@@ -22,7 +22,6 @@
     "@jis/tests": "workspace:*"
   },
   "dependencies": {
-    "@jis/spec": "workspace:*",
     "@jis/std": "workspace:*",
     "@jis/config": "workspace:*"
   },

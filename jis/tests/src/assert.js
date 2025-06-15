@@ -1,10 +1,12 @@
 import * as _assert from "node:assert/strict";
-import {isStructInstance, validationSchema} from "@jis/spec";
+import {isStructInstance, validationSchema} from "@jis/std/spec";
 
 export const assert = {
     //Native
     equal: _assert.equal,
     deepEqual: _assert.deepEqual,
+    ok: _assert.ok,
+    fail: _assert.fail,
 
     //Booleans
     isTrue: (actual) => _assert.equal(actual, true),
@@ -27,9 +29,9 @@ export const assert = {
     },
     //Schema
     objIsValidBySchema: (schema, obj) => {
-        if (! validationSchema(schema, obj).isOk) _assert.fail('Object does not match schema');
+        if (! validationSchema(schema)(obj).isOk) _assert.fail('Object does not match schema');
     },
     objIsInvalidBySchema: (schema, obj) => {
-        if (validationSchema(schema, obj).isOk) _assert.fail('Object unexpectedly matched schema');
+        if (validationSchema(schema)(obj).isOk) _assert.fail('Object unexpectedly matched schema');
     }
 }

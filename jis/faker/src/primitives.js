@@ -1,9 +1,12 @@
-export function string(min = 5, max = 10) {
+import {isEmpty} from "@jis/std/utils";
+
+export function string({min = 5, max = 10, prefix = '', suffix = ''}) {
     if (min > max) throw new Error('min must be less than or equal to max');
     const length = Math.floor(Math.random() * (max - min + 1)) + min;
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const result = Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 
-    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    return (isEmpty(prefix) ? prefix : '') + result + (isEmpty(suffix) ? suffix : '');
 }
 
 export function boolean() {

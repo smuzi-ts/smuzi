@@ -1,16 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "allowJs": true,
-    "checkJs": true,
-    "noEmit": true,
-    "strict": false,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "allowImportingTsExtensions": true
-  },
-  "include": ["./**/*.ts"]
+  "extends": "@jis/config/tsconfig.pack.json",
+  "include": ["./src/**/*.ts"]
 }

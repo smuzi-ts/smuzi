@@ -1,4 +1,6 @@
-import {Result} from "./dataTypes/Result.ts";
+import {readonly, Result} from "#lib/prelude.js";
+import {pipe} from "#lib/utils.js";
+import {isStructInstance, TYPE_STRUCT} from "#lib/spec/struct.ts";
 
 export const TYPE_NAME_FIELD = Symbol('TYPE_NAME_FIELD');
 export const TYPE_INTEGER = Symbol('integer');
@@ -18,7 +20,6 @@ const integer = (mistmatchedTypes = baseMistmatchedTypes)  => {
         (val) => Number.isInteger(val) ? Result.Ok(val) : Result.Err(mistmatchedTypes(typeof val, "integer"))
     )
 }
-
 
 //TODO
 const float = (mistmatchedTypes = baseMistmatchedTypes) => {
@@ -63,3 +64,26 @@ const baseCheckType =
 const baseMistmatchedTypes = (realType, expectedType) => {
     return `Expected ${expectedType}, found ${realType}`
 }
+
+export function validationSchema(schema){
+    return (obj) => {
+        const err: ValidationErrors = {};
+        let isValid = true;
+
+        for (const varName in schema) {
+            const check = isStructInstance(schema[varName]) ?
+                validationSchema(schema[varName])(obj[varName]) :
+                schema[varName](obj[varName]);
+
+            if (! check.isOk) {
+                isValid = false;
+                err[varName] = check.err;
+            }
+        }
+
+        return isValid ? Result.Ok(obj) : Result.Err(err);
+    };
+}
+
+
+type ValidationErrors = Record<string, string>;
