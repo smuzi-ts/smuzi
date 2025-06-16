@@ -1,5 +1,5 @@
 import {Result} from "#lib/prelude.js";
-import {isInteger, isStructInstance} from "#lib/utils.js";
+import {isInteger, isStruct, isStructInstance} from "#lib/utils.js";
 
 export const TYPE_NAME_FIELD = Symbol('TYPE_NAME_FIELD');
 export const TYPE_INTEGER = Symbol('integer');
@@ -49,17 +49,20 @@ const baseMistmatchedTypes = (actual, expected) => {
     return Result.Err({actual, expected});
 }
 
-export function validationSchema(schema){
+export function validationSchema(schema) {
     return (obj) => {
         const err: ValidationErrors = {};
         let isValid = true;
 
+        let checkResult;
         for (const varName in schema) {
-            const checkResult = isStructInstance(schema[varName]) ?
-                validationSchema(schema[varName])(obj[varName]) :
-                schema[varName](obj[varName]);
+            if (isStruct(schema[varName])) {
+                checkResult = validationSchema(schema[varName])(obj[varName])
+            } else {
+                checkResult = schema[varName](obj[varName]);
+            }
 
-            if (! checkResult.isOk) {
+            if (! checkResult.isOk()) {
                 isValid = false;
                 err[varName] = checkResult.val;
             }

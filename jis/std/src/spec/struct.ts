@@ -3,9 +3,9 @@ import {failIf, readonly} from "#lib/prelude.js";
 import {isEmpty, isString, pipe} from "#lib/utils.js";
 import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
-export const TYPE_STRUCT = Symbol('struct');
-export const TYPE_STRUCT_INSTANCE = Symbol('struct_instance');
-export const STRUCT_NAME_FIELD = Symbol('struct');
+export const TYPE_STRUCT = Symbol('TYPE_STRUCT');
+export const TYPE_STRUCT_INSTANCE = Symbol('TYPE_STRUCT_INSTANCE');
+export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
 
 const assignStructNameToObj = (structNameUnique) => (obj) =>
     Object.assign({
@@ -56,7 +56,7 @@ const generateStructNameUnique = (structName = "") => {
 }
 
 const throwIfFailValidation = (validationResult, structName) => {
-    if (! validationResult.isOk && validationResult.panic) {
+    if (! validationResult.isOk()) {
         throw new StructValidationException(structName, validationResult);
     }
 }
@@ -71,7 +71,7 @@ type IUnsafeStructBuilder = <S extends Record<string, any>>(obj: S) => IResult<R
 type CheckResult = true | string;
 
 
-class StructValidationException extends Error {
+export class StructValidationException extends Error {
     #errDetails = {};
     #structName = "";
 

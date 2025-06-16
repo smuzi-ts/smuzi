@@ -10,14 +10,14 @@ import {faker} from "@jis/faker";
 import {assert, describe, it, repeatIt} from "@jis/tests";
 
 describe("Spec-UnsafeStruct", () => {
-    repeatIt(5,"Input data is VALID structure", (name) => {
+    repeatIt(5,"Input data is VALID unsafe structure", (name) => {
         it(name, () => {
             checkStructureBySchema(faker.spec.schema(5,10));
         })
     })
 
 
-    it("Input data is INVALID structure",() => {
+    it("Input data is INVALID unsafe structure",() => {
         const schema = {
             field1: S.string(),
             field2: S.integer(),
@@ -34,12 +34,11 @@ describe("Spec-UnsafeStruct", () => {
 
         let result = StructInterface(badInputData);
 
-        assert.isFalse(result.isOk);
-        assert.deepEqual(result.val, {
+        assert.expectResultErr(result, {
             field1: {actual: "number", expected: "string"},
             field2: {actual: "string", expected: "integer"},
             field3: {actual: "number", expected: "boolean"},
-        })
+        });
     })
 })
 

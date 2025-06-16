@@ -1,7 +1,7 @@
 import * as _assert from "node:assert/strict";
 import {validationSchema} from "@jis/std/spec";
 import {AssertionError} from "node:assert";
-import {isEmpty, isNone, isStructInstance} from "@jis/std/utils";
+import {isEmpty, isFunction, isNone, isStructInstance} from "@jis/std/utils";
 
 export const assert = {
     //Native
@@ -54,22 +54,53 @@ export const assert = {
     },
     //Schema
     objIsValidBySchema: (schema, obj) => {
-        if (! validationSchema(schema)(obj).isOk) _assert.fail('Object does not match schema');
+        if (! validationSchema(schema)(obj).isOk()) {
+            throw new AssertionError({
+                message: `Expected object to match the schema, but validation failed`,
+                actual: obj,
+                expected: schema,
+                operator: 'validationSchema'
+            })
+        }
     },
     objIsInvalidBySchema: (schema, obj) => {
-        if (validationSchema(schema)(obj).isOk) _assert.fail('Object unexpectedly matched schema');
+        if (validationSchema(schema)(obj).isOk()) {
+            throw new AssertionError({
+                message: `Expected object NOT to match the schema, but validation succeeded`,
+                actual: obj,
+                expected: schema,
+                operator: 'validationSchema'
+            })
+        }
     },
 
-    //Errors/Exceptions
-    expectError: (error, fn) => {
+    //Errors
+    expectResultErr: (result, expectedErr = undefined) => {
+        if(result.isOk()) _assert.fail('Expected error, but got ok');
+
+        if (expectedErr !== undefined) {
+            assert.deepEqual(result.val, expectedErr);
+        }
+    },
+
+    expectException: (errOrFn, fn) => {
+        let expectedErr = errOrFn;
         try {
-            const call = typeof error === "function"
+            if (isFunction(errOrFn)) {
+                fn = errOrFn;
+                expectedErr = Error;
+            }
+
             fn();
-
-            _assert.fail('Object unexpectedly matched schema')
-        } catch (e) {
-
+        } catch (actualErr) {
+            if (!actualErr instanceof expectedErr) {
+                throw new AssertionError({
+                    message: `Expected error to be instance of ${expectedErr.name}, but got ${actualErr.constructor.name}`,
+                    actual: actualErr,
+                    expected: expectedErr,
+                    operator: 'instanceof'
+                })
+            }
         }
     }
-
 }

@@ -1,4 +1,11 @@
-import {Struct, STRUCT_NAME_FIELD, TYPE_STRUCT_INSTANCE, TYPE_NAME_FIELD, S} from "#lib/spec.js";
+import {
+    Struct,
+    STRUCT_NAME_FIELD,
+    TYPE_STRUCT_INSTANCE,
+    TYPE_NAME_FIELD,
+    S,
+    StructValidationException
+} from "#lib/spec.js";
 import {isStructInstance} from "#lib/utils.js";
 import {faker} from "@jis/faker";
 import {assert, describe, it, repeatIt} from "@jis/tests";
@@ -49,6 +56,26 @@ describe("Spec-Struct", () => {
 
         assert.isStructInstance(resultInstance, StructInterface1);
         assert.ok(! isStructInstance(resultInstance, StructInterface2), `Expected that resultInstance implementing ${StructInterface1[STRUCT_NAME_FIELD].description}, but actual structure ${StructInterface2[STRUCT_NAME_FIELD.description]}`);
+    })
+
+    it("Input data is INVALID structure",() => {
+        const schema = {
+            field1: S.string(),
+            field2: S.integer(),
+            field3: S.bool(),
+        };
+
+        const StructInterface = Struct(faker.string({max: 5, suffix: "Struct"}), schema);
+
+        const badInputData = {
+            field1: 100,
+            field2: "stringInsteadOfInteger",
+            field3: 2,
+        };
+
+        assert.expectException(StructValidationException, () => {
+            StructInterface(badInputData);
+        })
     })
 })
 
