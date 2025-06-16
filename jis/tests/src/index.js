@@ -1,4 +1,4 @@
-export {it, describe} from "node:test";
+export {it, describe, skip} from "node:test";
 export {assert} from "./assert.js"
 
 export function repeatIt(repeat = 1, name = '', fn) {

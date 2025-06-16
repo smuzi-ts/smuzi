@@ -12,7 +12,7 @@ import {assert, describe, it, repeatIt} from "@jis/tests";
 describe("Spec-UnsafeStruct", () => {
     repeatIt(5,"Input data is VALID unsafe structure", (name) => {
         it(name, () => {
-            checkStructureBySchema(faker.spec.schema(5,10));
+            checkStructureBySchema(faker.spec.schema());
         })
     })
 

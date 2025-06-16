@@ -1,8 +1,10 @@
 import {type IResult, Result} from "#lib/dataTypes/result.ts";
 import {failIf, readonly} from "#lib/prelude.js";
-import {isEmpty, isString, pipe} from "#lib/utils.js";
+import {isEmpty, isString, pipe, pipeIn} from "#lib/utils.js";
 import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
+export const STRICT_MODE_ENABLE = true;
+export const STRICT_MODE_DISABLE = false;
 export const TYPE_STRUCT = Symbol('TYPE_STRUCT');
 export const TYPE_STRUCT_INSTANCE = Symbol('TYPE_STRUCT_INSTANCE');
 export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
@@ -13,52 +15,32 @@ const assignStructNameToObj = (structNameUnique) => (obj) =>
         [STRUCT_NAME_FIELD]: structNameUnique,
     }, obj);
 
-export const BStruct = (validation) => (structName = '', schema: {},) => {
+export const BStruct = (validation, strictModeStruct) => (structName = '', schema: {},) => {
     const structNameUnique = generateStructNameUnique(structName)
 
-    const instanceBuilder: IStructBuilder = pipe(
+    const instanceBuilder: IStructBuilder = (obj, strictMode = strictModeStruct) => pipeIn(obj)
+    (
         assignStructNameToObj(structNameUnique),
         readonly,
         validation(schema),
         (result) => {
-            throwIfFailValidation(result, structName);
+            failIf(! result.isOk() && strictMode, new StructValidationException(structName, result));
 
-            return result.val;
+            return strictMode === STRICT_MODE_DISABLE ? result : result.val;
         }
     );
-    instanceBuilder[TYPE_NAME_FIELD] = TYPE_STRUCT;
-    instanceBuilder[STRUCT_NAME_FIELD] = structNameUnique;
-
-    return instanceBuilder;
-}
-export const Struct = BStruct(validationSchema);
-
-export const BUnsafeStruct = (validation) => (structName = '', schema: {},) => {
-    const structNameUnique = generateStructNameUnique(structName)
-
-    const instanceBuilder: IUnsafeStructBuilder = pipe(
-        assignStructNameToObj(structNameUnique),
-        readonly,
-        validation(schema),
-    );
 
     instanceBuilder[TYPE_NAME_FIELD] = TYPE_STRUCT;
     instanceBuilder[STRUCT_NAME_FIELD] = structNameUnique;
 
     return instanceBuilder;
 }
-
-export const UnsafeStruct = BUnsafeStruct(validationSchema);
+export const Struct = BStruct(validationSchema, STRICT_MODE_ENABLE);
+export const UnsafeStruct = BStruct(validationSchema, STRICT_MODE_DISABLE);
 
 const generateStructNameUnique = (structName = "") => {
     failIf(! isString(structName) || isEmpty(structName), `Struct name is required then declare the structure`);
     return Symbol(structName);
-}
-
-const throwIfFailValidation = (validationResult, structName) => {
-    if (! validationResult.isOk()) {
-        throw new StructValidationException(structName, validationResult);
-    }
 }
 
 /**

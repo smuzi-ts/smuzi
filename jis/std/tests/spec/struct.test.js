@@ -38,12 +38,12 @@ describe("Spec-Struct", () => {
 
     repeatIt(5,"Input data is valid structure", (name) => {
         it(name, () => {
-            checkStructureBySchema(faker.spec.schema(5,10));
+            checkStructureBySchema(faker.spec.schema());
         })
     })
 
     it("One schema, different structures",() => {
-        const schema = faker.spec.schema(5,10);
+        const schema = faker.spec.schema();
 
         const StructInterface1 = Struct(faker.spec.structName(), schema);
         const StructInterface2 = Struct(faker.spec.structName(), schema);

@@ -92,8 +92,10 @@ export const assert = {
             }
 
             fn();
+
+            throw new Error('Ok');
         } catch (actualErr) {
-            if (!actualErr instanceof expectedErr) {
+            if (! actualErr instanceof expectedErr) {
                 throw new AssertionError({
                     message: `Expected error to be instance of ${expectedErr.name}, but got ${actualErr.constructor.name}`,
                     actual: actualErr,

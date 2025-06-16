@@ -1,5 +1,6 @@
 import {Result} from "#lib/prelude.js";
 import {isInteger, isStruct, isStructInstance} from "#lib/utils.js";
+import {STRICT_MODE_DISABLE} from "#lib/spec/struct.ts";
 
 export const TYPE_NAME_FIELD = Symbol('TYPE_NAME_FIELD');
 export const TYPE_INTEGER = Symbol('integer');
@@ -57,7 +58,7 @@ export function validationSchema(schema) {
         let checkResult;
         for (const varName in schema) {
             if (isStruct(schema[varName])) {
-                checkResult = validationSchema(schema[varName])(obj[varName])
+                checkResult = schema[varName](obj[varName], STRICT_MODE_DISABLE);
             } else {
                 checkResult = schema[varName](obj[varName]);
             }
