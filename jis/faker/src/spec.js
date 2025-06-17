@@ -1,6 +1,6 @@
 import {S, TYPE_BOOL, TYPE_FLOAT, TYPE_INTEGER, TYPE_NAME_FIELD, TYPE_STRING, TYPE_STRUCT} from "@jis/std/spec";
 import {faker} from "./index.js";
-import {failIf, match} from "@jis/std";
+import {match} from "@jis/std";
 import {isStruct} from "@jis/std/utils";
 
 export function schema({minFields = 1, maxFields = 5 } = {}) {
@@ -38,7 +38,7 @@ export function objBySchema(schema) {
 }
 
 export function instanceOfStruct(struct) {
-    failIf(! isStruct(struct), "Parameter 'struct' is not an instance of a structure");
+    if (! isStruct(struct)) throw new Exception("Parameter 'struct' is not an instance of a structure")
 
     const result = {};
 
