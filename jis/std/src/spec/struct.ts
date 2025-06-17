@@ -5,6 +5,7 @@ import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
 export const STRICT_MODE_ENABLE = true;
 export const STRICT_MODE_DISABLE = false;
+
 export const TYPE_STRUCT = Symbol('TYPE_STRUCT');
 export const TYPE_STRUCT_INSTANCE = Symbol('TYPE_STRUCT_INSTANCE');
 export const STRUCT_NAME_FIELD = Symbol('STRUCT_NAME_FIELD');
