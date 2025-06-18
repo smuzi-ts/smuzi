@@ -1,0 +1,22 @@
+{
+  "name": "@jis/zigar",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "start": "node --loader=node-zigar --no-warnings src/index.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "./src"
+  ],
+  "dependencies": {
+    "node-zigar": "^0.14.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  }
+}

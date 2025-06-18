@@ -1,5 +1,5 @@
 import {BLogger, ConsoleLogger} from "#app/logger/Logger";
 
-const Logger = BLogger(ConsoleLogger);
+const logger = BLogger(ConsoleLogger);
 
-Logger.log(1,2,3)
+logger.log(1,2,3)

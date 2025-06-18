@@ -8,7 +8,7 @@ import {
 } from "#lib/spec.js";
 import {isStructInstance} from "#lib/utils.js";
 import {faker} from "@jis/faker";
-import {assert, describe, it, repeatIt} from "@jis/tests";
+import {assert, describe, it, repeatIt, skip} from "@jis/tests";
 
 describe("Spec-Struct", () => {
 
@@ -73,9 +73,10 @@ describe("Spec-Struct", () => {
             field3: 2,
         };
 
-        assert.expectException(StructValidationException, () => {
-            StructInterface(badInputData);
-        })
+        assert.expectErrorInstOf(
+            err => err instanceof StructValidationException,
+            () => StructInterface(badInputData)
+        )
     })
 })
 

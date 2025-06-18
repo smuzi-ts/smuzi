@@ -78,24 +78,7 @@ describe("Spec-StructDeep", () => {
         const inputData = faker.spec.objBySchema(unionSchema);
         inputData.BAD_PARAM = 'INVALID';
 
-        export class StructValidationException extends Error {
-            #errDetails = {};
-            #structName = "";
-
-            constructor(structName, err) {
-                super(`Struct '${structName}' : ` +  JSON.stringify(err));
-                this.#errDetails = err;
-                this.#structName = structName;
-            }
-
-            get errDetails() {
-                return this.#errDetails;
-            }
-        }
-
-        const expectedError = StructValidationException;
-
-        assert.expectException(expectedError, () => {
+        assert.expectExceptionInstOf((err) => (err instanceof StructValidationException), () => {
             ParentStruct(inputData)
         })
     })

@@ -1,7 +1,8 @@
 import * as _assert from "node:assert/strict";
-import {validationSchema} from "@jis/std/spec";
+import {StructValidationException, validationSchema} from "@jis/std/spec";
 import {AssertionError} from "node:assert";
 import {isEmpty, isFunction, isNone, isStructInstance} from "@jis/std/utils";
+import {getClass} from "@jis/std";
 
 export const assert = {
     //Native
@@ -83,24 +84,35 @@ export const assert = {
         }
     },
 
-    expectException: (errOrFn, fn) => {
-        let expectedErr = errOrFn;
+    expectAnyErrors: (fn) => {
+        const errorOk = new Error('__OK__');
+
         try {
-            if (isFunction(errOrFn)) {
-                fn = errOrFn;
-                expectedErr = Error;
-            }
-
             fn();
-
-            throw new Error('Ok');
+            throw errorOk;
         } catch (actualErr) {
-            if (! actualErr instanceof expectedErr) {
+            if (actualErr === errorOk) {
                 throw new AssertionError({
-                    message: `Expected error to be instance of ${expectedErr.name}, but got ${actualErr.constructor.name}`,
+                    message: `Expected any errors, but got error ${getClass(actualErr)}`,
                     actual: actualErr,
-                    expected: expectedErr,
-                    operator: 'instanceof'
+                    expected: "any errors",
+                    operator: ''
+                })
+            }
+        }
+    },
+
+    expectErrorInstOf: (expectedErrChecker, fn) => {
+        try {
+            fn();
+            throw new Error('__OK__');
+        } catch (actualErr) {
+            if (! expectedErrChecker(actualErr)) {
+                throw new AssertionError({
+                    message: `Expected error to be instance of via checker, but got error ${getClass(actualErr)}`,
+                    actual: actualErr,
+                    expected: "",
+                    operator: 'checker'
                 })
             }
         }

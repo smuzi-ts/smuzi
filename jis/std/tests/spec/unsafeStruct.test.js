@@ -3,13 +3,13 @@ import {
     STRUCT_NAME_FIELD,
     TYPE_STRUCT_INSTANCE,
     TYPE_NAME_FIELD,
-    UnsafeStruct,
+    UnstrictStruct,
     S,
 } from "#lib/spec.js";
 import {faker} from "@jis/faker";
 import {assert, describe, it, repeatIt} from "@jis/tests";
 
-describe("Spec-UnsafeStruct", () => {
+describe("Spec-UnstrictStruct", () => {
     repeatIt(5,"Input data is VALID unsafe structure", (name) => {
         it(name, () => {
             checkStructureBySchema(faker.spec.schema());
@@ -24,7 +24,7 @@ describe("Spec-UnsafeStruct", () => {
             field3: S.bool(),
         };
 
-        const StructInterface = UnsafeStruct(faker.string({max: 5, suffix: "Struct"}), schema);
+        const StructInterface = UnstrictStruct(faker.string({max: 5, suffix: "Struct"}), schema);
 
         const badInputData = {
             field1: 100,
@@ -43,7 +43,7 @@ describe("Spec-UnsafeStruct", () => {
 })
 
 function checkStructureBySchema(schema) {
-    const StructInterface = UnsafeStruct(faker.string({max: 5, suffix: "Struct"}), schema);
+    const StructInterface = UnstrictStruct(faker.string({max: 5, suffix: "Struct"}), schema);
     const inputData = faker.spec.objBySchema(schema);
     const result = StructInterface(inputData);
     const resultInstance = result.val;

@@ -1,5 +1,5 @@
 import {type IResult, Result} from "#lib/dataTypes/result.ts";
-import {failIf, readonly} from "#lib/prelude.js";
+import {Exception, readonly} from "#lib/prelude.js";
 import {isEmpty, isString, pipe, pipeIn} from "#lib/utils.js";
 import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
@@ -25,7 +25,7 @@ export const BStruct = (validation, strictModeStruct) => (structName = '', schem
         readonly,
         validation(schema),
         (result) => {
-            failIf(! result.isOk() && strictMode, new StructValidationException(structName, result));
+            if(! result.isOk() && strictMode) throw new StructValidationException(structName, result.val);
 
             return strictMode === STRICT_MODE_DISABLE ? result : result.val;
         }
@@ -37,10 +37,10 @@ export const BStruct = (validation, strictModeStruct) => (structName = '', schem
     return instanceBuilder;
 }
 export const Struct = BStruct(validationSchema, STRICT_MODE_ENABLE);
-export const UnsafeStruct = BStruct(validationSchema, STRICT_MODE_DISABLE);
+export const UnstrictStruct = BStruct(validationSchema, STRICT_MODE_DISABLE);
 
 const generateStructNameUnique = (structName = "") => {
-    failIf(! isString(structName) || isEmpty(structName), `Struct name is required then declare the structure`);
+    if(! isString(structName) || isEmpty(structName)) throw new Exception(`Struct name is required then declare the structure`);
     return Symbol(structName);
 }
 
@@ -49,22 +49,13 @@ const generateStructNameUnique = (structName = "") => {
  */
 
 type IStructBuilder = <S extends Record<string, any>>(obj: S) => Readonly<S>
-type IUnsafeStructBuilder = <S extends Record<string, any>>(obj: S) => IResult<Readonly<S>, any>
+type IUnstrictStructBuilder = <S extends Record<string, any>>(obj: S) => IResult<Readonly<S>, any>
 
 type CheckResult = true | string;
 
 
-export class StructValidationException extends Error {
-    #errDetails = {};
-    #structName = "";
-
+export class StructValidationException extends Exception {
     constructor(structName, err) {
-        super(`Struct '${structName}' : ` +  JSON.stringify(err));
-        this.#errDetails = err;
-        this.#structName = structName;
-    }
-
-    get errDetails() {
-        return this.#errDetails;
+        super(`Struct '${structName}' : ` +  JSON.stringify(err), {structName, err});
     }
 }
