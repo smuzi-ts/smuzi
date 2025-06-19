@@ -36,6 +36,43 @@ export const assert = {
 
     //Strings
     isString: (actual) => _assert.equal(typeof actual, "string"),
+    strStartsWith: (actual, prefix = "") => {
+        assert.isString(actual);
+
+        _assert.ok(actual.startsWith(prefix), new AssertionError(
+            {
+                actual: actual,
+                expected: `${prefix}*`,
+                message: `Expected string to start with "${prefix}", but got "${actual}"`,
+                operator: "startsWith"
+            }
+        ));
+    },
+    strEndsWith: (actual, suffix = "") => {
+        assert.isString(actual);
+
+        _assert.ok(actual.endsWith(suffix), new AssertionError(
+            {
+                actual: actual,
+                expected: `*${suffix}`,
+                message: `Expected string to end with "${suffix}", but got "${actual}"`,
+                operator: "endsWith"
+            }
+        ));
+    },
+    strContains: (actual, searchElement = "") => {
+        assert.isString(actual);
+
+        _assert.ok(actual.includes(searchElement), new AssertionError(
+            {
+                actual: actual,
+                expected: `*${searchElement}*`,
+                message: `Expected string to contain "${searchElement}", but got "${actual}"`,
+                operator: "includes"
+            }
+        ));
+    },
+
 
     //Numbers
     isNumber: (actual) => _assert.equal(typeof actual, "number"),

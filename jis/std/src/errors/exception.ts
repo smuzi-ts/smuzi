@@ -16,7 +16,18 @@ export class Exception extends Error {
             throw new Error("Exception preparing stack not Initialized. Please run initPrepareStackTrace() in your application")
         }
         super(message)
+        this.setLastCallSite();
         this.meta = meta;
+    }
+
+    setLastCallSite() {
+        this.typeName = this.stack.last.getTypeName();
+        this.function = this.stack.last.getFunctionName();
+        this.method = this.stack.last.getMethodName();
+        this.file = this.stack.last.getFileName();
+        this.line = this.stack.last.getLineNumber();
+        this.column = this.stack.last.getColumnNumber();
+        this.stack = this.stack.traceAsString;
     }
 
 }
@@ -32,14 +43,7 @@ export const initPrepareStackTrace = () => {
 
     Error.prepareStackTrace = (err, structuredStackTrace) => {
         if (err instanceof Exception) {
-            let currentCallSite = structuredStackTrace[0];
-
-            err.typeName = currentCallSite.getTypeName();
-            err.function = currentCallSite.getFunctionName();
-            err.method = currentCallSite.getMethodName();
-            err.file = currentCallSite.getFileName();
-            err.line = currentCallSite.getLineNumber();
-            err.column = currentCallSite.getColumnNumber();
+            return {last: structuredStackTrace[0], traceAsString: nativePrepareStackTrace(err, structuredStackTrace)};
         }
 
         return nativePrepareStackTrace(err, structuredStackTrace);
