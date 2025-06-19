@@ -16,10 +16,10 @@ const assignStructNameToObj = (structNameUnique) => (obj) =>
         [STRUCT_NAME_FIELD]: structNameUnique,
     }, obj);
 
-export const BStruct = (validation, strictModeStruct) => (structName = '', schema: {},) => {
+export const BStruct = (validation, strictModeStruct) => (structName = '', schema: {}) => {
     const structNameUnique = generateStructNameUnique(structName)
 
-    const instanceBuilder: IStructBuilder = (obj, strictMode = strictModeStruct) => pipeIn(obj)
+    const instanceBuilder = (obj, strictMode = strictModeStruct) => pipeIn(obj)
     (
         assignStructNameToObj(structNameUnique),
         readonly,
@@ -36,8 +36,10 @@ export const BStruct = (validation, strictModeStruct) => (structName = '', schem
 
     return instanceBuilder;
 }
-export const Struct = BStruct(validationSchema, STRICT_MODE_ENABLE);
-export const UnstrictStruct = BStruct(validationSchema, STRICT_MODE_DISABLE);
+
+
+export const Struct: IStructBuilder = BStruct(validationSchema, STRICT_MODE_ENABLE);
+export const UnstrictStruct: IUnstrictStructBuilder = BStruct(validationSchema, STRICT_MODE_DISABLE);
 
 const generateStructNameUnique = (structName = "") => {
     if(! isString(structName) || isEmpty(structName)) throw new Exception(`Struct name is required then declare the structure`);
@@ -48,8 +50,8 @@ const generateStructNameUnique = (structName = "") => {
  * Declare types
  */
 
-type IStructBuilder = <S extends Record<string, any>>(obj: S) => Readonly<S>
-type IUnstrictStructBuilder = <S extends Record<string, any>>(obj: S) => IResult<Readonly<S>, any>
+type IStructBuilder = (structName: string, schema: {}) => <S extends Record<string, any>>(obj: S) => Readonly<S>
+type IUnstrictStructBuilder = (structName: string, schema: {}) => <S extends Record<string, any>>(obj: S) => IResult<Readonly<S>, any>
 
 type CheckResult = true | string;
 

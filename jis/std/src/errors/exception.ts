@@ -32,7 +32,7 @@ export class Exception extends Error {
 
 }
 
-export const initPrepareStackTrace = () => {
+const defaultInitPrepareStackTrace = () => {
     if (INITIALIZED) {
         return;
     }
@@ -52,5 +52,8 @@ export const initPrepareStackTrace = () => {
     INITIALIZED = true;
 }
 
+export const initPrepareStackTrace = (fn = defaultInitPrepareStackTrace) => {
+    fn();
+}
 
 initPrepareStackTrace();

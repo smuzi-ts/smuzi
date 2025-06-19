@@ -29,11 +29,16 @@ export function isArray(val) {
     return Array.isArray(val);
 }
 
-export const isStruct = (val) => {
+export function isObject(val) {
+    return Object.prototype.toString.call(val) === "[object Object]";
+
+}
+
+export function isStruct(val) {
     return val?.[TYPE_NAME_FIELD] === TYPE_STRUCT;
 }
 
-export const isStructInstance = (val, struct = undefined) => {
+export function isStructInstance(val, struct = undefined) {
     const isStructInstance = val?.[TYPE_NAME_FIELD] === TYPE_STRUCT_INSTANCE;
     if (struct === undefined) return isStructInstance;
 

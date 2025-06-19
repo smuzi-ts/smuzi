@@ -9,6 +9,7 @@ export const TYPE_STRING = Symbol('string');
 export const TYPE_BOOL = Symbol('bool');
 export const TYPE_ARRAY = Symbol('array');
 
+
 const assignTypeName = (typeId, checker) => {
     checker[TYPE_NAME_FIELD] = typeId;
     return checker;
@@ -38,20 +39,12 @@ const array = (mistmatchedTypes = baseMistmatchedTypes) => {
     );
 }
 
-const arrayOfStrings = (mistmatchedTypes = baseMistmatchedTypes) => {
-    return assignTypeName(
-        TYPE_ARRAY,
-        (val) => isArray(val) ? Result.Ok(val) : mistmatchedTypes(typeof val, "array")
-    );
-}
-
 export const Schema = {
     string,
     bool,
     integer,
     float,
     array,
-    arrayOfStrings,
 }
 
 export const S = Schema;
