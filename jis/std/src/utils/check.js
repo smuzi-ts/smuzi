@@ -25,6 +25,10 @@ export function isFunction(val) {
     return typeof val === "function";
 }
 
+export function isArray(val) {
+    return Array.isArray(val);
+}
+
 export const isStruct = (val) => {
     return val?.[TYPE_NAME_FIELD] === TYPE_STRUCT;
 }

@@ -36,6 +36,12 @@ describe("Spec-Struct", () => {
         });
     })
 
+    it("Schema with array", () => {
+        checkStructureBySchema({
+            field: S.array()
+        });
+    })
+
     repeatIt(5,"Input data is valid structure", (name) => {
         it(name, () => {
             checkStructureBySchema(faker.spec.schema());

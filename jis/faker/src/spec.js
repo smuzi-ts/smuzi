@@ -1,4 +1,13 @@
-import {S, TYPE_BOOL, TYPE_FLOAT, TYPE_INTEGER, TYPE_NAME_FIELD, TYPE_STRING, TYPE_STRUCT} from "@jis/std/spec";
+import {
+    S,
+    TYPE_ARRAY,
+    TYPE_BOOL,
+    TYPE_FLOAT,
+    TYPE_INTEGER,
+    TYPE_NAME_FIELD,
+    TYPE_STRING,
+    TYPE_STRUCT
+} from "@jis/std/spec";
 import {faker} from "./index.js";
 import {match} from "@jis/std";
 import {isStruct} from "@jis/std/utils";
@@ -27,6 +36,7 @@ export function objBySchema(schema) {
                 [TYPE_INTEGER, () => result[key] = faker.integer()],
                 [TYPE_BOOL, () => result[key] = faker.boolean()],
                 [TYPE_FLOAT, () => result[key] = faker.float()],
+                [TYPE_ARRAY, () => result[key] = faker.array.items()],
             ],
             () => {
                 throw new Error(`Undefined schema type [key=${key}][type=${type}]`)
