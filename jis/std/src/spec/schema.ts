@@ -38,12 +38,20 @@ const array = (mistmatchedTypes = baseMistmatchedTypes) => {
     );
 }
 
+const arrayOfStrings = (mistmatchedTypes = baseMistmatchedTypes) => {
+    return assignTypeName(
+        TYPE_ARRAY,
+        (val) => isArray(val) ? Result.Ok(val) : mistmatchedTypes(typeof val, "array")
+    );
+}
+
 export const Schema = {
     string,
     bool,
     integer,
     float,
     array,
+    arrayOfStrings,
 }
 
 export const S = Schema;

@@ -146,12 +146,12 @@ export const assert = {
         } catch (actualErr) {
             if (! expectedErrChecker(actualErr)) {
                 throw new AssertionError({
-                    message: `Expected error to be instance of via checker, but got error ${getClass(actualErr)}`,
+                    message: `Expected error to be matched via checker, but got error ${getClass(actualErr)}`,
                     actual: actualErr,
                     expected: "",
-                    operator: 'checker'
+                    operator: 'expectedErrChecker'
                 })
             }
         }
-    }
+    },
 }

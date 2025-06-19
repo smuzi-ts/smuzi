@@ -8,47 +8,64 @@ import {
 } from "#lib/spec.js";
 import {isStructInstance} from "#lib/utils.js";
 import {faker} from "@jis/faker";
-import {assert, describe, it, repeatIt, skip} from "@jis/tests";
+import {assert, describe, it, repeatIt, skip, ok, err} from "@jis/tests";
 
 describe("Spec-Struct", () => {
 
-    it("Schema with string field", () => {
+    it(ok("Schema with string field"), () => {
         checkStructureBySchema({
             field: S.string()
         });
     })
 
-    it("Schema with integer field", () => {
+    it(ok("Schema with integer field"), () => {
         checkStructureBySchema({
             field: S.integer()
         });
     })
 
-    it("Schema with boolean field", () => {
+    it(ok("Schema with boolean field"), () => {
         checkStructureBySchema({
             field: S.bool()
         });
     })
 
-    it("Schema with float field", () => {
+    it(ok("Schema with float field"), () => {
         checkStructureBySchema({
             field: S.float()
         });
     })
 
-    it("Schema with array", () => {
+    it(ok("Schema with array field"), () => {
         checkStructureBySchema({
             field: S.array()
         });
     })
 
-    repeatIt(5,"Input data is valid structure", (name) => {
+    it(err("Schema with array field"),() => {
+        const StructInterface = Struct("Struct1", {
+            field1: S.array(),
+        });
+
+        const badInputData = {
+            field1: "stringInsteadOfArray",
+        };
+
+        assert.expectErrorInstOf(
+            err => {
+                return (err instanceof StructValidationException && err?.meta?.)
+            },
+            () => StructInterface(badInputData)
+        )
+    })
+
+    repeatIt(5, ok("Input data parse to structure"), (name) => {
         it(name, () => {
             checkStructureBySchema(faker.spec.schema());
         })
     })
 
-    it("One schema, different structures",() => {
+    it(ok("One schema, different structures"),() => {
         const schema = faker.spec.schema();
 
         const StructInterface1 = Struct(faker.spec.structName(), schema);
@@ -64,7 +81,7 @@ describe("Spec-Struct", () => {
         assert.ok(! isStructInstance(resultInstance, StructInterface2), `Expected that resultInstance implementing ${StructInterface1[STRUCT_NAME_FIELD].description}, but actual structure ${StructInterface2[STRUCT_NAME_FIELD.description]}`);
     })
 
-    it("Input data is INVALID structure",() => {
+    it(err("Input data parse to structure"),() => {
         const schema = {
             field1: S.string(),
             field2: S.integer(),
