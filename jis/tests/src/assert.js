@@ -4,6 +4,10 @@ import {AssertionError} from "node:assert";
 import {isEmpty, isFunction, isNone, isStructInstance} from "@jis/std/utils";
 import {getClass} from "@jis/std";
 
+const signalOk = new Error('__OK__')
+const sendSignalOk = () => { throw signalOk; };
+const isSignalOk = actual => Object.is(actual, signalOk);
+
 export const assert = {
     //Native
     equal: _assert.equal,
@@ -122,13 +126,11 @@ export const assert = {
     },
 
     expectAnyErrors: (fn) => {
-        const errorOk = new Error('__OK__');
-
         try {
             fn();
-            throw errorOk;
+            sendSignalOk();
         } catch (actualErr) {
-            if (actualErr === errorOk) {
+            if (isSignalOk(actualErr)) {
                 throw new AssertionError({
                     message: `Expected any errors, but got error ${getClass(actualErr)}`,
                     actual: actualErr,
@@ -142,16 +144,24 @@ export const assert = {
     expectErrorInstOf: (expectedErrChecker, fn) => {
         try {
             fn();
-            throw new Error('__OK__');
+            sendSignalOk();
         } catch (actualErr) {
             if (! expectedErrChecker(actualErr)) {
                 throw new AssertionError({
-                    message: `Expected error to be matched via checker, but got error ${getClass(actualErr)}`,
+                    message: `Expected error to be instance of via checker, but got error ${getClass(actualErr)}`,
                     actual: actualErr,
                     expected: "",
-                    operator: 'expectedErrChecker'
+                    operator: 'checker'
                 })
             }
+        }
+    },
+    expectErrorWithMeta: (expectedMeta, fn) => {
+        try {
+            fn();
+            sendSignalOk();
+        } catch (actualErr) {
+            assert.deepEqual(actualErr.meta, expectedMeta)
         }
     },
 }

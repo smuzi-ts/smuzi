@@ -43,7 +43,8 @@ describe("Spec-Struct", () => {
     })
 
     it(err("Schema with array field"),() => {
-        const StructInterface = Struct("Struct1", {
+        const structName = faker.string({max: 5, suffix: "Struct"});
+        const StructInterface = Struct(structName, {
             field1: S.array(),
         });
 
@@ -51,10 +52,13 @@ describe("Spec-Struct", () => {
             field1: "stringInsteadOfArray",
         };
 
-        assert.expectErrorInstOf(
-            err => {
-                return (err instanceof StructValidationException && err?.meta?.)
-            },
+        const expectedErrorMeta = {
+            structName: structName,
+            err: { field1: { expected: "array", actual: 'string' } }
+        };
+
+        assert.expectErrorWithMeta(
+            expectedErrorMeta,
             () => StructInterface(badInputData)
         )
     })
@@ -88,16 +92,26 @@ describe("Spec-Struct", () => {
             field3: S.bool(),
         };
 
-        const StructInterface = Struct(faker.string({max: 5, suffix: "Struct"}), schema);
+        const structName = faker.string({max: 5, suffix: "Struct"});
+        const StructInterface = Struct(structName, schema);
 
         const badInputData = {
-            field1: 100,
-            field2: "stringInsteadOfInteger",
-            field3: 2,
+            field1: faker.integer(),
+            field2: faker.string(),
+            field3: faker.integer(),
         };
 
-        assert.expectErrorInstOf(
-            err => err instanceof StructValidationException,
+        const expectedErrorMeta = {
+            structName: structName,
+            err: {
+                field1: { expected: "string", actual: 'number' },
+                field2: { expected: "integer", actual: 'string' },
+                field3: { expected: "boolean", actual: 'number' },
+            }
+        };
+
+        assert.expectErrorWithMeta(
+            expectedErrorMeta,
             () => StructInterface(badInputData)
         )
     })
