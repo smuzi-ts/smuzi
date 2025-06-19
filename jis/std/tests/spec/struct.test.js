@@ -101,6 +101,11 @@ describe("Spec-Struct", () => {
             field3: faker.integer(),
         };
 
+        assert.expectErrorInstOf(
+            (err) => err instanceof StructValidationException,
+            () => StructInterface(badInputData)
+        )
+
         const expectedErrorMeta = {
             structName: structName,
             err: {

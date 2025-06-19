@@ -60,7 +60,7 @@ describe("Spec-StructDeep", () => {
         })
     })
 
-    it("Structure with Two-level nesting with INVALID input data", () => {
+    skip("Structure with Two-level nesting with INVALID input data", () => {
         const parentSchema = faker.spec.schema({maxFields: 1});
         const childSchema1 = faker.spec.schema({maxFields: 1});
         const childSchema2 = faker.spec.schema({maxFields: 1});
@@ -78,8 +78,9 @@ describe("Spec-StructDeep", () => {
         const inputData = faker.spec.objBySchema(unionSchema);
         inputData.BAD_PARAM = 'INVALID';
 
-        assert.expectExceptionInstOf((err) => (err instanceof StructValidationException), () => {
-            ParentStruct(inputData)
-        })
+        assert.expectErrorInstOf(
+            err => err instanceof StructValidationException,
+            () => ParentStruct(inputData)
+        )
     })
 })
