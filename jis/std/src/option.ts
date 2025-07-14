@@ -2,7 +2,7 @@ export function Some<T>(value: T): Option<T> {
     return new OptionSome<T>(value);
 }
 
-export function None(): Option<null> {
+export function None(): Option<never> {
     return new OptionNone();
 }
 
@@ -26,7 +26,7 @@ class OptionSome<T> extends Option<T> {
     }
 }
 
-class OptionNone  extends Option<undefined>{
+class OptionNone  extends Option<never>{
     constructor() {
         super();
     }
