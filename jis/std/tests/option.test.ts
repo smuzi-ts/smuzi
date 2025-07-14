@@ -1,5 +1,5 @@
 import {assert, describe, it, okMsg} from "@jis/tests";
-import {Some, None} from "#std/result";
+import {Some, None} from "#std/option.ts";
 
 describe("Std-Option", () => {
 

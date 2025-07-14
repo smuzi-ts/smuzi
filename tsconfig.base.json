@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
+    "baseUrl": ".",
     "paths": {
       "#std": ["./jis/std/src/*"]
     }

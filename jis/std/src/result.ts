@@ -1,8 +1,8 @@
-export function Ok<T>(value: T): Result<T, null> {
+export function Ok<T>(value: T): Result<T, never> {
     return new ResultOk<T>(value);
 }
 
-export function Err<E>(error: E): Result<null, E> {
+export function Err<E>(error: E): Result<never, E> {
     return new ResultErr<E>(error);
 }
 
@@ -25,14 +25,14 @@ export class Result<T, E> {
 }
 
 
-class ResultOk<T> extends Result<T, null> {
+class ResultOk<T> extends Result<T, never> {
     constructor(val: T) {
         super();
         this._val = val;
     }
 }
 
-class ResultErr<E> extends Result<null, E> {
+class ResultErr<E> extends Result<never, E> {
     constructor(val: E) {
         super();
         this._val = val;

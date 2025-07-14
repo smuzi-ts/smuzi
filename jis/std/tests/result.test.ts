@@ -1,5 +1,5 @@
 import {assert, describe, errMsg, it, okMsg} from "@jis/tests";
-import {Err, Ok, Result} from "../src/result";
+import {Err, Ok, Result} from "#std/result.ts";
 
 describe("Std-Result", () => {
     it(okMsg("Matched Ok"), () => {
