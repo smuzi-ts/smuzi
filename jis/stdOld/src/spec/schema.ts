@@ -1,6 +1,6 @@
 import {Result} from "#lib/prelude.js";
-import {isArray, isInteger, isStruct, isStructInstance} from "#lib/utils.js";
-import {STRICT_MODE_DISABLE} from "#lib/spec/struct.ts";
+import {isArray, isInteger} from "#lib/prelude.js";
+import {STRICT_MODE_DISABLE, isStruct} from "#lib/spec/struct.ts";
 
 export const TYPE_NAME_FIELD = Symbol('TYPE_NAME_FIELD');
 export const TYPE_INTEGER = Symbol('integer');

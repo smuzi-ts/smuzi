@@ -1,6 +1,6 @@
 import {type IResult, Result} from "#lib/dataTypes/result.ts";
-import {Exception, readonly} from "#lib/prelude.js";
-import {isEmpty, isString, pipe, pipeIn} from "#lib/utils.js";
+import {Exception, readonly, isEmpty, isString,} from "#lib/prelude.js";
+import { pipe, pipeIn} from "#lib/utils.js";
 import {TYPE_NAME_FIELD, validationSchema} from "#lib/spec/schema.ts";
 
 export const STRICT_MODE_ENABLE = true;
@@ -60,4 +60,15 @@ export class StructValidationException extends Exception {
     constructor(structName, err) {
         super(`Struct '${structName}' : ` +  JSON.stringify(err), {structName, err});
     }
+}
+
+export function isStruct(val) {
+    return val?.[TYPE_NAME_FIELD] === TYPE_STRUCT;
+}
+
+export function isStructInstance(val, struct = undefined) {
+    const checkStructInstance = val?.[TYPE_NAME_FIELD] === TYPE_STRUCT_INSTANCE;
+    if (struct === undefined) return checkStructInstance;
+
+    return val[STRUCT_NAME_FIELD] === struct[STRUCT_NAME_FIELD];
 }

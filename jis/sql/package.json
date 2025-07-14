@@ -1,0 +1,17 @@
+{
+  "name": "@jis/config",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {},
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "./ts"
+  ],
+  "exports": {
+    "./ts/pack": "./ts/tsconfig.pack.json"
+  }
+}

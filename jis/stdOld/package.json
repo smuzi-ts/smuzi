@@ -1,0 +1,30 @@
+{
+  "name": "@jis/std",
+  "version": "0.0.1",
+  "private": true,
+  "description": "fdfdf",
+  "scripts": {},
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "./src"
+  ],
+  "exports": {
+    ".": "./src/prelude.js",
+    "./utils": "./src/utils.js",
+    "./spec": "./src/spec.js"
+  },
+  "dependencies": {
+    "@jis/config": "workspace:*",
+    "@jis/faker": "workspace:*",
+    "@jis/tests": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  }
+}

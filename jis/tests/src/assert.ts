@@ -1,7 +1,8 @@
 import * as _assert from "node:assert/strict";
-import {StructValidationException, validationSchema} from "@jis/std/spec";
+import {StructValidationException, validationSchema, isStructInstance} from "@jis/std/spec";
 import {AssertionError} from "node:assert";
-import {isEmpty, isFunction, isNone, isStructInstance} from "@jis/std/utils";
+import {isEmpty, isFunction, isNone} from "@jis/std";
+
 import {getClass} from "@jis/std";
 
 const signalOk = new Error('__OK__')
