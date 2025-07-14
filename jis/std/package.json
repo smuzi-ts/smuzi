@@ -3,19 +3,17 @@
   "version": "0.0.1",
   "private": true,
   "description": "",
-  "scripts": {},
+  "scripts": {
+
+  },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "files": [
-    "./src"
+    "./src",
+    "./tests"
   ],
-  "exports": {
-    ".": "./src/prelude.js",
-    "./utils": "./src/utils.js",
-    "./spec": "./src/spec.js"
-  },
   "dependencies": {
     "@jis/config": "workspace:*",
     "@jis/faker": "workspace:*",
@@ -25,6 +23,6 @@
     "@types/node": "^22.15.21"
   },
   "imports": {
-    "#lib/*": "./src/*"
+    "#std/*": "./src/*"
   }
 }

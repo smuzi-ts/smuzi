@@ -1,10 +1,16 @@
 export {it, describe, skip} from "node:test";
-export {assert} from "./assert.js"
-export const ok = (message = "") => `${message} - exp ok`;
-export const err = (message = "") => `${message} - exp err`;
-export const invalid = (message = "") => `${message} - exp invalid`;
+export {assert} from "./assert.ts"
 
-export function repeatIt(repeat = 1, name = '', fn) {
+export const okMsg = (msg = ""): string => `${msg} - exp ok`;
+export const errMsg = (msg = ""): string => `${msg} - exp err`;
+export const invalidMsg = (msg = ""): string => `${msg} - exp invalid`;
+
+// repeatIt с типами:
+export function repeatIt(
+    repeat: number = 1,
+    name: string = "",
+    fn: (name: string) => void
+): void {
     for (let i = 1; i <= repeat; i++) {
         fn(`${name} - #${i}`);
     }

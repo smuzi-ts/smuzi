@@ -22,7 +22,7 @@
     "@jis/tests": "workspace:*"
   },
   "dependencies": {
-    "@jis/std": "workspace:*",
+    "@jis/std-old": "workspace:*",
     "@jis/config": "workspace:*"
   },
   "imports": {

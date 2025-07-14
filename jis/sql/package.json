@@ -8,9 +8,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "files": [
-    "./ts"
-  ],
   "exports": {
     "./ts/pack": "./ts/tsconfig.pack.json"
   }

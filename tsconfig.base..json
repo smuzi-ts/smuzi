@@ -1,11 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {
+"compilerOptions": {
     "target": "ES2024",
     "module": "ESNext",
     "lib": ["ESNext", "dom"],
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
+    "checkJs": false,
     "noEmit": true,
     "strict": false,
     "moduleResolution": "node",
@@ -14,7 +13,7 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "paths": {
-      "#libs": ["./src"]
+      "#std": ["./jis/std/src/*"]
     }
   }
 }
