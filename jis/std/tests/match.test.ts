@@ -2,7 +2,7 @@ import {assert, describe, errMsg, it, okMsg} from "@jis/tests";
 import {match} from "#std/match.ts";
 import {isString, isBool, isArray} from "#std/checker.ts";
 
-describe("Std-matchExp", () => {
+describe("Std-match", () => {
     it(okMsg("Custom handlers, matched value string to Some"), () => {
         let handlers = new Map([
             [m => m === "GET", "find"],

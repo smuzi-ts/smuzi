@@ -1,27 +1,29 @@
 import { isNone, isString } from "#std/checker.ts";
 import { match } from "#std/match.ts";
 
-type StringValuePattern = string | string[]
+// type StringValuePattern = string | string[]
 
-export class StringValue<T extends string> {
+export class StringValueType<T extends string> {
     protected _val: T;
-    protected _checker: unknown;
 
     constructor(val: T)
     {
         this._val = val;
-        let checkerHandlers = new Map([
-            [isString, (val, expected) => val === expected]
-        ]);
-        this._checker = match(this._val, checkerHandlers);
     }
 
-    match<M extends Map<StringValuePattern, unknown>>(mPatterns: M, _: unknown): unknown {
-        for (let p in mPatterns) {
-            
+    match<M extends Map<string | string[], Function>>(mPatterns: M, _: unknown): unknown {
+        for (const [pattern, handler] of mPatterns) {
+            if (isString(pattern) && pattern === this._val) {
+                return handler(this._val);
+            }
         }
 
         return _
     }
+}
+
+export function StringValue(str: string): StringValueType<string>
+{
+    return new StringValueType(str);
 }
 
