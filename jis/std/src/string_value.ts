@@ -1,7 +1,12 @@
-import { isNone, isString } from "#std/checker.ts";
-import { match } from "#std/match.ts";
+import { isArray, isNone, isString } from "./checker.ts";
+import { match } from "./match.ts";
+import { echo } from "./debug.ts";
 
-// type StringValuePattern = string | string[]
+type MapStringPatternsType = Map<string | string[], Function>
+
+export function MapStringPatterns(m): MapStringPatternsType {
+    return new Map(m);
+}
 
 export class StringValueType<T extends string> {
     protected _val: T;
@@ -11,9 +16,16 @@ export class StringValueType<T extends string> {
         this._val = val;
     }
 
-    match<M extends Map<string | string[], Function>>(mPatterns: M, _: unknown): unknown {
+    match<M extends MapStringPatternsType>(mPatterns: M, _: unknown): unknown {
+        let checkers = new Map([
+            [isString, (v, p) => p === v],
+            [isArray, (v, p) => p.includes(v)]
+        ]);
+
         for (const [pattern, handler] of mPatterns) {
-            if (isString(pattern) && pattern === this._val) {
+            let checker = echo(match(pattern, checkers))
+            
+            if (checker) {
                 return handler(this._val);
             }
         }

@@ -1,3 +1,6 @@
+import { isString } from "./checker.ts";
+import { panic } from "./panic.ts";
+
 export function Ok<T>(value: T): Result<T, never> {
     return new ResultOk<T>(value);
 }
@@ -8,8 +11,8 @@ export function Err<E>(error: E): Result<never, E> {
 
 export class Result<T, E> {
     protected _val: T | E;
-    
-    match(handlers: { Ok: (value: T) => unknown; Err: (error: E) => unknown;  }): unknown {
+
+    match<Ok, Err>(handlers: { Ok: (value: T) => Ok; Err: (error: E) => Err; }): Ok | Err {
         if (this instanceof ResultOk) {
             return handlers.Ok(this._val as T);
         }
@@ -17,9 +20,11 @@ export class Result<T, E> {
         return handlers.Err(this._val as E);
     }
 
-    unwrap()
-    {
-        return this._val;
+    unwrap(): T | never {
+        return this.match({
+            Ok: (v) => v,
+            Err: (e) => panic("Unwrapped Err variant : " + (isString(e) ? e : JSON.stringify(e))),
+        });
     }
 
 }

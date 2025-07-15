@@ -4,13 +4,14 @@ import {isString, isBool, isArray} from "#std/checker.ts";
 
 describe("Std-match", () => {
     it(okMsg("Custom handlers, matched value string to Some"), () => {
-        let handlers = new Map([
-            [m => m === "GET", "find"],
-            [m => m === "POST", "save"],
+        let router = new Map([
+            [method => method === "GET", "find"],
+            [method => method === "POST", "save"],
         ]);
 
-        let result = match(1, handlers)
-        assert.equalSome(result, "isString")
+        let method = "GET";
+        let response = match(method, router)
+        assert.equalSome(response, "find")
     })
 
 

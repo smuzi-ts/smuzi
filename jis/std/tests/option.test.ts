@@ -8,7 +8,7 @@ describe("Std-Option", () => {
 
 
         const resultMatch = resultDoing.match({
-            Some: (v) => v,
+            Some: (v) => v + "!!!",
             None: () =>  "None",
         });
 

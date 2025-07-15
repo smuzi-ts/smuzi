@@ -7,7 +7,7 @@ export type Assert = {
   deepEqual: typeof _assert.deepEqual;
   ok: typeof _assert.ok;
   fail: typeof _assert.fail;
-  equalSome(actual: Option<unknown>, innerValue: unknown): asserts actual;
+  equalSome(actual: Option<unknown>, expectedInnerValue: unknown): asserts actual;
   equalNone(actual: Option<unknown>): asserts actual;
 };
 
@@ -21,10 +21,10 @@ export const assert: Assert = {
     deepEqual: _assert.deepEqual,
     ok: _assert.ok,
     fail: _assert.fail,
-    equalSome(actual: Option<unknown>, innerValue: unknown = None()) {
+    equalSome(actual: Option<unknown>, expectedInnerValue: unknown = None()) {
       actual.match({
         Some: (val) => {
-          assert.equal(val, innerValue);
+          assert.equal(val, expectedInnerValue);
         },
         None: () => {
           assert.fail("Expected Some, but get None")
