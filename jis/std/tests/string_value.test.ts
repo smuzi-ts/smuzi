@@ -8,6 +8,7 @@ function getRoutes() {
             ["GET", () => "find"],
             ["POST", () => "save"],
             [["PUT", "PATCH"], () => "update"],
+            [/abs/, (params) => echo(params)]
         ]);
 }
 
@@ -33,6 +34,15 @@ describe("Std-StringValue", () => {
       it(okMsg("Not Matched to any values"), () => {
         let routes = getRoutes();
         let method = "DELETE";
+        let handler =  StringValue(method);
+        let response = handler.match(routes, (v) => 1);
+        echo(response)
+        assert.equal(response, "Undefined")
+    })
+
+        it(okMsg("Not Matched to regexp"), () => {
+        let routes = getRoutes();
+        let method = "abs";
         let handler =  StringValue(method);
         let response = handler.match(routes, (v) => 1);
         echo(response)

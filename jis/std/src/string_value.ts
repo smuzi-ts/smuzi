@@ -4,7 +4,7 @@ import { match } from "./match.ts";
 
 type MapStringPatternsType = Map<string | string[] | RegExp, Function>
 
-export function MapStringPatterns(m: []): MapStringPatternsType {
+export function MapStringPatterns(m): MapStringPatternsType {
     return new Map(m);
 }
 
@@ -18,13 +18,13 @@ export class StringValueType<T extends string> {
 
     match<M extends MapStringPatternsType>(mPatterns: M, _: (v: T) => unknown): unknown {
         let checkers = new Map([
-            [isString, (v, p) => p === v],
-            [isArray, (v, p) => p.includes(v)],
+            [isString, (v: T, p) => p === v],
+            [isArray, (v: T, p) => p.includes(v)],
+            [_, () => false]
         ]);
 
         for (const [pattern, handler] of mPatterns) {
-            let checker = match(pattern, checkers).unwrap()
-            
+            let checker = match(pattern, checkers,)
         
             if (checker(this._val, pattern)) {
                 return handler(this._val);

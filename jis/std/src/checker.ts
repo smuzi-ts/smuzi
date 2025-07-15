@@ -18,7 +18,7 @@ export function isInteger(val: unknown): boolean {
     return Number.isInteger(val);
 }
 
-export function isFunction(val: unknown): boolean {
+export function isFunction(val: unknown): val is Function {
     return typeof val === "function";
 }
 
