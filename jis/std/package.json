@@ -10,10 +10,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "files": [
-    "./src",
-    "./tests"
-  ],
+  "files": ["./src"],
+   "exports": {
+    ".": "./src/prelude.js"
+  },
   "dependencies": {
     "@jis/config": "workspace:*",
     "@jis/faker": "workspace:*",

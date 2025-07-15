@@ -1,20 +1,17 @@
 {
 "compilerOptions": {
     "target": "ES2024",
-    "module": "ESNext",
+    "module": "nodenext",
     "lib": ["ESNext", "dom"],
     "allowJs": false,
     "checkJs": false,
     "noEmit": true,
     "strict": false,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
-    "baseUrl": ".",
-    "paths": {
-      "#std": ["./jis/std/src/*"]
-    }
+    "baseUrl": "."
   }
 }

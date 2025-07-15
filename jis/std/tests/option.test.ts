@@ -25,3 +25,7 @@ describe("Std-Option", () => {
         assert.equal(resultMatch, "None")
     })
 })
+
+export function isOption(value: unknown): boolean {
+    return value instanceof Option;
+}

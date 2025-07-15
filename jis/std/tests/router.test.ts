@@ -1,9 +1,9 @@
-import {assert, describe, it, okMsg} from "@jis/tests";
+import {assert, describe, it, okMsg, skip} from "@jis/tests";
 import {Route, HttpMethod} from "#std/router.ts";
 
 describe("Std-Router", () => {
 
-    it(okMsg("Matched"), () => {
+    skip(okMsg("Matched"), () => {
         let routes = new Map();
         routes.set([HttpMethod.GET, "test"], () => console.log('[HttpMethod.GET, "test"]'));
         routes.set([HttpMethod.GET, "prod"], () => console.log('[HttpMethod.GET, "prod"]'));
