@@ -6,8 +6,9 @@ describe("Std-Option", () => {
     it(okMsg("Matched - Some"), () => {
         let resultDoing = Some("Success")
 
+
         const resultMatch = resultDoing.match({
-            Some: (v) => v + "!!!",
+            Some: (v) => v,
             None: () =>  "None",
         });
 

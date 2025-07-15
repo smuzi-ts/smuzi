@@ -1,15 +1,26 @@
 import {assert, describe, errMsg, it, okMsg} from "@jis/tests";
-import {matchExp} from "#std/match.ts";
+import {match} from "#std/match.ts";
 import {isString, isBool, isArray} from "#std/checker.ts";
 
 describe("Std-matchExp", () => {
+    it(okMsg("Custom handlers, matched value string to Some"), () => {
+        let handlers = new Map([
+            [m => m === "GET", "find"],
+            [m => m === "POST", "save"],
+        ]);
+
+        let result = match(1, handlers)
+        assert.equalSome(result, "isString")
+    })
+
+
     it(okMsg("Matched value string to Some"), () => {
         let handlers = new Map([
             [isString, "isString"],
             [isBool, "isBool"],
         ]);
 
-        let result = matchExp("test", handlers)
+        let result = match("test", handlers)
         assert.equalSome(result, "isString")
     })
 
@@ -19,7 +30,7 @@ describe("Std-matchExp", () => {
             [isBool, "isBool"],
         ]);
 
-        let result = matchExp(true, handlers)
+        let result = match(true, handlers)
         assert.equalSome(result, "isBool")
     })
 
@@ -29,7 +40,7 @@ describe("Std-matchExp", () => {
             [isBool, "isBool"],
         ]);
 
-        let result = matchExp("test", handlers)
+        let result = match("test", handlers)
         assert.equalNone(result)
     })
 })
