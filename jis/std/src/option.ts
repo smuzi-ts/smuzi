@@ -47,3 +47,8 @@ class OptionNone  extends Option<never>{
         super();
     }
 }
+
+
+export function isOption(value: unknown): value is Option<unknown> {
+    return value instanceof Option;
+}

@@ -3,26 +3,14 @@ import {match} from "#std/match.ts";
 import {isString, isBool, isArray} from "#std/checker.ts";
 
 describe("Std-match", () => {
-    it(okMsg("Custom handlers, matched value string to Some"), () => {
-        let router = new Map([
-            [method => method === "GET", "find"],
-            [method => method === "POST", "save"],
-        ]);
-
-        let method = "GET";
-        let response = match(method, router)
-        assert.equalSome(response, "find")
-    })
-
-
     it(okMsg("Matched value string to Some"), () => {
         let handlers = new Map([
             [isString, "isString"],
             [isBool, "isBool"],
         ]);
 
-        let result = match("test", handlers)
-        assert.equalSome(result, "isString")
+        let result = match("test", handlers, "default")
+        assert.equal(result, "isString")
     })
 
     it(okMsg("Matched value boolean to Some"), () => {
@@ -31,17 +19,17 @@ describe("Std-match", () => {
             [isBool, "isBool"],
         ]);
 
-        let result = match(true, handlers)
-        assert.equalSome(result, "isBool")
+        let result = match(true, handlers, "default")
+        assert.equal(result, "isBool")
     })
 
-     it(okMsg("Matched value string to None"), () => {
+     it(okMsg("Not Matched value"), () => {
         let handlers = new Map([
             [isArray, "isArray"],
             [isBool, "isBool"],
         ]);
 
-        let result = match("test", handlers)
-        assert.equalNone(result)
+        let result = match("test", handlers, "default")
+        assert.equal(result, "default")
     })
 })

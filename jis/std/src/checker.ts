@@ -6,7 +6,7 @@ export function isEmpty(val: unknown): boolean {
     return isNone(val) || val === "" || (Array.isArray(val) && val.length === 0);
 }
 
-export function isString(val: unknown): boolean {
+export function isString(val: unknown): val is string {
     return typeof val === "string";
 }
 
@@ -26,6 +26,6 @@ export function isArray(val: unknown): boolean {
     return Array.isArray(val);
 }
 
-export function isObject(val: unknown): boolean {
+export function isObject(val: unknown): val is Record<string, unknown> {
     return Object.prototype.toString.call(val) === "[object Object]";
 }

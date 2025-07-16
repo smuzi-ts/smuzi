@@ -1,3 +1,4 @@
+export const pipeFn = (...fns) => (input) => fns.reduce((prevResult, fn) => fn(prevResult), input);
 export const pipe = (input) => (...fns) => fns.reduce((prevResult, fn) => fn(prevResult), input);
 
 export function* curry(fn, arity = fn.length) {
