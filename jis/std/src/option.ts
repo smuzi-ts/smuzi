@@ -26,7 +26,7 @@ export class Option<T> {
         });
     }
 
-    someOr<N>(none: N): T | N {
+    someOr(none: T): T {
         return this.match({
             Some: (v) => v,
             None: () => none,
