@@ -1,7 +1,7 @@
 import { panic } from "./panic.ts";
 
 type Val = NonNullable<unknown>;
-export type OptionPatterns<T,R> = { Some: (value: T) => R; None: () => R; }
+export type OptionPatterns<T, R> = { Some: (value: T) => R; None: () => R; }
 
 export function Some<T extends Val>(value: T): Option<T> {
     return new OptionSome<T>(value);

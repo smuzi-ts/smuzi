@@ -8,17 +8,23 @@ import { isImpl } from "./trait.ts";
 type Checker<T> = (v: T) => boolean;
 type Handler<T, R, A extends unknown[] = unknown[]> = (val: T, ...args: A) => R;
 
-//->Strings
+//>>> Strings
 type StringValuePatterns = string | string[] | RegExp | Checker<string>;
 type StringValueMapPatterns<R> = Map<StringValuePatterns, Handler<string, R> | R>
 
-//<-Strings
+//<<<
 
-//->Numbers
+//>>> Numbers
 export type NumberValuePatterns = number | number[] | Checker<number>;
 type NumberValueMapPatterns<R> = Map<NumberValuePatterns, Handler<number, R> | R>
 
-//<-Numbers
+//<<<
+
+//>>> Booleans
+
+type BooleanValueMapPatterns<R> = { True: () => R | R; False: () => R | R; }
+
+//<<<
 
 
 export function matchUnknown<T extends unknown, R = unknown>(

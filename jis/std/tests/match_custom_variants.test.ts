@@ -4,7 +4,7 @@ import { IMatched, match } from "#std/match.ts";
 
 export type CustomOptionPatterns<T = unknown, R = unknown> = { CustomSome: (value: T) => R; CustomNone: () => R; }
 
-export class CustomOption<T> implements IMatched {
+export class CustomOption<T> {
     protected _val: T;
     
     match<R>(handlers: CustomOptionPatterns<T,R>): R {
@@ -33,7 +33,6 @@ class CustomOptionNone extends CustomOption<never>{
 describe("Std-match-Custom Variants", () => {
     it(okMsg("Matched to Custom Some"), () => {
         let resultDoing = new CustomOptionSome("Success")
-
 
         const resultMatch = match<CustomOptionPatterns>(
             resultDoing,
