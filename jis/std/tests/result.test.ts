@@ -17,7 +17,7 @@ describe("Std-Result", () => {
         let resultDoing = generateResult(false)
 
         const resultMatch = resultDoing.match({
-            Ok: (v) => v,
+            Ok: (v) => "some",
             Err: (e) =>  e,
         });
 

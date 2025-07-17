@@ -1,7 +1,7 @@
 import { log } from "console";
 
-export function dump<T>(v: T): T
+export function dump<T extends unknown[]>(...v: T): T
 {
-    log("ECHO", v);
+    log("ECHO", ...v);
     return v;
 }

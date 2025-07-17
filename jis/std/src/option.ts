@@ -1,10 +1,11 @@
 import { panic } from "./panic.ts";
+type Val = NonNullable<unknown>;
 
-export function Some<T>(value: T): Option<T> {
+export function Some<T extends Val>(value: T): Option<T> {
     return new OptionSome<T>(value);
 }
 
-export function None(): Option<never> {
+export function None<T extends Val>(): Option<T> {
     return new OptionNone();
 }
 
@@ -35,7 +36,7 @@ export class Option<T> {
 }
 
 
-class OptionSome<T> extends Option<T> {
+class OptionSome<T extends Val> extends Option<T> {
     constructor(val: T) {
         super();
         this._val = val;

@@ -1,11 +1,13 @@
 import { isString } from "./checker.ts";
 import { panic } from "./panic.ts";
 
-export function Ok<T>(value: T): Result<T, never> {
+type Val = NonNullable<unknown>;
+
+export function Ok<T extends Val>(value: T): Result<T, never> {
     return new ResultOk<T>(value);
 }
 
-export function Err<E>(error: E): Result<never, E> {
+export function Err<E extends Val>(error: E): Result<never, E> {
     return new ResultErr<E>(error);
 }
 
@@ -30,14 +32,14 @@ export class Result<T, E> {
 }
 
 
-class ResultOk<T> extends Result<T, never> {
+class ResultOk<T extends Val> extends Result<T, never> {
     constructor(val: T) {
         super();
         this._val = val;
     }
 }
 
-class ResultErr<E> extends Result<never, E> {
+class ResultErr<E extends Val> extends Result<never, E> {
     constructor(val: E) {
         super();
         this._val = val;

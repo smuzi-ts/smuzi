@@ -6,7 +6,7 @@ export function isEmpty(val: unknown): boolean {
     return isNone(val) || val === "" || (Array.isArray(val) && val.length === 0);
 }
 
-export function isString(val: unknown): val is string {
+export function isString(val: unknown): boolean {
     return typeof val === "string";
 }
 
