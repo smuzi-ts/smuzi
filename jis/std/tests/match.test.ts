@@ -1,26 +1,27 @@
-import {assert, describe, errMsg, it, okMsg} from "@jis/tests";
+import {assert, describe, it, okMsg} from "@jis/tests";
 import {match} from "#std/match.ts";
 import {isString, isBool, isArray} from "#std/checker.ts";
 
 describe("Std-match", () => {
+    it(okMsg("Matched value to string patterns"), () => {
+        let handlers = new Map([
+            ["a", "isA"],
+            ["b", "isB"],
+            ["c", "isC"],
+        ]);
+
+        let result = match({val:"b", handlers, deflt: "default"})
+        assert.equal(result, "isB")
+    })
+
     it(okMsg("Matched value string to Some"), () => {
         let handlers = new Map([
             [isString, "isString"],
             [isBool, "isBool"],
         ]);
 
-        let result = match("test", handlers, "default")
+        let result = match({val:"test", handlers, deflt: "default"})
         assert.equal(result, "isString")
-    })
-
-    it(okMsg("Matched value boolean to Some"), () => {
-        let handlers = new Map([
-            [isString, "isString"],
-            [isBool, "isBool"],
-        ]);
-
-        let result = match(true, handlers, "default")
-        assert.equal(result, "isBool")
     })
 
      it(okMsg("Not Matched value"), () => {
@@ -29,7 +30,19 @@ describe("Std-match", () => {
             [isBool, "isBool"],
         ]);
 
-        let result = match("test", handlers, "default")
+        let result = match({val:"test", handlers, deflt: "default"})
+
         assert.equal(result, "default")
+    })
+
+      it(okMsg("Matched value to Some via Callbacks"), () => {
+        let handlers = new Map([
+            [isString, (v) => v + "_isString"],
+            [isBool, (v) => v + "_isBool"],
+        ]);
+
+        let result = match({val: 1, handlers, deflt: (v) => v + "_default"})
+
+        assert.equal(result, "1_default")
     })
 })
