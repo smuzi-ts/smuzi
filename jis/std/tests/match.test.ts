@@ -10,7 +10,7 @@ describe("Std-match", () => {
             ["c", "isC"],
         ]);
 
-        let result = match({val:"b", handlers, deflt: "default"})
+        let result = match({val:"b", handlers, deflt: "isDefault"})
         assert.equal(result, "isB")
     })
 

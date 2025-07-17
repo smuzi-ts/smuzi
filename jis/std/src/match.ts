@@ -18,14 +18,12 @@ export function match<R extends unknown, T extends unknown>(
         returnAsFn = false
     }: MatchOptions<T, R>): R {
     for (const [check, res] of handlers) {
-        if (isFunction(check) && check(val)) {
+        if (isFunction(check) ? check(val) : check === val ) {
             if (isFunction(res)) {
                 return returnAsFn ? (res as R) : (res as Handler<T, R>)(val);
             } else {
                 return res
             }
-        } else if (check === val) {
-
         }
     }
 
