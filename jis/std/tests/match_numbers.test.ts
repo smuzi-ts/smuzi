@@ -9,7 +9,7 @@ describe("Std-match-Numbers", () => {
             [3, "isThree"],
         ]);
 
-        let result = match({val: 2, handlers, deflt: "isDefault"})
+        let result = match(2, handlers, "isDefault")
         assert.equal(result, "isTwo")
     })
 
@@ -20,7 +20,7 @@ describe("Std-match-Numbers", () => {
             [3, "isThree"],
         ]);
 
-        let result = match({val:4, handlers, deflt: "isDefault"})
+        let result = match(4, handlers, "isDefault")
         assert.equal(result, "isDefault")
     })
 
@@ -31,7 +31,7 @@ describe("Std-match-Numbers", () => {
             [(v) => v === 3, "isThree"],
         ]);
 
-        let result = match({val: 2, handlers, deflt: "isDefault"})
+        let result = match(2, handlers, "isDefault")
         assert.equal(result, "isTwo")
     })
 
@@ -42,7 +42,7 @@ describe("Std-match-Numbers", () => {
             [(v) => v === 3, "isThree"],
         ]);
 
-        let result = match({val: 4, handlers, deflt: "isDefault"})
+        let result = match(4, handlers, "isDefault")
 
         assert.equal(result, "isDefault")
     })
@@ -54,7 +54,7 @@ describe("Std-match-Numbers", () => {
             [3, (v) => v + 30],
         ]);
 
-        let result = match({val: 2, handlers, deflt: (v) => v + 40})
+        let result = match(2, handlers, (v) => v + 40)
 
         assert.equal(result, 22)
     })
@@ -66,7 +66,7 @@ describe("Std-match-Numbers", () => {
             [[4,5], "is_4_or_5"],
         ]);
 
-        let result = match({val: 3, handlers, deflt: "isDefault"})
+        let result = match(3, handlers, "isDefault")
         assert.equal(result, "is_2_or_3")
     })
 
@@ -79,7 +79,7 @@ describe("Std-match-Numbers", () => {
             [5, 'is_5']
         ]);
 
-        let result = match({val: 2, handlers, deflt: "isDefault"})
+        let result = match(2, handlers, "isDefault")
         assert.equal(result, "is_2_or_3")
     })
 
@@ -91,7 +91,7 @@ describe("Std-match-Numbers", () => {
             [5, 'is_5']
         ]);
 
-        let result = match({val: 4, handlers, deflt: "isDefault"})
+        let result = match(4, handlers, "isDefault")
         assert.equal(result, "is_4")
     })
 })

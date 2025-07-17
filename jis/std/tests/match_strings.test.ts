@@ -9,7 +9,7 @@ describe("Std-match-Strings", () => {
             ["C", "isC"],
         ]);
 
-        let result = match({val:"B", handlers, deflt: "isDefault"})
+        let result = match("B", handlers, "isDefault")
         assert.equal(result, "isB")
     })
 
@@ -20,7 +20,7 @@ describe("Std-match-Strings", () => {
             ["C", "isC"],
         ]);
 
-        let result = match({val:"Z", handlers, deflt: "isDefault"})
+        let result = match("Z", handlers, "isDefault")
         assert.equal(result, "isDefault")
     })
 
@@ -31,7 +31,7 @@ describe("Std-match-Strings", () => {
             [(v) => v === "C", "isC"],
         ]);
 
-        let result = match({val: "B", handlers, deflt: "default"})
+        let result = match("B", handlers, "default")
         assert.equal(result, "isB")
     })
 
@@ -42,7 +42,7 @@ describe("Std-match-Strings", () => {
             [(v) => v === "C", "isC"],
         ]);
 
-        let result = match({val:"Z", handlers, deflt: "default"})
+        let result = match("Z", handlers, "default")
 
         assert.equal(result, "default")
     })
@@ -54,7 +54,7 @@ describe("Std-match-Strings", () => {
             [(v) => v === "C", (v) => v + "_isC"],
         ]);
 
-        let result = match({val: "B", handlers, deflt: (v) => v + "_default"})
+        let result = match("B", handlers, (v) => v + "_default")
 
         assert.equal(result, "B_isB")
     })
@@ -67,7 +67,7 @@ describe("Std-match-Strings", () => {
                 ["5", 'is_5']
             ]);
     
-            let result = match({val: "2", handlers, deflt: "isDefault"})
+            let result = match("2", handlers, "isDefault")
             assert.equal(result, "is_2_or_3")
         })
     
@@ -79,7 +79,7 @@ describe("Std-match-Strings", () => {
                 ["5", 'is_5']
             ]);
     
-            let result = match({val: "4", handlers, deflt: "isDefault"})
+            let result = match("4", handlers, "isDefault")
             assert.equal(result, "is_4")
         })
 })

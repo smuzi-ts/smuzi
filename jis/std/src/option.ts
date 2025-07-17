@@ -1,5 +1,7 @@
 import { panic } from "./panic.ts";
+
 type Val = NonNullable<unknown>;
+export type OptionPatterns<T,R> = { Some: (value: T) => R; None: () => R; }
 
 export function Some<T extends Val>(value: T): Option<T> {
     return new OptionSome<T>(value);
@@ -12,7 +14,7 @@ export function None<T extends Val>(): Option<T> {
 export class Option<T> {
     protected _val: T;
     
-    match<S,N>(handlers: { Some: (value: T) => S; None: () => N; }): S | N {
+    match<R>(handlers: OptionPatterns<T,R>): R {
         if (this instanceof OptionSome) {
             return handlers.Some(this._val as T);
         }
@@ -43,7 +45,7 @@ class OptionSome<T extends Val> extends Option<T> {
     }
 }
 
-class OptionNone  extends Option<never>{
+class OptionNone extends Option<never>{
     constructor() {
         super();
     }
