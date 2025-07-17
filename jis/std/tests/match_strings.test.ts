@@ -1,5 +1,5 @@
 import {assert, describe, it, okMsg} from "@jis/tests";
-import {match} from "#std/match.ts";
+import {MapStringPatterns, match} from "#std/match.ts";
 
 describe("Std-match-Strings", () => {
     it(okMsg("Matched value String via String patterns"), () => {
@@ -58,4 +58,28 @@ describe("Std-match-Strings", () => {
 
         assert.equal(result, "B_isB")
     })
+
+        it(okMsg("Matched value to Array pattern via Combinations patterns "), () => {
+            let handlers = MapStringPatterns([
+                ["1", "is_1"],
+                [["2","3"], "is_2_or_3"],
+                [(v) => v === "4", "is_4"],
+                ["5", 'is_5']
+            ]);
+    
+            let result = match({val: "2", handlers, deflt: "isDefault"})
+            assert.equal(result, "is_2_or_3")
+        })
+    
+        it(okMsg("Matched value to Function pattern via Combinations patterns "), () => {
+            let handlers = MapStringPatterns([
+                ["1", "is_1"],
+                [["2","3"], "is_2_or_3"],
+                [(v) => v === "4", "is_4"],
+                ["5", 'is_5']
+            ]);
+    
+            let result = match({val: "4", handlers, deflt: "isDefault"})
+            assert.equal(result, "is_4")
+        })
 })

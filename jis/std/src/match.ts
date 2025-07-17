@@ -3,7 +3,6 @@
 import { isRegExp } from "node:util/types";
 import { isArray, isBool, isNone, isObject, isString, isFunction, isNumber } from "./checker.ts";
 import { None, Option, Some } from "./option.ts";
-import { dump } from "./debug.ts";
 
 type Checker<T> = (v: T) => boolean;
 type Handler<T, R, A extends unknown[] = unknown[]> = (val: T, ...args: A) => R;
@@ -17,27 +16,24 @@ type UnknownValueMatchOptions<T extends unknown, R extends unknown> = IValueMatc
     handlers: Map<Checker<T> | unknown, Handler<T, R> | R>;
 };
 
-//->String
-type StringValueMapPatterns<T, R> = Map<string | string[] | RegExp | Checker<T>, Handler<T, R> | R>
+//->Strings
+type StringValuePatterns = string | string[] | RegExp | Checker<string>;
+type StringValueMapPatterns<R> = Map<StringValuePatterns, Handler<string, R> | R>
 
 type StringValueMatchOptions<T extends string, R extends unknown> = IValueMatchOptions<T, R> & {
-    handlers: StringValueMapPatterns<T, R>
+    handlers: StringValueMapPatterns<R>
 };
-//<-String
+//<-Strings
 
-//->Number
-type NumberValueMapPatterns<T, R> = Map<number | number[] | Checker<T>, Handler<T, R> | R>
+//->Numbers
+export type NumberValuePatterns = number | number[] | Checker<number>;
+type NumberValueMapPatterns<R> = Map<NumberValuePatterns, Handler<number, R> | R>
 
 type NumberValueMatchOptions<T extends number, R extends unknown> = IValueMatchOptions<T, R> & {
-    handlers: NumberValueMapPatterns<T, R>
+    handlers: NumberValueMapPatterns<R>
 };
-//<-Number
+//<-Numbers
 
-type OptionValueMatchOptions<T extends Option<unknown>, R extends unknown> = IValueMatchOptions<T, R> & {
-    val: T;
-    handlers: StringValueMapPatterns<T, R>
-    deflt: Handler<T, R> | R;
-};
 
 export function matchUnknown<T extends unknown, R = unknown>(opts: UnknownValueMatchOptions<T, R>, returnAsFn: true): Handler<T, R>;
 export function matchUnknown<T extends unknown, R = unknown>(opts: UnknownValueMatchOptions<T, R>, returnAsFn: false): R;
@@ -185,4 +181,16 @@ function matchNumber<T extends number, R>(
     } else {
         return (deflt as R)
     }
+}
+
+export function MapStringPatterns<T extends string, R = unknown>(
+    handlers: [StringValuePatterns, R | Handler<T, R>][]
+) {
+    return new Map(handlers);
+}
+
+export function MapNumberPatterns<T extends number, R = unknown>(
+    handlers: [NumberValuePatterns, R | Handler<T, R>][]
+) {
+    return new Map(handlers);
 }
