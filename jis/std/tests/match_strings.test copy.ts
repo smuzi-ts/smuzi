@@ -1,8 +1,7 @@
 import {assert, describe, it, okMsg} from "@jis/tests";
 import {match} from "#std/match.ts";
-import {isString, isBool, isArray} from "#std/checker.ts";
 
-describe("Std-match", () => {
+describe("Std-match-Strings", () => {
     it(okMsg("Matched value String via String patterns"), () => {
         let handlers = new Map([
             ["A", "isA"],

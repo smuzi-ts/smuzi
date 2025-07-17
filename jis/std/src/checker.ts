@@ -6,11 +6,16 @@ export function isEmpty(val: unknown): boolean {
     return isNone(val) || val === "" || (Array.isArray(val) && val.length === 0);
 }
 
-export function isString(val: unknown): boolean {
+export function isString(val: unknown): val is string {
     return typeof val === "string";
 }
 
-export function isBool(val: unknown): boolean {
+
+export function isNumber(val: unknown): val is number {
+    return typeof val === "number";
+}
+
+export function isBool(val: unknown): val is boolean {
     return typeof val === "boolean";
 }
 
