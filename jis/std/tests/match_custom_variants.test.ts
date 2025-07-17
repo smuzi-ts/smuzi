@@ -1,6 +1,5 @@
 import {assert, describe, it, okMsg} from "@jis/tests";
-import {Some, None} from "#std/option.ts";
-import { IMatched, match } from "#std/match.ts";
+import { matchVariant } from "#std/match.ts";
 
 export type CustomOptionPatterns<T = unknown, R = unknown> = { CustomSome: (value: T) => R; CustomNone: () => R; }
 
@@ -34,7 +33,7 @@ describe("Std-match-Custom Variants", () => {
     it(okMsg("Matched to Custom Some"), () => {
         let resultDoing = new CustomOptionSome("Success")
 
-        const resultMatch = match<CustomOptionPatterns>(
+        const resultMatch = matchVariant<CustomOptionPatterns>(
             resultDoing,
             {
                 CustomSome: (v) => v + "!!!",
@@ -49,7 +48,7 @@ describe("Std-match-Custom Variants", () => {
         let resultDoing = new CustomOptionNone()
 
 
-        const resultMatch = match<CustomOptionPatterns>(
+        const resultMatch = matchVariant<CustomOptionPatterns>(
             resultDoing,
             {
                 CustomSome: (v) => v + "!!!",

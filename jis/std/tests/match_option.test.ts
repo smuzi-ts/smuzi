@@ -1,5 +1,5 @@
-import {assert, describe, it, okMsg} from "@jis/tests";
-import {Some, None} from "#std/option.ts";
+import { assert, describe, it, okMsg } from "@jis/tests";
+import { Some, None } from "#std/option.ts";
 import { match } from "#std/match.ts";
 
 describe("Std-match-Option", () => {
@@ -11,19 +11,19 @@ describe("Std-match-Option", () => {
             resultDoing,
             {
                 Some: (v) => v + "!!!",
-                None: () =>  "None",
-    
-        });
+                None: () => "None",
+
+            });
 
         assert.equal(resultMatch, "Success!!!")
     })
 
-     it(okMsg("Matched to None"), () => {
+    it(okMsg("Matched to None"), () => {
         let resultDoing = None()
 
         const resultMatch = match(resultDoing, {
             Some: (v) => v,
-            None: () =>  "None",
+            None: () => "None",
         });
 
         assert.equal(resultMatch, "None")

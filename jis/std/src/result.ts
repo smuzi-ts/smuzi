@@ -2,6 +2,7 @@ import { isString } from "./checker.ts";
 import { panic } from "./panic.ts";
 
 type Val = NonNullable<unknown>;
+export type ResultPatterns<T, E, RO, RE> = { Ok: (value: T) => RO; Err: (error: E) => RE | RO; }
 
 export function Ok<T extends Val>(value: T): Result<T, never> {
     return new ResultOk<T>(value);
@@ -14,7 +15,7 @@ export function Err<E extends Val>(error: E): Result<never, E> {
 export class Result<T, E> {
     protected _val: T | E;
 
-    match<Ok, Err>(handlers: { Ok: (value: T) => Ok; Err: (error: E) => Err; }): Ok | Err {
+    match<RO, RE>(handlers: ResultPatterns<T, E, RO, RE>): RO | RE {
         if (this instanceof ResultOk) {
             return handlers.Ok(this._val as T);
         }

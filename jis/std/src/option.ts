@@ -14,7 +14,7 @@ export function None<T extends Val>(): Option<T> {
 export class Option<T> {
     protected _val: T;
     
-    match<R>(handlers: OptionPatterns<T,R>): R {
+    match<R>(handlers: OptionPatterns<T, R>): R {
         if (this instanceof OptionSome) {
             return handlers.Some(this._val as T);
         }

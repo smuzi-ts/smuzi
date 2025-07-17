@@ -4,6 +4,7 @@ import { isRegExp } from "node:util/types";
 import { isArray, isBool, isNone, isObject, isString, isFunction, isNumber } from "./checker.ts";
 import { isOption, None, Option, OptionPatterns, Some } from "./option.ts";
 import { isImpl } from "./trait.ts";
+import { Result, ResultPatterns } from "./result.ts";
 
 type Checker<T> = (v: T) => boolean;
 type Handler<T, R, A extends unknown[] = unknown[]> = (val: T, ...args: A) => R;
@@ -62,17 +63,24 @@ export function matchUnknown<R extends unknown, T extends unknown>(
     }
 }
 
-export function match<Patterns, T = IMatched, R = unknown>(
-    val: T,
-    handlers: Patterns,
+export function match<T, R = unknown>(
+    val: Option<T>,
+    handlers: OptionPatterns<T, R>,
     returnAsFn?: false
 ): R;
 
 export function match<T, R = unknown>(
     val: Option<T>,
     handlers: OptionPatterns<T, R>,
+    returnAsFn: true
+): Handler<T, R>;
+
+export function match<T, E, RO = unknown, RE = unknown>(
+    val: Result<T, E>,
+    handlers: ResultPatterns<T, E, RO, RE>,
     returnAsFn?: false
-): R;
+): RO | RE;
+
 
 export function match<T extends string, R = unknown>(
     val: T, 
@@ -207,6 +215,30 @@ function matchNumber<T extends number, R>(
     } else {
         return (deflt as R)
     }
+}
+
+export function matchVariant<Patterns, T = IMatched, R = unknown>(
+    val: T,
+    handlers: Patterns,
+    returnAsFn?: false
+): R;
+
+export function matchVariant<Patterns, T = IMatched, R = unknown>(
+    val: T,
+    handlers: Patterns,
+    returnAsFn: true
+): Handler<T, R>;
+
+export function matchVariant(
+    val,
+    handlers,
+    returnAsFn: boolean = false
+) {
+    if(isImpl<IMatched>(val)) {
+        return val.match(handlers, returnAsFn);
+    }
+
+    return returnAsFn ? matchUnknown(val, handlers, returnAsFn, true) : matchUnknown(val, handlers, returnAsFn, false);
 }
 
 export function MapStringPatterns<T extends string, R = unknown>(
