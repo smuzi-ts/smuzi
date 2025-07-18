@@ -20,7 +20,7 @@ describe("Std-match-Strings", () => {
             ["C", "isC"],
         ]);
 
-        let result = match("Z", handlers, "isDefault")
+        let result = match("Z", handlers, "1")
         assert.equal(result, "isDefault")
     })
 

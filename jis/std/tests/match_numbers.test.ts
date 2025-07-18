@@ -59,6 +59,18 @@ describe("Std-match-Numbers", () => {
         assert.equal(result, 22)
     })
 
+    it(okMsg("Matched value via Number, return using Callbacks"), () => {
+        let handlers = new Map([
+            [1, (v) => v + 10],
+            [2, (v) => v + 20],
+            [3, (v) => v + 30],
+        ]);
+
+        let result = match(2, handlers, (v) => v + 40)
+
+        assert.equal(result, 22)
+    })
+
     it(okMsg("Matched value via  Array of Numbers  patterns"), () => {
         let handlers = new Map([
             [[1], "is_1"],

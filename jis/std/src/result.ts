@@ -1,4 +1,5 @@
 import { isString } from "./checker.ts";
+import { IMatched } from "./match.ts";
 import { panic } from "./panic.ts";
 
 type Val = NonNullable<unknown>;
@@ -12,7 +13,7 @@ export function Err<E extends Val>(error: E): Result<never, E> {
     return new ResultErr<E>(error);
 }
 
-export class Result<T, E> {
+export class Result<T, E> implements IMatched {
     protected _val: T | E;
 
     match<RO, RE>(handlers: ResultPatterns<T, E, RO, RE>): RO | RE {

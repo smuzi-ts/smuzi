@@ -1,3 +1,4 @@
+import { IMatched } from "./match.ts";
 import { panic } from "./panic.ts";
 
 type Val = NonNullable<unknown>;
@@ -11,7 +12,7 @@ export function None<T extends Val>(): Option<T> {
     return new OptionNone();
 }
 
-export class Option<T> {
+export class Option<T> implements IMatched {
     protected _val: T;
     
     match<R>(handlers: OptionPatterns<T, R>): R {
