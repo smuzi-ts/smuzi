@@ -1,0 +1,28 @@
+{
+  "name": "@jis/http",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {
+
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": ["./src"],
+   "exports": {
+    ".": "./src/prelude.js"
+  },
+  "dependencies": {
+    "@jis/std": "workspace:*",
+    "@jis/faker": "workspace:*",
+    "@jis/tests": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  },
+  "imports": {
+    "#http/*": "./src/*"
+  }
+}

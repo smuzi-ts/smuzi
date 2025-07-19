@@ -40,6 +40,22 @@ importers:
         specifier: ^22.15.21
         version: 22.16.3
 
+  jis/http:
+    dependencies:
+      '@jis/faker':
+        specifier: workspace:*
+        version: link:../faker
+      '@jis/std':
+        specifier: workspace:*
+        version: link:../std
+      '@jis/tests':
+        specifier: workspace:*
+        version: link:../tests
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.16.3
+
   jis/sql: {}
 
   jis/std:

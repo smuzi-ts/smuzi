@@ -82,4 +82,17 @@ describe("Std-match-Strings", () => {
             let result = match("4", handlers, "isDefault")
             assert.equal(result, "is_4")
         })
+
+    it(okMsg("Matched value to RegExp"), () => {
+        let result = "users/3"
+        let patterns = new Map();
+
+        patterns.set("users", 1);
+        patterns.set("users/archived", "list of archived users");
+        patterns.set(/^users\/\d+$/, "find");
+
+        let resultMatch = match(result, patterns, "not found")
+
+        assert.equal(resultMatch, "find")
+    })
 })

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.common.json",
+  "include": ["./src"],
+  "compilerOptions": {
+    "types": ["node"],
+    "outDir": "build/src",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "rootDir": "src",
+    "composite": true,
+    "baseUrl": "./src",
+    "paths": {
+      "#std/*": ["*"]
+  },
+  }
+}

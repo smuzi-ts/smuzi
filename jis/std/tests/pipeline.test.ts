@@ -2,7 +2,7 @@ import { assert, describe, it, okMsg, skip } from "@jis/tests";
 import { Pipe } from "#std/pipeline.ts";
 
 describe("Std-Pipeline", () => {
-    skip(okMsg("Do with strings"), () => {
+    it(okMsg("Do with strings"), () => {
         const start = () => "Val";
         const addOne = (v: string) => v+"+1";
         const addTwo = (v: string) => v+"+2";
@@ -13,7 +13,7 @@ describe("Std-Pipeline", () => {
         assert.equal(res, "Val+1+2+3");
     })
 
-    skip(okMsg("Do with numbers"), () => {
+    it(okMsg("Do with numbers"), () => {
         const start = () => 0;
         const addOne = (v: number) => v+1;
         const addTwo = (v: number) => v+2;
@@ -24,7 +24,7 @@ describe("Std-Pipeline", () => {
         assert.equal(res, 6);
     })
 
-    skip(okMsg("Created with input value"), () => {
+    it(okMsg("Created with input value"), () => {
         const addOne = (v: string) => v+"+1";
         const addTwo = (v: string) => v+"+2";
         const addThree = (v: string) => v+"+3";
@@ -34,7 +34,7 @@ describe("Std-Pipeline", () => {
         assert.equal(res, "Val+1+2+3");
     })
 
-    skip(okMsg("Do with many args AND one arg"), () => {
+    it(okMsg("Do with many args AND one arg"), () => {
         const addOne = (v1: string, v2: string) => v1+v2+"+addOne";
         const addTwo = (v1) => [v1, "+addTwo"];
         const addThree = (v1: string, v2: string) => [v1+v2, "+addThree"];
@@ -49,7 +49,7 @@ describe("Std-Pipeline", () => {
         assert.equal(res2, "+addThree");
     })
 
-     skip(okMsg("Create templates of Pipes"), () => {
+     it(okMsg("Create templates of Pipes"), () => {
         const start1 = () => "VAL ONE";
         const start2 = () => "VAL TWO";
 

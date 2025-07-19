@@ -23,6 +23,10 @@ export class Option<T> implements IMatched {
         return handlers.None();
     }
 
+    isNone(): this is OptionNone {
+        return  this instanceof OptionNone;
+    }
+    
     unwrap(): T | never {
         return this.match({
             Some: (v) => v,

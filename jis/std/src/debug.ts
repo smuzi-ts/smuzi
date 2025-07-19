@@ -1,7 +1,7 @@
-import { trace } from "console";
+import { trace, debug } from "console";
 
 export function dump<T extends unknown[]>(...v: T): T
 {
-    trace("ECHO", ...v);
+    debug("ECHO", ...v);
     return v;
 }
