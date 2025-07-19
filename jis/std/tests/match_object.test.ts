@@ -56,4 +56,31 @@ describe("Std-match-Object", () => {
 
         assert.equal(resultMatch4, "Richard with any Last Name and age != 18 and != 25")
     })
+
+    it(okMsg("Matched all properties , using also RegExp and array of options"), () => {
+        const patterns = new Map();
+        patterns.set({ name: "Richard", age: 5 }, "baby"); //<-- user 1
+        patterns.set({ name: "Richard", age: 20 }, "young");// <-- user2 
+        patterns.set({ name: "Richard", age: [50, 60]}, "old"); //<-- Matched to user3 or user4
+
+        // Variant 1
+        const user1 = { name: "Richard", age: 5 }
+        const resultMatch1 = match(user1, patterns, "undefined")
+        assert.equal(resultMatch1, "baby")
+
+        // Variant 2
+        const user2 = { name: "Richard", age: 20 }
+        const resultMatch2 = match(user2, patterns, "undefined")
+        assert.equal(resultMatch2, "young")
+
+        // Variant 3
+        const user3 = { name: "Richard", age: 50 }
+        const resultMatch3 = match(user3, patterns, "undefined")
+        assert.equal(resultMatch3, "old")
+
+        // Variant 3
+        const user4 = { name: "Richard", age: 60 }
+        const resultMatch4 = match(user4, patterns, "undefined")
+        assert.equal(resultMatch3, "old")
+    })
 })

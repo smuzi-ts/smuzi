@@ -2,9 +2,8 @@
 
 import { isRegExp } from "node:util/types";
 import { isArray, isString, isFunction, isNumber, isObject } from "./checker.ts";
-import { None, Some } from "./option.ts";
+import { None, Option, Some } from "./option.ts";
 import { dd, dump } from "./debug.ts";
-import { matchRegExp } from "./regexp.ts";
 
 
 type Checker<T> = (v: T) => boolean;
@@ -118,8 +117,7 @@ export function match<R, T>(
     let matchHandler = matchUnknown(val, new Map([
         [isString, matchString],
         [isNumber, matchNumber],
-        [isArray, matchNumber],
-        [isObject, matchObject],
+        [(v) => isArray(v) || isObject(v), matchArray],
     ]), matchUnknown, true);
 
     return returnAsFn ? matchHandler(val, handlers, deflt, true) : matchHandler(val, handlers, deflt, false);
@@ -196,11 +194,7 @@ function matchArray(
     deflt,
     returnAsFn = false
 ) {
-    let checkersForAnyPatterns = new Map([
-        [isString, Some(checkersForStringPattern())],
-        [isRegExp, Some(checkersForStringPattern())],
-        [isNumber, Some(checkersForNumberPattern())],
-    ]);
+    let mapCheckersForPattern = checkersForUnknownPattern();
 
     for (const [patternsList, handler] of handlers) {
         let matched = true;
@@ -208,7 +202,7 @@ function matchArray(
         for (const patternIndex in patternsList) {
             let checkerForPattern = matchUnknown(
                 patternsList[patternIndex],
-                checkersForAnyPatterns,
+                mapCheckersForPattern,
                 () => None(),
                 false
             );
@@ -245,38 +239,6 @@ function matchArray(
     return matchFn(deflt, val, returnAsFn);
 }
 
-function matchObject(
-    val,
-    handlers,
-    deflt,
-    returnAsFn = false
-) {
-    for (const [patternObj, handler] of handlers) {
-        let matched = true;
-        for (const prop in patternObj) {
-            if (Object.prototype.hasOwnProperty.call(val, prop)) {
-                if (val[prop] == patternObj[prop]) continue;
-                if (isRegExp(patternObj[prop])) {
-                    let res = matchRegExp(val[prop], patternObj[prop]);
-                    if (! res.res) {
-                        matched = false;
-                        break;
-                    }
-                    continue;
-                }
-            }
-            matched = false;
-            break;
-        }
-
-        if (matched) {
-            return matchFn(handler, val, returnAsFn);
-        }
-    }
-
-    return matchFn(deflt, val, returnAsFn);
-}
-
 function matchFn(fnOrVar: unknown, input: unknown, returnAsFn: boolean) {
     if (isFunction(fnOrVar)) {
         return returnAsFn ? fnOrVar : fnOrVar(input);
@@ -302,7 +264,20 @@ export interface IMatched {
  }
 
 
- function checkersForStringPattern()
+ type MatchResult = {
+   res: boolean,
+   data: Option<Record<string, string> | string[]>,
+ };
+ 
+function checkersForUnknownPattern() {
+    return new Map([
+        [isString, Some(checkersForStringPattern())],
+        [isRegExp, Some(checkersForStringPattern())],
+        [isNumber, Some(checkersForNumberPattern())],
+    ]);
+}
+
+ function checkersForStringPattern(): Map<Function, (v, p) => MatchResult>
  {
     return new Map([
         [isString, (v, p) => ({ res: p === v, data: None() })],
@@ -312,11 +287,22 @@ export interface IMatched {
     ]);
  }
 
-function checkersForNumberPattern()
+function checkersForNumberPattern(): Map<Function, (v, p) => MatchResult>
 {
     return new Map([
         [isNumber, (v, p) => ({ res: p === v, data: None() })],
         [isArray, (v, p) => ({ res: p.includes(v), data: None() })],
         [isFunction, (v, p) => ({ res: p(v), data: None() })],
     ]);
+}
+
+export function matchRegExp(v: string, p: RegExp): MatchResult  {
+    const match = v.match(p);
+    if (!match) return { res: false, data: None() }
+
+    if (match.groups) {
+        return { res: true, data: Some(match.groups) }
+    }
+
+    return { res: true, data: Some(match.slice(1)) }
 }
