@@ -87,7 +87,7 @@ describe("Std-match-Strings", () => {
         let result = "users/3"
         let patterns = new Map();
 
-        patterns.set("users", 1);
+        patterns.set("users", "users list");
         patterns.set("users/archived", "list of archived users");
         patterns.set(/^users\/\d+$/, "find");
 

@@ -44,17 +44,18 @@ describe("Std-match-Array", () => {
         assert.equal(resultMatch, 40)
     })
 
-    it(okMsg("Using RegExp - Matched values is Strings and Number"), () => {
-        let result = ["users/3", "books"]
+    it(okMsg("Matched values using RegExp"), () => {
+      let result = ["GET", "users/3"]
         let patterns = new Map();
 
-        patterns.set(["users"], "users list");
-        patterns.set(["users", "books"], "books list for all");
-        patterns.set(["users/archived", "books"], "list of archived books for all");
-        patterns.set([/^users\/\d+$/, "books"], "books list for concrete user");
+        patterns.set(["GET", "users"], "users list");
+        patterns.set(["POST", "users"], "create user");
+        patterns.set(["GET", "users/archived"], "list of archived users");
+        patterns.set(["PUT", /^users\/\d+$/], "update user");
+        patterns.set(["GET", /^users\/\d+$/], "find user");
 
         let resultMatch = match(result, patterns, "not found")
 
-        assert.equal(resultMatch, "books list for concrete user")
+        assert.equal(resultMatch, "find user")
     })
 })

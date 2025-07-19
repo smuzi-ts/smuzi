@@ -12,7 +12,7 @@ export type Assert = {
   isFalse: (actual: unknown) => asserts actual is false,
     
   isOption(actual: unknown): asserts actual is Option<unknown>,
-  equalequalSome(actual: Option<unknown>, expectedInnerValue: unknown): asserts actual;
+  equalSome(actual: Option<unknown>, expectedInnerValue: unknown): asserts actual;
   equalNone(actual: Option<unknown>): asserts actual;
 
   isObject(actual: unknown): asserts actual is Record<string, unknown>;
