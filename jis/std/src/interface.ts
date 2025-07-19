@@ -1,8 +1,20 @@
-import { isFunction, isObject } from "./checker.ts";
-import { IMatched } from "./match.ts";
+import { asFunction, asObject} from "./checker.ts";
 
-export function isImpl<T extends unknown>(obj: unknown): obj is T;
+export function isImpl<I>(obj: unknown, keys: (keyof I)[]): obj is I {
+  if (typeof obj !== 'object' || obj === null) return false;
 
-export function isImpl(obj: unknown): obj is IMatched {
-  return isObject(obj) && isFunction(obj.match);
+  return keys.every((key) => key in obj);
+}
+
+type StructBuilder<T = Record<string, unknown>> = ((struct: T) => T) & {
+    [key: string]: Function
+};
+
+export function impl<M>(builder: StructBuilder, impl: M)
+{
+    for(const method in impl) {
+      if (asFunction(impl[method])) {
+        builder[method] = impl[method];
+      }
+    }
 }

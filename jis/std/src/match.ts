@@ -1,9 +1,5 @@
-
-
-import { isRegExp } from "node:util/types";
-import { isArray, isString, isFunction, isNumber, isObject } from "./checker.ts";
+import { isRegExp, isArray, isString, isFunction, isNumber, isObject, asFunction } from "./checker.ts";
 import { None, Option, Some } from "./option.ts";
-import { dd, dump } from "./debug.ts";
 
 
 type Checker<T> = (v: T) => boolean;
@@ -169,7 +165,7 @@ function matchObj(
 }
 
 function matchFn(fnOrVar: unknown, input: unknown, returnAsFn: boolean) {
-    if (isFunction(fnOrVar)) {
+    if (asFunction(fnOrVar)) {
         return returnAsFn ? fnOrVar : fnOrVar(input);
     } else {
         return fnOrVar
