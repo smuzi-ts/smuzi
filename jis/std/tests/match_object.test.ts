@@ -1,5 +1,6 @@
-import { assert, describe, it, okMsg } from "@jis/tests";
+import { assert, describe, it, okMsg, skip } from "@jis/tests";
 import { match } from "#std/match.ts";
+import { dump } from "#std/debug.ts";
 
 describe("Std-match-Object", () => {
     it(okMsg("Matched all properties"), () => {
@@ -57,11 +58,11 @@ describe("Std-match-Object", () => {
         assert.equal(resultMatch4, "Richard with any Last Name and age != 18 and != 25")
     })
 
-    it(okMsg("Matched all properties , using also RegExp and array of options"), () => {
+    it(okMsg("Matched all properties , using also array of options"), () => {
         const patterns = new Map();
         patterns.set({ name: "Richard", age: 5 }, "baby"); //<-- user 1
         patterns.set({ name: "Richard", age: 20 }, "young");// <-- user2 
-        patterns.set({ name: "Richard", age: [50, 60]}, "old"); //<-- Matched to user3 or user4
+        patterns.set({ name: "Richard", age: [50, 60]}, "old"); //<-- user3 or user4
 
         // Variant 1
         const user1 = { name: "Richard", age: 5 }
@@ -82,5 +83,33 @@ describe("Std-match-Object", () => {
         const user4 = { name: "Richard", age: 60 }
         const resultMatch4 = match(user4, patterns, "undefined")
         assert.equal(resultMatch3, "old")
+    })
+
+      it(okMsg("Matched via function checker"), () => {
+        const patterns = new Map([
+            [{age: (a) => a <= 5 }, "baby"], //<-- user 1
+            [{age: (a) => a <= 20 }, "young"], // <-- user2 
+            [{age: (a) => a <= 60 }, "man"], //<-- user3
+        ]);
+    
+        // Variant 1
+        const user1 = { name: "Baby", age: 5 }
+        const resultMatch1 = match(user1, patterns, "old")
+        assert.equal(resultMatch1, "baby")
+
+        // Variant 2
+        const user2 = { name: "Young", age: 20 }
+        const resultMatch2 = match(user2, patterns, "old")
+        assert.equal(resultMatch2, "young")
+
+        // Variant 3
+        const user3 = { name: "Man", age: 40 }
+        const resultMatch3 = match(user3, patterns, "old")
+        assert.equal(resultMatch3, "man")
+
+        // Variant 4
+        const user4 = { name: "Old", age: 65 }
+        const resultMatch4 = match(user4, patterns, "old")
+        assert.equal(resultMatch4, "old")
     })
 })
