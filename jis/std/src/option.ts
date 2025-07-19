@@ -24,7 +24,7 @@ export class Option<T> implements IMatched {
     }
 
     isNone(): this is OptionNone {
-        return  this instanceof OptionNone;
+        return this instanceof OptionNone;
     }
     
     unwrap(): T | never {

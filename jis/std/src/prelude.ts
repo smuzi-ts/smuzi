@@ -1,6 +1,8 @@
-export * from "#std/checker.ts";
-export * from "#std/option.ts";
-export * from "#std/result.ts";
-export * from "#std/match.ts";
-export * from "#std/pipeline.ts";
-export * from "#std/panic.ts";
+export * from "./checker.ts";
+export * from "./option.ts";
+export * from "./result.ts";
+export * from "./match.ts";
+export * from "./pipeline.ts";
+export * from "./panic.ts";
+export * from "./struct.ts";
+

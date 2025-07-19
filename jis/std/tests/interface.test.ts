@@ -1,26 +1,35 @@
-import { asArray, asFunction, asObject, asString } from "#std/checker.ts";
-import { isImpl, impl } from "#std/interface.ts";
+import { impl, Struct } from "#std/struct.ts";
 import { assert, describe, it, okMsg, skip } from "@jis/tests";
 
 
-type ISay = {
-    say: (volume: number) => string
-}
-
-function User(struct: {name: string, age: 18}) {
-    return struct;
-}
-
-
 describe("Std-Interface", () => {
-        it(okMsg("Matched values using RegExp"), () => {
-            impl<ISay>(User, { say(volume: number) { return this.name + " Hello " + volume }});
+    it(okMsg("Matched values using RegExp"), () => {
+        type Speaker = {
+            hello: (volume: number) => string
+            goodbay: () => string
+        }
 
-            const user1 = User({name: "TEST", age: 18});
+        const User = Struct<{ name: string, age: number }>();
 
-            if (isImpl<ISay>(user1, ["say"])) {
-                assert.equal(user1.say(2), "Hello 2");
-            }
+        function HelloWorld(speaker: Speaker) {
+            return speaker.hello(2)
+        }
 
+
+        impl<Speaker>(User, {
+            hello(volume: number) {
+                return this.name + " say 'Hello' with volume " + volume
+            },
+            goodbay() {
+                return this.name + " say 'Goodbay'"
+            },
         });
+
+        const user1 = new User({ name: "Ban", age: 20 });
+
+        assert.isImpl<Speaker>(user1, ["hello", "goodbay"]);
+
+        assert.equal(HelloWorld(user1), "Ban say 'Hello' with volume 2");
+        assert.equal(user1.goodbay(), "Ban say 'Goodbay'");
+    });
 })

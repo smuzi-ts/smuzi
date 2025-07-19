@@ -1,6 +1,6 @@
 import * as _assert from "node:assert/strict";
 import {AssertionError} from "node:assert";
-import {None, Some, Option, isOption, isString, match, isObject} from "@jis/std";
+import {None, Some, Option, isOption, isString, match, isObject, isImpl} from "@jis/std";
 
 export type Assert = {
   equal: typeof _assert.equal;
@@ -17,6 +17,8 @@ export type Assert = {
 
   isObject(actual: unknown): asserts actual is Record<string, unknown>;
   objHasProperty(actual: unknown, property: string, value: Option<unknown>);
+
+  isImpl<I>(actual: unknown, keys: (keyof I)[]): asserts actual is I;
 };
 
 const signalOk = new Error('__OK__')
@@ -87,5 +89,8 @@ export const assert: Assert = {
         },
         None: () => {},
       });
-    }
+    },
+    isImpl<I>(actual, keys) {
+        assert.ok(isImpl<I>(actual, keys), "Expected was object is implemented trait with methods " + keys);
+    },
 }
