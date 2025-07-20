@@ -2,6 +2,8 @@ import * as _assert from "node:assert/strict";
 import {AssertionError} from "node:assert";
 import {None, Some, Option, isOption, isString, match, isObject, isImpl} from "@jis/std";
 
+type ClassBuilder<T = any> = new (...args: T[]) => T
+
 export type Assert = {
   equal: typeof _assert.equal;
   deepEqual: typeof _assert.deepEqual;
@@ -18,7 +20,7 @@ export type Assert = {
   isObject(actual: unknown): asserts actual is Record<string, unknown>;
   objHasProperty(actual: unknown, property: string, value: Option<unknown>);
 
-  isImpl<I>(actual: unknown, keys: (keyof I)[]): asserts actual is I;
+  isImpl<T extends ClassBuilder>(trait: T, actual: unknown): asserts actual is T;
 };
 
 const signalOk = new Error('__OK__')
@@ -81,7 +83,7 @@ export const assert: Assert = {
 
       // Some objects are created without a prototype (e.g., Object.create(null)),
       // so they do not have the hasOwnProperty method. Use Object.prototype.hasOwnProperty.call(...) instead.
-      assert.ok(Object.prototype.hasOwnProperty.call(actual, property), "Expected wa object has property " + property)
+      assert.ok(Object.prototype.hasOwnProperty.call(actual, property), "Expected that object has property " + property)
     
       value.match({
         Some: (expected) => {
@@ -90,7 +92,7 @@ export const assert: Assert = {
         None: () => {},
       });
     },
-    isImpl<I>(actual, keys) {
-        assert.ok(isImpl<I>(actual, keys), "Expected was object is implemented trait with methods " + keys);
+    isImpl(trait, actual) {
+        assert.ok(isImpl(trait, actual), "Expected that object is implemented trait" + trait);
     },
 }

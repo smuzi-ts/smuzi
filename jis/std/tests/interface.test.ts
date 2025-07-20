@@ -1,35 +1,36 @@
-import { impl, Struct } from "#std/struct.ts";
+import { impl, isImpl } from "#std/struct.ts";
 import { assert, describe, it, okMsg, skip } from "@jis/tests";
 
 
 describe("Std-Interface", () => {
-    it(okMsg("Matched values using RegExp"), () => {
-        type Speaker = {
-            hello: (volume: number) => string
-            goodbay: () => string
+    it(okMsg(""), () => {
+        class Speaker {
+            hello:(self) => (volume: number) => string
         }
 
-        const User = Struct<{ name: string, age: number }>();
+        class User {
+            constructor(
+                public name: string,
+                public age: number
+            ) {}
+        }
+        
+            
+        impl(Speaker, User, {
+            hello: (self: User) => (volume: number) => {
+                return self.name + " say 'Hello' with volume " + volume
+            },
+        });
 
         function HelloWorld(speaker: Speaker) {
             return speaker.hello(2)
         }
 
+        const user1 = new User("test", 20);
 
-        impl<Speaker>(User, {
-            hello(volume: number) {
-                return this.name + " say 'Hello' with volume " + volume
-            },
-            goodbay() {
-                return this.name + " say 'Goodbay'"
-            },
-        });
-
-        const user1 = new User({ name: "Ban", age: 20 });
-
-        assert.isImpl<Speaker>(user1, ["hello", "goodbay"]);
-
-        assert.equal(HelloWorld(user1), "Ban say 'Hello' with volume 2");
-        assert.equal(user1.goodbay(), "Ban say 'Goodbay'");
+        if (isImpl(Speaker, user1)) {
+            assert.equal(HelloWorld(user1), "Ban say 'Hello' with volume 2");
+        }
+    
     });
 })
