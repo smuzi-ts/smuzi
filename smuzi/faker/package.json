@@ -1,0 +1,30 @@
+{
+  "name": "@smuzi/faker",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "test": "node --test --no-warnings"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "./src",
+    "./tests"
+  ],
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@smuzi/tests": "workspace:*"
+  },
+  "dependencies": {
+    "@smuzi/std-old": "workspace:*"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@smuzi/green-threads",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {},
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  },
+  "dependencies": {
+    "noroutine": "^0.0.7",
+    "@smuzi/std": "workspace:*"
+  }
+}
