@@ -9,7 +9,7 @@ export function isImpl<Trait>(trait: new () => Trait, obj: unknown): obj is Trai
   return Traits.has(obj.constructor.name + trait.constructor.name);
 }
 
-export function impl<Trait, S = any>(trait: new () => Trait, builder: ClassBuilder, impl: Trait)
+export function impl<Trait>(trait: new () => Trait, builder: ClassBuilder, impl: Trait)
 {
     for(const method in impl) {
       if (asFunction(impl[method])) {
