@@ -1,0 +1,24 @@
+{
+  "name": "@smuzi/http",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {
+
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": ["./src"],
+  "dependencies": {
+    "@smuzi/std": "workspace:*",
+    "@smuzi/tests": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  }
+}

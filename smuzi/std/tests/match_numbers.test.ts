@@ -49,9 +49,9 @@ describe("Std-match-Numbers", () => {
 
       it(okMsg("Matched value via Number, return using Callbacks"), () => {
         let handlers = new Map([
-            [1, (v) => v + 10],
-            [2, (v) => v + 20],
-            [3, (v) => v + 30],
+            [1, (r) => r.val + 10],
+            [2, (r) => r.val + 20],
+            [3, (r) => r.val + 30],
         ]);
 
         let result = match(2, handlers, (v) => v + 40)
@@ -61,9 +61,9 @@ describe("Std-match-Numbers", () => {
 
     it(okMsg("Matched value via Number, return using Callbacks"), () => {
         let handlers = new Map([
-            [1, (v) => v + 10],
-            [2, (v) => v + 20],
-            [3, (v) => v + 30],
+            [1, (r) => r.val + 10],
+            [2, (r) => r.val + 20],
+            [3, (r) => r.val + 30],
         ]);
 
         let result = match(2, handlers, (v) => v + 40)

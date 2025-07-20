@@ -1,5 +1,4 @@
-import { dump } from "#std/debug.ts";
-import { impl, isImpl, Struct} from "#std/struct.ts";
+import { impl, Struct } from "#std/struct.ts";
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
 
 
@@ -8,8 +7,7 @@ describe("Std-Traits", () => {
         class Notificable {
             send: (subject: string) => string
         }
-
-        const User = Struct<{email: string, age: number}>('User');
+        const User = Struct<{ email: string, age: number }>('User');
 
         impl(Notificable, User, {
             send(subject: string) {
@@ -21,7 +19,7 @@ describe("Std-Traits", () => {
             return sender.send("TEST")
         }
 
-        const user1 = new User({email: "test@gmail.com", age: 20});
+        const user1 = new User({ email: "test@gmail.com", age: 20 });
 
         assert.equal(SendToEmail(user1), "Sent notification to test@gmail.com with subject TEST");
     });

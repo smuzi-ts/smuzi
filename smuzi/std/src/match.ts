@@ -1,4 +1,5 @@
 import { isRegExp, isArray, isString, isFunction, isNumber, isObject, asFunction } from "./checker.ts";
+import { dump } from "./debug.ts";
 import { None, Option, Some } from "./option.ts";
 
 
@@ -125,11 +126,11 @@ function matchPrimitive<T extends string|number, R>(
     returnAsFn: boolean = false
 ): R | Handler<T, R> {
     for (const [pattern, handler] of handlers) {
-      const checker = matchChecherForPattern(pattern)
-      if (checker(val, pattern).res) return matchFn(handler, val, returnAsFn)
+      const res = matchChecherForPattern(pattern)(val, pattern)
+      if (res.res) return matchFn(handler, {val, pattern, params: res.params}, returnAsFn)
     }
 
-    return matchFn(deflt, val, returnAsFn)
+    return matchFn(deflt, {val, pattern: None(), params: None()}, returnAsFn)
 }
 
 function matchObj(
@@ -138,8 +139,10 @@ function matchObj(
     deflt,
     returnAsFn = false
 ) {
+
     for (const [patternsList, handler] of handlers) {
         let matched = true;
+        const params = {};
 
         for (const patternIndex in patternsList) {
             if (val[patternIndex] == undefined) {
@@ -154,14 +157,16 @@ function matchObj(
                 matched = false;
                 break;
             }
+
+            params[patternIndex] = res.params;
         }
 
         if (matched) {
-            return matchFn(handler, val, returnAsFn);
+            return matchFn(handler, {val, params: Some(params)}, returnAsFn);
         }
     }
 
-    return matchFn(deflt, val, returnAsFn);
+    return matchFn(deflt, {val, params: None}, returnAsFn);
 }
 
 function matchFn(fnOrVar: unknown, input: unknown, returnAsFn: boolean) {
@@ -191,7 +196,7 @@ export interface IMatched {
 
  type MatchResult = {
    res: boolean,
-   data: Option<Record<string, string> | string[]>,
+   params: Option<Record<string, string> | string[]>,
  };
  
 
@@ -199,41 +204,41 @@ export interface IMatched {
     return matchUnknown(
         pattern,
         checkersForPatterns(),
-        (v, p) => ({ res: false, data: None() }),
+        (v, p) => ({ res: false, params: None() }),
         true
     );
  }
 
  function checkPatternAsString(v, p)
  {
-   return { res: p === v, data: None() }
+   return { res: p === v, params: None() }
  }
 
 function checkPatternAsNumber(v, p)
  {
-   return { res: p === v, data: None() }
+   return { res: p === v, params: None() }
  }
 
  function checkPatternAsFunction(v, p)
  {
-   return { res: p(v), data: None() }
+   return { res: p(v), params: None() }
  }
 
 function checkPatternAsArray(v, p)
  {
-   return { res: p.includes(v), data: None() }
+   return { res: p.includes(v), params: None() }
  }
 
  function checkPatternAsRegExp(v, p)
  {
     const match = v.match(p);
-    if (!match) return { res: false, data: None() }
+    if (!match) return { res: false, params: None() }
 
     if (match.groups) {
-        return { res: true, data: Some(match.groups) }
+        return { res: true, params: Some(match.groups) }
     }
 
-    return { res: true, data: Some(match.slice(1)) }
+    return { res: true, params: Some(match.slice(1)) }
  }
 
  function checkersForPatterns(): Map<Function, (v, p) => MatchResult>
@@ -246,4 +251,3 @@ function checkPatternAsArray(v, p)
         [isRegExp, checkPatternAsRegExp]
     ]);
  }
-
