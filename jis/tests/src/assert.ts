@@ -20,7 +20,7 @@ export type Assert = {
   isObject(actual: unknown): asserts actual is Record<string, unknown>;
   objHasProperty(actual: unknown, property: string, value: Option<unknown>);
 
-  isImpl<T extends ClassBuilder>(trait: T, actual: unknown): asserts actual is T;
+  isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
 };
 
 const signalOk = new Error('__OK__')
@@ -93,6 +93,6 @@ export const assert: Assert = {
       });
     },
     isImpl(trait, actual) {
-        assert.ok(isImpl(trait, actual), "Expected that object is implemented trait" + trait);
+        assert.ok(isImpl(trait, actual), "Expected that object is implemented trait");
     },
 }
