@@ -1,5 +1,6 @@
 import {assert, describe, it, okMsg} from "@smuzi/tests";
 import {MapStringPatterns, match} from "#std/match.ts";
+import { dump } from "#std/debug.ts";
 
 describe("Std-match-Strings", () => {
     it(okMsg("Matched value String via String patterns"), () => {
@@ -49,12 +50,12 @@ describe("Std-match-Strings", () => {
 
       it(okMsg("Matched value to Some via Callbacks"), () => {
         let handlers = new Map([
-            [(v) => v === "A", (v) => v + "_isA"],
-            [(v) => v === "B", (v) => v + "_isB"],
-            [(v) => v === "C", (v) => v + "_isC"],
+            [(v) => v === "A", (res) => res.val + "_isA"],
+            [(v) => v === "B", (res) => res.val + "_isB"],
+            [(v) => v === "C", (res) => res.val + "_isC"],
         ]);
 
-        let result = match("B", handlers, (v) => v + "_default")
+        let result = match("B", handlers, (res) => "_default")
 
         assert.equal(result, "B_isB")
     })
@@ -94,5 +95,36 @@ describe("Std-match-Strings", () => {
         let resultMatch = match(result, patterns, "not found")
 
         assert.equal(resultMatch, "find")
+    })
+
+
+    it(okMsg("Matched value to RegExp and using params as array"), () => {
+        let patterns = new Map();
+
+        patterns.set("users", "users list");
+        patterns.set("users/archived", "list of archived users");
+        patterns.set(/^users\/(\d+)\/books\/(\d+)$/, (res) => {
+            const params = res.params.unwrap();
+            return "user id=" + params[0] + " | books id=" + params[1];
+        })
+        let result = "users/3/books/5"
+        let resultMatch = match(result, patterns, "not found")
+
+        assert.equal(resultMatch, "user id=3 | books id=5")
+    })
+
+    it(okMsg("Matched value to RegExp and using params as object"), () => {
+        let patterns = new Map();
+
+        patterns.set("users", "users list");
+        patterns.set("users/archived", "list of archived users");
+        patterns.set(/^users\/(?<user_id>\d+)\/books\/(?<book_id>\d+)$/, (res) => {
+            const params = res.params.unwrap();
+            return "user id=" + params.user_id + " | books id=" + params.book_id;
+        })
+        let result = "users/3/books/5"
+        let resultMatch = match(result, patterns, "not found")
+
+        assert.equal(resultMatch, "user id=3 | books id=5")
     })
 })
