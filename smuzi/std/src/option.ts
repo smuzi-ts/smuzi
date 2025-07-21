@@ -1,3 +1,5 @@
+import { asObject } from "./checker.ts";
+import { dump } from "./debug.ts";
 import { panic } from "./panic.ts";
 
 type Val = NonNullable<unknown>;
@@ -11,7 +13,7 @@ export function None<T extends Val>(): Option<T> {
     return new OptionNone();
 }
 
-export class Option<T> {
+export class Option<T = unknown> {
     protected _val: T;
     
     match<R>(handlers: OptionPatterns<T, R>): R {
@@ -26,10 +28,23 @@ export class Option<T> {
         return this instanceof OptionNone;
     }
     
-    unwrap(): T | never {
+    unwrap(msg: string = "Unwrapped None variant"): T | never {
         return this.match({
             Some: (v) => v,
-            None: () => panic("Unwrapped None variant"),
+            None: () => panic(msg),
+        });
+    }
+
+    unwrapGet(property: string): unknown | never {
+        const msg = `Unwrapped None variant for property '${property}'`;
+
+        return this.get(property).unwrap(msg);
+    }
+
+    get(property: string): Option {
+        return this.match({
+            Some: (v) => asObject(v) ? Reflect.has(v, property) ? Some(v[property]) : None() : None(),
+            None: () => None(),
         });
     }
 

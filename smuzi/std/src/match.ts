@@ -145,9 +145,12 @@ function matchObj(
 
     for (const [patternsList, handler] of handlers) {
         let matched = true;
+
         const params = {};
 
         for (const patternIndex in patternsList) {
+            params[patternIndex] = None();
+            
             if (val[patternIndex] == undefined) {
                 matched = false;
                 break;
@@ -164,6 +167,7 @@ function matchObj(
             params[patternIndex] = res.params;
         }
 
+     
         if (matched) {
             return matchFn(handler, {val, patterns: Some(patternsList), params: Some(params)} , returnAsFn);
         }
