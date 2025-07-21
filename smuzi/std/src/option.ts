@@ -35,7 +35,7 @@ export class Option<T = unknown> {
         });
     }
 
-    unbox(): Option<T> | Option
+    flat(): Option<T> | Option
     {
         if (isOption(this._val)) {
             return this._val;
@@ -51,14 +51,14 @@ export class Option<T = unknown> {
         });
     }
 
-    unwrapGet(property: string): unknown | never {
+    getUnwrap(property: string): unknown | never {
         const msg = `Unwrapped None variant for property '${property}'`;
 
         return this.get(property).unwrap(msg);
     }
 
-    unboxGet(property: string): Option<T> | Option {
-        return this.get(property).unbox();
+    getFlat(property: string): Option<T> | Option {
+        return this.get(property).flat();
     }
 
 

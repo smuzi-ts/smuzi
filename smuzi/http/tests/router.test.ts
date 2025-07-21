@@ -1,4 +1,4 @@
-import { isString, match, MathedData, None, Option, Some, StringValuePatterns, Struct } from "@smuzi/std";
+import { isString, match, MathedData, None, Option, ParamsMathedData, StringValuePatterns, Struct } from "@smuzi/std";
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
 import { dump } from "../../std/src/debug";
 
@@ -14,8 +14,20 @@ type HttpRoute = { path: PathParam, method: HttpMethod };
 type HttpRouter = {
     get: (path: PathParam, action) => void
     post: (path: PathParam, action) => void
+    group: (params: HttpRoute, handler: (router: HttpRouter) => HttpRouter) => void
     getMapRoutes: () => Map<HttpRoute, any> //TODO any to concrete type
 }
+
+type HttpRequest = { path: string, method: HttpMethod, params: Option<unknown> };
+
+const HttpRequest = Struct<HttpRequest>();
+
+type HttpContext = {
+    request: HttpRequest,
+    params: ParamsMathedData,
+}
+const HttpContext = Struct<HttpContext>();
+
 
 function processPath(path: string): string | RegExp {
   if (! isString(path)) return path;
@@ -31,21 +43,29 @@ function Router(): HttpRouter
 
     const add = (route, action) => {
         route.path = processPath(route.path);
-
         routes.set(route, (data: MathedData) => {
-            data.val.params = data.params.unboxGet('path');
-
-            return action(data.val);
+            const context = new HttpContext({
+                request: data.val,
+                params: data.params.getFlat('path'),
+              })
+            return action(context);
         })
     }
 
     return {
         get(path, action) {
-            add({path, method: HttpMethod.GET}, action)
+            add({ path, method: HttpMethod.GET }, action)
         },
         post(path, action) {
-            add({path, method: HttpMethod.POST}, action)
+            add({ path, method: HttpMethod.POST }, action)
         },
+        group(params: HttpRoute, handler) {
+            const action = (request: HttpRequest) => {
+                
+            }
+
+            add(params, action);
+        },     
         getMapRoutes()
         {
             return routes;
@@ -53,16 +73,13 @@ function Router(): HttpRouter
     }
 }
 
-type HttpRequest = { path: string, method: HttpMethod, params: Option<unknown> };
-const HttpRequest = Struct<HttpRequest>('HttpRequest');
-
 describe("Std-Router", () => {
     it(okMsg("Routing with special string-pattern"), () => {
         const router = Router();
         router.get("users", () => "list"); //<-- request1
         router.post("users", () => "create"); //<-- request2
-        router.get("users/{id}", (request: HttpRequest) => {
-            return "find id=" + request.params.unwrapGet('id')
+        router.get("users/{id}", (context: HttpContext) => {
+            return "find id=" + context.params.getUnwrap('id')
         }); //<-- request3
 
 

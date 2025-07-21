@@ -22,8 +22,13 @@ type ArrayValuePatterns = any[];
 type ArrayValueMapPatterns<R> = Map<ArrayValuePatterns, Handler<any, R> | R>
 //<<<
 
+export type ParamsMathedData = Option<unknown | Record<string, Option<unknown>>>;
 
-export type MathedData = {val, pattern: Option<unknown | Record<string, Option<unknown>>>, params: Option<unknown | Record<string, Option<unknown>>>};
+export type MathedData = {
+    val,
+    pattern: Option<unknown | Record<string, Option<unknown>>>,
+    params: ParamsMathedData,
+};
 
 function matchUnknown<T extends unknown, R = unknown>(
     value: T,

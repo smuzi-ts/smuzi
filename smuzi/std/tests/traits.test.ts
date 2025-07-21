@@ -1,4 +1,4 @@
-import { impl, Struct } from "#std/struct.ts";
+import { impl, isImpl, Struct } from "#std/struct.ts";
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
 
 
@@ -7,20 +7,31 @@ describe("Std-Traits", () => {
         class Notificable {
             send: (subject: string) => string
         }
-        const User = Struct<{ email: string, age: number }>('User');
 
-        impl(Notificable, User, {
+        type User = {
+            email: string
+            age: number
+        } 
+
+        const Admin = Struct<User>();
+        const Manager = Struct<User>();
+
+        impl(Notificable, Admin, {
             send(subject: string) {
                 return `Sent notification to ${this.email} with subject ${subject}`
             },
         });
 
+
         function SendToEmail(sender: Notificable) {
             return sender.send("TEST")
         }
 
-        const user1 = new User({ email: "test@gmail.com", age: 20 });
+        const adminUser = new Admin({email: "admin@gmail.com", age: 20});
+        const managerUser = new Manager({email: "manager@gmail.com", age: 20});
 
-        assert.equal(SendToEmail(user1), "Sent notification to test@gmail.com with subject TEST");
+        assert.equal(SendToEmail(adminUser), "Sent notification to admin@gmail.com with subject TEST");
+
+        assert.isNotImpl(Notificable, managerUser)
     });
 })

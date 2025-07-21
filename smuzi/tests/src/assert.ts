@@ -21,6 +21,7 @@ export type Assert = {
   objHasProperty(actual: unknown, property: string, value: Option<unknown>);
 
   isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
+  isNotImpl<T>(trait: new () => T, actual: unknown): asserts actual is unknown;
 };
 
 const signalOk = new Error('__OK__')
@@ -94,5 +95,9 @@ export const assert: Assert = {
     },
     isImpl(trait, actual) {
         assert.ok(isImpl(trait, actual), "Expected that object is implemented trait");
+    },
+
+    isNotImpl(trait, actual) {
+        assert.ok(! isImpl(trait, actual), "Expected that object is NOT implemented trait");
     },
 }

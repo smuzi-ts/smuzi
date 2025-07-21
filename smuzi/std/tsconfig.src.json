@@ -2,6 +2,9 @@
   "extends": "../../tsconfig.common.json",
   "include": ["./src"],
   "compilerOptions": {
+    "useDefineForClassFields": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
     "types": ["node"],
     "outDir": "build/src",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
