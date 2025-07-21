@@ -33,17 +33,8 @@ function Router(): HttpRouter
         route.path = processPath(route.path);
 
         routes.set(route, (data: MathedData) => {
-            data.val.params = data.params.match({
-                Some: (v: any) => {
-                   return v.path.match({
-                    Some: (v: any) => Some(v),
-                    None: () => None()
-                   })
-                },
-                None: () => None()
-            })
+            data.val.params = data.params.unboxGet('path');
 
-            
             return action(data.val);
         })
     }

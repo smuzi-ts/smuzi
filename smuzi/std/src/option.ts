@@ -35,10 +35,13 @@ export class Option<T = unknown> {
         });
     }
 
-    unwrapGet(property: string): unknown | never {
-        const msg = `Unwrapped None variant for property '${property}'`;
+    unbox(): Option<T> | Option
+    {
+        if (isOption(this._val)) {
+            return this._val;
+        }
 
-        return this.get(property).unwrap(msg);
+        return this;
     }
 
     get(property: string): Option {
@@ -47,6 +50,17 @@ export class Option<T = unknown> {
             None: () => None(),
         });
     }
+
+    unwrapGet(property: string): unknown | never {
+        const msg = `Unwrapped None variant for property '${property}'`;
+
+        return this.get(property).unwrap(msg);
+    }
+
+    unboxGet(property: string): Option<T> | Option {
+        return this.get(property).unbox();
+    }
+
 
     someOr(none: T): T {
         return this.match({
