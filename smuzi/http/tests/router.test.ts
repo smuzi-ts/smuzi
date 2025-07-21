@@ -33,18 +33,17 @@ function Router(): HttpRouter
         route.path = processPath(route.path);
 
         routes.set(route, (data: MathedData) => {
-            const params = data.params;
-            params.match({
-                Some: (v) => {
-                   return params.match({
-                    Some: (v) => Some(v.params),
+            const routeParams = data.params.match({
+                Some: (v: any) => {
+                   return v.path.match({
+                    Some: (v: any) => Some(dump(v.path)),
                     None: () => None()
                    })
                 },
                 None: () => None()
             })
-            
-            action();
+
+            return action(data.val, routeParams);
         })
     }
 
@@ -62,21 +61,20 @@ function Router(): HttpRouter
     }
 }
 
-const HttpRequest = Struct<{ path: string, method: HttpMethod }>('HttpRequest');
+const HttpRequest = Struct<{ path: string, method: HttpMethod, params: Option<unknown> }>('HttpRequest');
 
 describe("Std-Router", () => {
     it(okMsg("LIB"), () => {
         const router = Router();
         router.get("users", () => "list"); //<-- request1
         router.post("users", () => "create"); //<-- request2
-        router.get("users/{id}", (route) => {
-            dump(route);
-            const params = route.params.unwrap()
-            return "find id=" + params.path.unwrap().id
+        router.get("users/{id}", (request, route) => {
+            dump({request, route});
+            return "find id="
         }); //<-- request3
 
 
-        const request1 = new HttpRequest({ path: "users", method: HttpMethod.GET })
+        const request1 = new HttpRequest({ path: "users", method: HttpMethod.GET})
         const action1 = match(request1, router.getMapRoutes(), "not found")
         assert.equal(action1, "list")
 
