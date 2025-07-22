@@ -10,11 +10,12 @@ enum HttpMethod {
 type PathParam =  StringValuePatterns
 
 type HttpRoute = { path: PathParam, method: HttpMethod };
+type GroupRoute = { path: PathParam};
 
 type HttpRouter = {
     get: (path: PathParam, action) => void
     post: (path: PathParam, action) => void
-    group: (params: HttpRoute, handler: (router: HttpRouter) => HttpRouter) => void
+    group: (params: GroupRoute, handler: (router: HttpRouter) => HttpRouter) => void
     getMapRoutes: () => Map<HttpRoute, any> //TODO any to concrete type
 }
 
@@ -26,8 +27,8 @@ type HttpContext = {
     request: HttpRequest,
     params: ParamsMathedData,
 }
-const HttpContext = Struct<HttpContext>();
 
+const HttpContext = Struct<HttpContext>();
 
 function processPath(path: string): string | RegExp {
   if (! isString(path)) return path;
@@ -43,6 +44,7 @@ function Router(): HttpRouter
 
     const add = (route, action) => {
         route.path = processPath(route.path);
+        
         routes.set(route, (data: MathedData) => {
             const context = new HttpContext({
                 request: data.val,
@@ -59,9 +61,9 @@ function Router(): HttpRouter
         post(path, action) {
             add({ path, method: HttpMethod.POST }, action)
         },
-        group(params: HttpRoute, handler) {
-            const action = (request: HttpRequest) => {
-                
+        group(params: GroupRoute, handler) {
+            const action = (context: HttpContext) => {
+                return handler(Router())
             }
 
             add(params, action);
@@ -81,6 +83,12 @@ describe("Std-Router", () => {
         router.get("users/{id}", (context: HttpContext) => {
             return "find id=" + context.params.getUnwrap('id')
         }); //<-- request3
+        router.group({path: "books"}, (router: HttpRouter) => {
+            router.get("/", () => "list"); //<-- request1
+
+            return router
+        }); //<-- request4
+
 
 
         const request1 = new HttpRequest({ path: "users", method: HttpMethod.GET, params: None()})
