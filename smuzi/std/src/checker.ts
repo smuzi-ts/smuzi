@@ -14,7 +14,7 @@ export function asFunction(val: unknown): val is Function {
     return typeof val === "function";
 }
 
-export function asArray(val: unknown): val is unknown[] {
+export function asArray<T = unknown>(val: unknown): val is T[] {
     return Array.isArray(val);
 }
 
