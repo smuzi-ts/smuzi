@@ -5,4 +5,5 @@ export * from "./match.ts";
 export * from "./pipeline.ts";
 export * from "./panic.ts";
 export * from "./struct.ts";
+export * from "./debug.ts";
 

@@ -3,5 +3,6 @@
   "include": [],
   "references": [
     { "path": "smuzi/std" },
+    { "path": "smuzi/router" },
   ]
 }

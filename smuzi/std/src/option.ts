@@ -51,13 +51,13 @@ export class Option<T = unknown> {
         });
     }
 
-    getUnwrap(property: string): unknown | never {
+    unwrapByKey(property: string): unknown | never {
         const msg = `Unwrapped None variant for property '${property}'`;
 
         return this.get(property).unwrap(msg);
     }
 
-    getFlat(property: string): Option<T> | Option {
+    flatByKey(property: string): Option<T> | Option {
         return this.get(property).flat();
     }
 

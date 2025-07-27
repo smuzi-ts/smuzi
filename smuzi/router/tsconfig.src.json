@@ -9,7 +9,7 @@
     "composite": true,
     "baseUrl": "./src",
     "paths": {
-      "#std/*": ["*"]
+      "#lib/*": ["*"]
   },
   }
 }
