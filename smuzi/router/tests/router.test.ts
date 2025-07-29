@@ -1,4 +1,4 @@
-import {  match, None } from "@smuzi/std";
+import { match, None } from "@smuzi/std";
 import { assert, describe, it, okMsg } from "@smuzi/tests";
 import {type Context, CreateRouter, Method, type Router, SInputMessage} from "#lib/router.ts";
 
