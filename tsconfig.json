@@ -4,5 +4,6 @@
   "references": [
     { "path": "smuzi/std" },
     { "path": "smuzi/router" },
+    { "path": "project/dashboard" }
   ]
 }

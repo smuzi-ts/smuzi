@@ -1,10 +1,27 @@
-import { asRegExp, asString, match, MathedData, None, Option, ParamsMathedData, Some, Struct } from "@smuzi/std";
+import { asRegExp, asString, match, MathedData, None, Option, ParamsMatchedData, Some, Struct } from "@smuzi/std";
 
 export enum Method {
     GET = "GET",
     POST = "POST",
     PUT = "PUT",
     DELETE = "DELETE"
+}
+
+export function methodFromString(method: string): Option<Method>
+{
+    const handers = new Map([
+        ['GET', Some(Method.GET)],
+        ['POST', Some(Method.POST)],
+        ['PUT', Some(Method.PUT)],
+        ['DELETE', Some(Method.DELETE)],
+    ]);
+
+    return match(
+        method,
+        handers,
+        None(),
+        false
+    );
 }
 
 type Action = any
@@ -28,7 +45,7 @@ export const SInputMessage = Struct<InputMessage>();
 
 export type Context = {
     request: InputMessage,
-    params: ParamsMathedData,
+    params: ParamsMatchedData,
 }
 
 export const SContext = Struct<Context>();

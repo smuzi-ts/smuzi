@@ -20,5 +20,8 @@
   },
   "imports": {
     "#lib/*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/router.js"
   }
 }
