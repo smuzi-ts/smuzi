@@ -2,7 +2,7 @@ import http2, { IncomingHttpHeaders, ServerHttp2Stream } from 'node:http2';
 import fs from 'node:fs';
 import path from 'node:path';
 import { type Context, CreateRouter, methodFromString, SInputMessage, } from "@smuzi/router";
-import { isObject, isString, match, Pipe } from '@smuzi/std';
+import { isArray, isObject, isString, match, matchUnknown, Pipe } from '@smuzi/std';
 import { log } from 'node:console';
 
 const server = http2.createSecureServer({
@@ -27,39 +27,49 @@ server.on('stream', (stream: ServerHttp2Stream, headers: IncomingHttpHeaders) =>
   router.get("users", (context: Context) => {
     return "Route = users list";
   });
+  
+
+  router.get("json", (context: Context) => {
+    return { name: "den" };
+  });
+
+    router.get("array", (context: Context) => {
+    return [1,2,3];
+  });
 
   const response = match(new SInputMessage(request), router.getMapRoutes(), "not found")
-    const handlers = new Map();
+  const handlers = new Map();
 
-    handlers.set(isString, (response) => {
-      stream.respond({
+
+  handlers.set(isString, (response) => {
+    stream.respond({
       'content-type': 'text/html; charset=utf-8',
       ':status': 200,
     });
-    stream.end(response.val)
+    stream.end(response)
   });
 
-  handlers.set(isObject, (response) => {
+  handlers.set(response => isObject(response) || isArray(response), (response) => {
     stream.respond({
       'content-type': 'application/json; charset=utf-8',
       ':status': 200,
     });
 
-    stream.end(JSON.stringify(response.val));
+    stream.end(JSON.stringify(response));
   });
 
 
-    match(
-      response,
-      handlers,
-      _ => {
-        stream.respond({
-          ':status': 500,
-        })
-        stream.end('Internal Server Error');
-      },
-      false
-    )
+  matchUnknown(
+    response,
+    handlers,
+    _ => {
+      stream.respond({
+        ':status': 500,
+      })
+      stream.end('Internal Server Error');
+    },
+    false
+  )
 
 });
 

@@ -24,25 +24,25 @@ type ArrayValueMapPatterns<R> = Map<ArrayValuePatterns, Handler<any, R> | R>
 
 export type ParamsMatchedData = Option<unknown | Record<string, Option<unknown>>>;
 
-export type MatchedData = {
+export type MathedData = {
     val,
     pattern: Option<unknown | Record<string, Option<unknown>>>,
     params: ParamsMatchedData,
 };
 
-function matchUnknown<T extends unknown, R = unknown>(
+export function matchUnknown<T extends unknown, R = unknown>(
     value: T,
     handlers: Map<Checker<T> | unknown, Handler<T, R> | R>, 
     deflt: Handler<T, R> | R, 
     returnAsFn: true): Handler<T, R>;
 
-function matchUnknown<T extends unknown, R = unknown>(
+export function matchUnknown<T extends unknown, R = unknown>(
     value: T,
     handlers: Map<Checker<T> | unknown, Handler<T, R> | R>, 
     deflt: Handler<T, R> | R, 
     returnAsFn?: false): R;
 
-function matchUnknown<R extends unknown, T extends unknown>(
+export function matchUnknown<R extends unknown, T extends unknown>(
     val,
     handlers,
     deflt,
