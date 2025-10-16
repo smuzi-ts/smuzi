@@ -6,11 +6,14 @@ settings:
 
 importers:
 
-  project/dashboard:
+  projects/dashboard:
     dependencies:
       '@smuzi/router':
         specifier: workspace:*
         version: link:../../smuzi/router
+      '@smuzi/server':
+        specifier: workspace:*
+        version: link:../../smuzi/server
       '@smuzi/std':
         specifier: workspace:*
         version: link:../../smuzi/std
@@ -50,6 +53,22 @@ importers:
 
   smuzi/router:
     dependencies:
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.16.3
+
+  smuzi/server:
+    dependencies:
+      '@smuzi/router':
+        specifier: workspace:*
+        version: link:../router
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std

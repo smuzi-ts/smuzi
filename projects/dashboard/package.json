@@ -1,0 +1,26 @@
+{
+  "name": "@project/dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "dev": "tsx watch src/server.ts "
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": ["./src"],
+  "dependencies": {
+    "@smuzi/std": "workspace:*",
+    "@smuzi/tests": "workspace:*",
+    "@smuzi/server": "workspace:*",
+    "@smuzi/router": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  },
+  "imports": {
+    "#users/*": "./users/*"
+  }
+}
