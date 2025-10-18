@@ -1,9 +1,4 @@
-import { runServer } from '@smuzi/server';
-import { CreateRouter } from '@smuzi/router';
+import {Http2StrategyServer} from '@smuzi/server';
+import {serverConfig} from "#configs/server.ts";
 
-const router = CreateRouter();
-
-router.get('', () =>'Home')
-router.get('users', () => 'Users')
-
-Http2StrategyServer
+Http2StrategyServer(serverConfig)

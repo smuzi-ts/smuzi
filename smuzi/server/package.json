@@ -23,6 +23,6 @@
     "#lib/*": "./src/*"
   },
   "exports": {
-    ".": "./src/server.js"
+    ".": "./src/index.js"
   }
 }

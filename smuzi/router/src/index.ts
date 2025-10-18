@@ -31,12 +31,13 @@ type Route = { path: PathParam, method: Method };
 type GroupRoute = { path: PathParam};
 
 export type Index = {
-    get: (path: PathParam, action: Action) => void
-    post: (path: PathParam, action: Action) => void
-    put: (path: PathParam, action: Action) => void
-    delete: (path: PathParam, action: Action) => void
-    group: (params: GroupRoute, Index) => void
+    get: (path: PathParam, action) => void
+    post: (path: PathParam, action) => void
+    put: (path: PathParam, action) => void
+    delete: (path: PathParam, action) => void
+    group: (router: Index) => void
     getMapRoutes: () => Map<Route, any> //TODO any to concrete type
+    getGroupRoute(): GroupRoute
 }
 
 export type InputMessage = { path: string, method: Method};
@@ -87,15 +88,12 @@ function toStartWithPattern(input: PathParam): RegExp {
     return new RegExp(`${pattern}.*`, input.flags);
 }
 
-export function CreateRouter(groupRoute: Option<GroupRoute> = None()): Index
+export function CreateRouter(groupRoute: GroupRoute): Index
 {
     const routes = new Map()
 
     const add = (route: Route | GroupRoute, action) => {
-        route.path = processPath(groupRoute.match({
-            Some: (g) => contactPaths(g.path, route.path),
-            None: () => route.path
-        }));
+        route.path = processPath(contactPaths(groupRoute.path, route.path));
         
         routes.set(route, (data: MathedData) => {
             const context = new SContext({
@@ -119,19 +117,23 @@ export function CreateRouter(groupRoute: Option<GroupRoute> = None()): Index
         delete(path, action) {
             add({ path, method: Method.DELETE }, action)
         },
-        group(params: GroupRoute, groupRouter: Index) {
-            const groupPath = toStartWithPattern(params.path);
+        group(groupRouter: Index) {
+            const groupPath = groupRouter.getGroupRoute().path;
+            const startWithPattern = toStartWithPattern(groupPath);
 
             const action = (context: Context) => {
-                console.log('groupRouter.getMapRoutes()', groupRouter.getMapRoutes())
                 return match(context.request, groupRouter.getMapRoutes(), "not found");
             }
 
-            add({path: groupPath}, action);
+            add({path: startWithPattern}, action);
         },     
         getMapRoutes()
         {
             return routes;
+        },
+        getGroupRoute(): GroupRoute
+        {
+            return groupRoute;
         }
     }
 }

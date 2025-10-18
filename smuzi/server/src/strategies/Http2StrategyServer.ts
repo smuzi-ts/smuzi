@@ -1,19 +1,10 @@
 import http2, { IncomingHttpHeaders, ServerHttp2Stream } from 'node:http2';
 import fs from 'node:fs';
-import path from 'node:path';
-import {type Context, CreateRouter, methodFromString, Router, SInputMessage,} from "@smuzi/router";
+import { methodFromString, SInputMessage,} from "@smuzi/router";
 import { isArray, isObject, isString, match, matchUnknown } from '@smuzi/std';
+import {TConfigServer} from "#lib/index.ts";
 
-
-export type Http2ConfigServer = {
-    port: number,
-    cert: {
-        key: string,
-        cert: string,
-    }
-};
-
-export function Http2StrategyServer(config: Http2ConfigServer) {
+export function Http2StrategyServer(config: TConfigServer) {
     const server = http2.createSecureServer({
         key: fs.readFileSync(config.cert.key),
         cert: fs.readFileSync(config.cert.cert),
@@ -31,7 +22,7 @@ export function Http2StrategyServer(config: Http2ConfigServer) {
 
         console.log(`Incoming request: ${request.method} ${request.path}`);
 
-        const response = match(new SInputMessage(request), router.getMapRoutes(), "not found")
+        const response = match(new SInputMessage(request), config.router.getMapRoutes(), "not found")
         const handlers = new Map();
 
 
@@ -68,6 +59,6 @@ export function Http2StrategyServer(config: Http2ConfigServer) {
     });
 
     server.listen(config.port, () => {
-        console.log('HTTP/2 server running at https://localhost:8443');
+        console.log('HTTP/2 server running at ' + config.getUrl());
     });
 }

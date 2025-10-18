@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-
+    "test": "tsx --test"
   },
   "type": "module",
   "keywords": [],
@@ -12,7 +12,7 @@
   "license": "ISC",
   "files": ["./src"],
    "exports": {
-    ".": "./src/prelude.js"
+    ".": "./src/prelude.ts"
   },
   "dependencies": {
     "@smuzi/faker": "workspace:*",

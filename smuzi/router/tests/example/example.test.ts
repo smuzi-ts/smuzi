@@ -1,15 +1,15 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { CreateRouter, Method, SInputMessage} from "#lib/router.ts";
-import { usersRouter } from "./users/router";
+import { CreateRouter, Method, SInputMessage} from "#lib/index.ts";
 import { match, None } from "@smuzi/std";
-import { messagesRouter } from "./messages/router";
+import { router as messagesRouter } from "./messages/router";
+import { router as  usersRouter } from "./users/router";
 
 describe("Std-Router", () => {
     it(okMsg("Example"), () => {
         //Routing
         const router = CreateRouter();
-        router.group({ path: "users" }, usersRouter);
-        router.group({ path: "messages" }, messagesRouter);
+        router.group(usersRouter);
+        router.group(messagesRouter);
 
         //Preparing test requests
         const mapRequestResponse = new Map();

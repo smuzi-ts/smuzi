@@ -1,4 +1,4 @@
-import { Context } from "#lib/router.ts";
+import { Context } from "#lib/index.ts";
 
 export function list(context: Context) {
     return "users list";

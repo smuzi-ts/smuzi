@@ -21,6 +21,7 @@
     "@types/node": "^22.15.21"
   },
   "imports": {
-    "#users/*": "./users/*"
+    "#configs/*": "./src/configs/*",
+    "#users/*": "./src/modules/users/*"
   }
 }

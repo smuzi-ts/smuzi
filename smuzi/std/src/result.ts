@@ -1,5 +1,5 @@
 import { isString } from "./checker.ts";
-import { IMatched } from "./match.ts";
+import {type IMatched } from "./match.ts";
 import { panic } from "./panic.ts";
 
 type Val = NonNullable<unknown>;

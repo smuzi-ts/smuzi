@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-
+    "test": "tsx --test"
   },
   "type": "module",
   "keywords": [],
@@ -22,6 +22,6 @@
     "#lib/*": "./src/*"
   },
   "exports": {
-    ".": "./src/router.js"
+    ".": "./src/index.js"
   }
 }
