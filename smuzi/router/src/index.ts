@@ -30,12 +30,12 @@ type PathParam = string | RegExp;
 type Route = { path: PathParam, method: Method };
 type GroupRoute = { path: PathParam};
 
-export type Router = {
-    get: (path: PathParam, action) => void
-    post: (path: PathParam, action) => void
-    put: (path: PathParam, action) => void
-    delete: (path: PathParam, action) => void
-    group: (params: GroupRoute, handler: (router: Router) => Router) => void
+export type Index = {
+    get: (path: PathParam, action: Action) => void
+    post: (path: PathParam, action: Action) => void
+    put: (path: PathParam, action: Action) => void
+    delete: (path: PathParam, action: Action) => void
+    group: (params: GroupRoute, Index) => void
     getMapRoutes: () => Map<Route, any> //TODO any to concrete type
 }
 
@@ -87,7 +87,7 @@ function toStartWithPattern(input: PathParam): RegExp {
     return new RegExp(`${pattern}.*`, input.flags);
 }
 
-export function CreateRouter(groupRoute: Option<GroupRoute> = None()): Router
+export function CreateRouter(groupRoute: Option<GroupRoute> = None()): Index
 {
     const routes = new Map()
 
@@ -119,14 +119,12 @@ export function CreateRouter(groupRoute: Option<GroupRoute> = None()): Router
         delete(path, action) {
             add({ path, method: Method.DELETE }, action)
         },
-        group(route: GroupRoute, handler) {
-            const groupPath = toStartWithPattern(route.path);
+        group(params: GroupRoute, groupRouter: Index) {
+            const groupPath = toStartWithPattern(params.path);
 
             const action = (context: Context) => {
-                const groupRouter = handler(CreateRouter(Some(route)));
-                const matched = match(context.request, groupRouter.getMapRoutes(), "not found");
-
-                return matched;
+                console.log('groupRouter.getMapRoutes()', groupRouter.getMapRoutes())
+                return match(context.request, groupRouter.getMapRoutes(), "not found");
             }
 
             add({path: groupPath}, action);
