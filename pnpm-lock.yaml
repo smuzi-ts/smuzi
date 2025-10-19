@@ -8,6 +8,9 @@ importers:
 
   projects/dashboard:
     dependencies:
+      '@smuzi/database':
+        specifier: workspace:*
+        version: link:../../smuzi/database
       '@smuzi/router':
         specifier: workspace:*
         version: link:../../smuzi/router

@@ -1,5 +1,5 @@
 {
-  "name": "@smuzi/server",
+  "name": "@smuzi/console",
   "version": "0.0.1",
   "private": true,
   "description": "",
@@ -12,12 +12,8 @@
   "license": "ISC",
   "files": ["./src"],
   "dependencies": {
-
-  },
-  "peerDependencies": {
     "@smuzi/std": "workspace:*",
-    "@smuzi/tests": "workspace:*",
-    "@smuzi/router": "workspace:*"
+    "@smuzi/tests": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21"

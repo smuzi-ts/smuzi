@@ -1,11 +1,12 @@
 import {ServerConfig, HttpProtocol} from "@smuzi/server";
 import {router} from "#configs/router.ts";
 import * as path from "node:path";
+import * as process from "node:process";
 
 export const serverConfig = new ServerConfig({
     protocol: HttpProtocol.HTTPS,
-    host: "localhost",
-    port: 8443,
+    host: process.env.APP_HOST ?? "localhost",
+    port: process.env.APP_PORT ?? 80,
     router,
     cert: {
         key: path.join('ssl/', 'server.key'),

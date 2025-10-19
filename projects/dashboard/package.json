@@ -4,7 +4,8 @@
   "private": true,
   "description": "",
   "scripts": {
-    "dev": "tsx watch src/server.ts "
+    "dev": "tsx  watch --env-file=.env src/server.ts",
+    "console": "tsx  watch --env-file=.env src/console.ts"
   },
   "type": "module",
   "keywords": [],
@@ -15,7 +16,8 @@
     "@smuzi/std": "workspace:*",
     "@smuzi/tests": "workspace:*",
     "@smuzi/server": "workspace:*",
-    "@smuzi/router": "workspace:*"
+    "@smuzi/router": "workspace:*",
+    "@smuzi/database": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21"
