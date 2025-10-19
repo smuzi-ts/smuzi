@@ -13,7 +13,7 @@
   "files": ["./src"],
   "dependencies": {
     "@smuzi/std": "workspace:*",
-    "@smuzi/tests": "workspace:*",
+    "@smuzi/tests": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21"

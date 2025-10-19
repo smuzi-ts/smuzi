@@ -25,6 +25,19 @@ importers:
         specifier: ^22.15.21
         version: 22.16.3
 
+  smuzi/database:
+    dependencies:
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.16.3
+
   smuzi/faker:
     dependencies:
       '@smuzi/std-old':

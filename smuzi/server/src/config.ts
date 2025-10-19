@@ -1,4 +1,4 @@
-import {impl, Struct} from "@smuzi/std";
+import {impl, Struct, UrlTrait} from "@smuzi/std";
 import {Index} from "@smuzi/router";
 
 export enum HttpProtocol {
@@ -17,14 +17,12 @@ export type TServerConfig = {
     router: Index,
 };
 
-export class ServerUrl {
-    getUrl: () => string
-}
+const StructServerConfig = Struct<TServerConfig>();
 
-export const ServerConfig = Struct<TServerConfig>();
-
-impl(ServerUrl, ServerConfig, {
+impl(UrlTrait, StructServerConfig, {
     getUrl() {
         return `${this.protocol}://${this.host}` + (this.port ? (':' + this.port) : '');
     },
 });
+
+export const ServerConfig = StructServerConfig;
