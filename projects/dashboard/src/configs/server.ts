@@ -1,8 +1,8 @@
-import {ConfigServer, HttpProtocol} from "@smuzi/server";
+import {ServerConfig, HttpProtocol} from "@smuzi/server";
 import {router} from "#configs/router.ts";
 import * as path from "node:path";
 
-export const serverConfig = new ConfigServer({
+export const serverConfig = new ServerConfig({
     protocol: HttpProtocol.HTTPS,
     host: "localhost",
     port: 8443,

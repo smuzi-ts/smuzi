@@ -1,2 +1,2 @@
-export * from "#lib/strategies/Http2StrategyServer.js" ;
-export * from "#lib/structure.js" ;
+export * from "#lib/strategies/Http2StrategyServer.ts" ;
+export * from "#lib/config.ts" ;

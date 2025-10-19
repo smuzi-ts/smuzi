@@ -2,9 +2,9 @@ import http2, { IncomingHttpHeaders, ServerHttp2Stream } from 'node:http2';
 import fs from 'node:fs';
 import { methodFromString, SInputMessage,} from "@smuzi/router";
 import { isArray, isObject, isString, match, matchUnknown } from '@smuzi/std';
-import {TConfigServer} from "#lib/index.ts";
+import {TServerConfig} from "#lib/index.ts";
 
-export function Http2StrategyServer(config: TConfigServer) {
+export function Http2StrategyServer(config: TServerConfig) {
     const server = http2.createSecureServer({
         key: fs.readFileSync(config.cert.key),
         cert: fs.readFileSync(config.cert.cert),

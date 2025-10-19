@@ -6,7 +6,7 @@ export enum HttpProtocol {
     HTTP = "http",
 }
 
-export type TConfigServer = {
+export type TServerConfig = {
     host: string;
     protocol: HttpProtocol,
     port: number,
@@ -21,9 +21,9 @@ export class ServerUrl {
     getUrl: () => string
 }
 
-export const ConfigServer = Struct<TConfigServer>();
+export const ServerConfig = Struct<TServerConfig>();
 
-impl(ServerUrl, ConfigServer, {
+impl(ServerUrl, ServerConfig, {
     getUrl() {
         return `${this.protocol}://${this.host}` + (this.port ? (':' + this.port) : '');
     },
