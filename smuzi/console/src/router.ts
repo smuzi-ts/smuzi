@@ -1,4 +1,9 @@
-import {TInputParams} from "#lib/input-parsers/TInputParser.js";
+export type TInputParams = Record<string, string> | {};
+
+export type TInputCommand = {
+    path: string,
+    params: TInputParams,
+};
 
 export type CommandAction = <P extends TInputParams>(params: P) => void;
 

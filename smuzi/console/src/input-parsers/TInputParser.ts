@@ -1,8 +1,3 @@
-export type TInputParams = Record<string, string> | {};
-
-export type TInputCommand = {
-    path: string,
-    params: TInputParams,
-};
+import {TInputCommand} from "#lib/router.js";
 
 export type TInputParser = (processArgv: string) => TInputCommand
