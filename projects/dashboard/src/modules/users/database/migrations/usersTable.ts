@@ -1,5 +1,6 @@
 export default
 {
+    name: "usersTable",
     up() {
         return `
         CREATE TABLE IF NOT EXISTS users (

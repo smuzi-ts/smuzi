@@ -1,5 +1,5 @@
 import {TInputParser} from "#lib/input-parsers/TInputParser.js";
-import {match, panic} from "@smuzi/std";
+import {isEmpty, match, panic} from "@smuzi/std";
 import {ConsoleRouter, TInputCommand, TInputParams} from "#lib/router.js";
 
 export * from "#lib/input-parsers/SystemInputParser.ts"
@@ -12,10 +12,23 @@ function defaultNotFoundHandler(input: TInputCommand): never {
     panic('Command with path "' + input.path + '" not found');
 }
 
-export function handle(inputSource: string[], inputParser: TInputParser, router: ConsoleRouter, notFoundHandler: TNotFoundHandle = defaultNotFoundHandler)
+export function handle(
+    inputSource: string[],
+    inputParser: TInputParser,
+    router: ConsoleRouter,
+    notFoundHandler: TNotFoundHandle = defaultNotFoundHandler
+)
 {
     const inputParsed = inputParser(inputSource);
-    const action = match(inputParsed.path, router.getMapRoutes(), () => notFoundHandler(inputParsed));
 
-    action(inputParsed.params)
+    if (isEmpty(inputParsed.path)) {
+        router.getMapRoutes().forEach((action, route) => {
+            console.log(route + ' - ' + action.description.someOr('no description'))
+        })
+        return ;
+    }
+
+    const matchedCommand = match(inputParsed.path, router.getMapRoutes(), () => notFoundHandler(inputParsed));
+
+    matchedCommand.action(inputParsed.params)
 }

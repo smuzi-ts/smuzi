@@ -43,6 +43,9 @@ importers:
 
   smuzi/database:
     dependencies:
+      '@smuzi/console':
+        specifier: workspace:*
+        version: link:../console
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
