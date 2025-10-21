@@ -1,33 +1,29 @@
 import {TInputParams} from "#lib/input-parsers/TInputParser.js";
-import {MathedData} from "@smuzi/std";
 
 export type CommandAction = <P extends TInputParams>(params: P) => void;
 
-export type PathParam = string;
-export type ConsoleRoute = {path: PathParam};
+export type ConsoleRoute = string;
 
 export type ConsoleRouter = {
+    add: (route: ConsoleRoute, action: CommandAction) => void
     group: (groupRouter: ConsoleRouter) => void
     getMapRoutes: () => Map<ConsoleRoute, CommandAction>
     getGroupRoute: () => ConsoleRoute
 };
 
-export function CreateConsoleRouter(groupRoute: ConsoleRoute): ConsoleRouter
+export function CreateConsoleRouter(groupRoute: ConsoleRoute = ''): ConsoleRouter
 {
     const routes = new Map()
 
-    const add =  (route, action) => {
-        routes.set(route.path, (data: MathedData) => {
-            return action(data.val);
-        })
-    };
-
     return {
+        add:(route, action) => {
+            routes.set(route, action)
+        },
         group(groupRouter) {
-            const groupPath = groupRouter.getGroupRoute().path;
+            const groupPath = groupRouter.getGroupRoute();
 
             for (const [route, action] of groupRouter.getMapRoutes()) {
-                add(groupPath + route.path, action)
+                this.add(groupPath + route, action);
             }
         },
         getMapRoutes()

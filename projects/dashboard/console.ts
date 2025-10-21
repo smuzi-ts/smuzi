@@ -1,8 +1,5 @@
 import {consoleConfig} from "#configs/console";
 import * as process from "node:process";
+import {handle} from "@smuzi/console";
 
-const inputParams = consoleConfig.inputParser(process.argv);
-
-console.log(inputParams);
-
-consoleConfig.router
+handle(process.argv, consoleConfig.inputParser, consoleConfig.router);

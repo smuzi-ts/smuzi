@@ -1,5 +1,5 @@
 import {TInputParams} from "@smuzi/console";
 
-export function usersInfo(params: TInputParams) {
-    console.log('PARAMS');
+export const usersInfo = (params: TInputParams)=> {
+    console.log('usersInfo', params);
 }

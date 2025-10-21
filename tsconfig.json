@@ -3,7 +3,11 @@
   "include": [],
   "references": [
     { "path": "smuzi/std" },
-    { "path": "smuzi/router" },
+    { "path": "smuzi/server" },
+    { "path": "smuzi/console" },
+    { "path": "smuzi/database" },
+    { "path": "smuzi/faker" },
+    { "path": "smuzi/tests" },
     { "path": "project/dashboard" }
   ]
 }

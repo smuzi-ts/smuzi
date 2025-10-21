@@ -1,5 +1,6 @@
-import {TInputParams} from "@smuzi/console";
-
-export function createUser(params: TInputParams) {
-    console.log('PARAMS');
+type UserCreate = {
+    id: string
+}
+export const createUser = (params: UserCreate)=>  {
+    console.log('createUser', params);
 }

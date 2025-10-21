@@ -1,7 +1,7 @@
 import {CreateConsoleRouter, SystemInputParser} from "@smuzi/console";
-import {usersConsole} from "#lib/modules/users/commands/router.js";
+import {usersConsole} from "#users/commands/router.ts";
 
-const router = CreateConsoleRouter({path: ''});
+const router = CreateConsoleRouter();
 router.group(usersConsole);
 
 export const consoleConfig = {
