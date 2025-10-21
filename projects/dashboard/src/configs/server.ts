@@ -1,7 +1,7 @@
 import { ServerConfig, HttpProtocol, CreateHttpRouter} from "@smuzi/http";
 import * as path from "node:path";
 import * as process from "node:process";
-import {router as users} from "#lib/modules/users/routes/index.js";
+import {router as users} from "#users/routes/index.js";
 
 const router = CreateHttpRouter({path: ''});
 router.group(users);

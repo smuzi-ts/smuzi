@@ -2,6 +2,9 @@
   "extends": "../../tsconfig.common.json",
   "include": ["./src"],
   "compilerOptions": {
+    "target": "ES2024",
+    "module": "nodenext",
+    "lib": ["ESNext", "dom"],
     "useDefineForClassFields": true,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
@@ -12,7 +15,7 @@
     "composite": true,
     "baseUrl": "./src",
     "paths": {
-      "#std/*": ["*"]
+      "#lib/*": ["*"]
   },
   }
 }

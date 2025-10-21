@@ -77,7 +77,7 @@ export function match<T extends string, R = unknown>(
     handlers: StringValueMapPatterns<R>,
     deflt: Handler<T, R> | R, 
     returnAsFn: true
-): Handler<T, R>;
+): R;
 
 export function match<T extends string, R = unknown>(
     val: T, 

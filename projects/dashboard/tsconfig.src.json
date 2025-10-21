@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.common.json",
-  "include": ["./src"],
+  "include": ["./src","./console.ts"],
   "compilerOptions": {
     "types": ["node"],
     "outDir": "build/src",
@@ -9,7 +9,8 @@
     "composite": true,
     "baseUrl": "./src",
     "paths": {
-      "#lib/*": ["*"]
+      "#configs/*": ["configs/*"],
+      "#users/*": ["modules/users/*"]
     }
   }
 }

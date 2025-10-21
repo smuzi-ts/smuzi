@@ -1,18 +1,18 @@
-export type TInputParams = Record<string, string> | {};
+export type TInputParams = Record<string, string>;
 
 export type TInputCommand = {
     path: string,
     params: TInputParams,
 };
 
-export type CommandAction = <P extends TInputParams>(params: P) => void;
+export type CommandAction<P extends TInputParams> = (params: P) => void;
 
 export type ConsoleRoute = string;
 
 export type ConsoleRouter = {
-    add: (route: ConsoleRoute, action: CommandAction) => void
+    add: <Params extends TInputParams> (route: ConsoleRoute, action: CommandAction<Params>) => void
     group: (groupRouter: ConsoleRouter) => void
-    getMapRoutes: () => Map<ConsoleRoute, CommandAction>
+    getMapRoutes: () => Map<ConsoleRoute, () => CommandAction<TInputParams>>
     getGroupRoute: () => ConsoleRoute
 };
 
@@ -28,7 +28,7 @@ export function CreateConsoleRouter(groupRoute: ConsoleRoute = ''): ConsoleRoute
             const groupPath = groupRouter.getGroupRoute();
 
             for (const [route, action] of groupRouter.getMapRoutes()) {
-                this.add(groupPath + route, action);
+                this.add(groupPath + route, () => action);
             }
         },
         getMapRoutes()
