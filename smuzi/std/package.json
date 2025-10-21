@@ -12,8 +12,8 @@
   "license": "ISC",
   "files": ["./src"],
    "exports": {
-    ".": "./src/prelude.ts"
-  },
+     ".": "./src/prelude.ts"
+   },
   "dependencies": {
     "@smuzi/faker": "workspace:*",
     "@smuzi/tests": "workspace:*"

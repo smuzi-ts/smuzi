@@ -8,13 +8,13 @@ importers:
 
   projects/dashboard:
     dependencies:
+      '@smuzi/console':
+        specifier: workspace:*
+        version: link:../../smuzi/console
       '@smuzi/database':
         specifier: workspace:*
         version: link:../../smuzi/database
-      '@smuzi/router':
-        specifier: workspace:*
-        version: link:../../smuzi/router
-      '@smuzi/server':
+      '@smuzi/http':
         specifier: workspace:*
         version: link:../../smuzi/server
       '@smuzi/std':
@@ -23,6 +23,19 @@ importers:
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../../smuzi/tests
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.16.3
+
+  smuzi/console:
+    dependencies:
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
     devDependencies:
       '@types/node':
         specifier: ^22.15.21
@@ -67,24 +80,8 @@ importers:
         specifier: ^22.15.21
         version: 22.16.3
 
-  smuzi/router:
-    dependencies:
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
-    devDependencies:
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.16.3
-
   smuzi/server:
     dependencies:
-      '@smuzi/router':
-        specifier: workspace:*
-        version: link:../router
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
