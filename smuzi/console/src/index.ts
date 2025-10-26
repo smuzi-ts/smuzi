@@ -1,10 +1,15 @@
-import {TInputParser} from "#lib/input-parsers/TInputParser.js";
 import {isEmpty, match, panic} from "@smuzi/std";
 import {ConsoleRouter, TInputCommand, TInputParams} from "#lib/router.js";
+import {TConsoleConfig} from "#lib/config.ts";
 
+export * from "#lib/output/themes/StandardThema.ts";
 export * from "#lib/input-parsers/SystemInputParser.ts"
-export * from "#lib/input-parsers/TInputParser.ts"
+export * from "#lib/input-parsers/types.ts"
 export * from "#lib/router.ts"
+export * from "#lib/output/types.ts"
+export * from "#lib/output/printers/StandardOutput.ts"
+export * from "#lib/config.ts"
+
 
 export type TNotFoundHandle = (input: TInputCommand) => never
 
@@ -14,21 +19,20 @@ function defaultNotFoundHandler(input: TInputCommand): never {
 
 export function handle(
     inputSource: string[],
-    inputParser: TInputParser,
-    router: ConsoleRouter,
+    config: TConsoleConfig,
     notFoundHandler: TNotFoundHandle = defaultNotFoundHandler
 )
 {
-    const inputParsed = inputParser(inputSource);
+    const inputParsed = config.inputParser(inputSource);
 
     if (isEmpty(inputParsed.path)) {
-        router.getMapRoutes().forEach((action, route) => {
+        config.router.getMapRoutes().forEach((action, route) => {
             console.log(route + ' - ' + action.description.someOr('no description'))
         })
         return ;
     }
 
-    const matchedCommand = match(inputParsed.path, router.getMapRoutes(), () => notFoundHandler(inputParsed));
+    const matchedCommand = match(inputParsed.path, config.router.getMapRoutes(), () => notFoundHandler(inputParsed));
 
-    matchedCommand.action(inputParsed.params)
+    matchedCommand.action(config.output, inputParsed.params)
 }

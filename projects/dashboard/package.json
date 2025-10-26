@@ -11,13 +11,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "files": ["./src"],
+  "files": [
+    "./src"
+  ],
   "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/tests": "workspace:*",
-    "@smuzi/http": "workspace:*",
+    "@smuzi/console": "workspace:*",
+    "@smuzi/db-postgres": "workspace:*",
     "@smuzi/database": "workspace:*",
-    "@smuzi/console": "workspace:*"
+    "@smuzi/http": "workspace:*",
+    "@smuzi/std": "workspace:*",
+    "@smuzi/tests": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21"

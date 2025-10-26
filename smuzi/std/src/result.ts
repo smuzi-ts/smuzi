@@ -1,4 +1,4 @@
-import { isString } from "./checker.ts";
+import {asString} from "./checker.ts";
 import {type IMatched } from "./match.ts";
 import { panic } from "./panic.ts";
 
@@ -11,6 +11,10 @@ export function Ok<T extends Val>(value: T): Result<T, never> {
 
 export function Err<E extends Val>(error: E): Result<never, E> {
     return new ResultErr<E>(error);
+}
+
+export function OkOrNullableAsError<T extends unknown, E = string>(value: T, errIfNullable?: E): Result<T, E> {
+    return value === null || value === undefined ? Err((errIfNullable ?? "Nullable value") as E) : Ok(value);
 }
 
 export class Result<T, E> implements IMatched {
@@ -27,7 +31,7 @@ export class Result<T, E> implements IMatched {
     unwrap(): T | never {
         return this.match({
             Ok: (v) => v,
-            Err: (e) => panic("Unwrapped Err variant : " + (isString(e) ? e : JSON.stringify(e))),
+            Err: (e) => panic(asString(e) ? e : JSON.stringify(e)),
         });
     }
 

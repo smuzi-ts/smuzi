@@ -9,8 +9,7 @@
     "composite": true,
     "baseUrl": "./src",
     "paths": {
-      "#configs/*": ["configs/*"],
-      "#users/*": ["modules/users/*"]
-    }
+      "#lib/*": ["*"]
+  },
   }
 }

@@ -1,12 +1,12 @@
-export type PrinterConsole = {
-    info: () => void,
+export type TOutputConsole = {
+    info: (msg: string) => void,
     success: () => void,
     warn: () => void,
     error: () => void,
     bold: () => void,
 }
 
-export type ThemaOutputConsole = {
+export type TThemaOutputConsole = {
     info: "\x1b[0m",
     success: "\x1b[32m",
     warn: "\x1b[33m",

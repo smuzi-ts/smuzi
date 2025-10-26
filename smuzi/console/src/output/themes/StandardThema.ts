@@ -1,6 +1,6 @@
-import {ThemaOutputConsole} from "#lib/output/types.ts";
+import {TThemaOutputConsole} from "#lib/output/types.ts";
 
-export const standardThema: ThemaOutputConsole = {
+export const StandardThema: TThemaOutputConsole = {
     info: "\x1b[0m",
     success: "\x1b[32m",
     warn: "\x1b[33m",

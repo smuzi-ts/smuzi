@@ -1,0 +1,5 @@
+export const UserRepository = {
+    findById() {
+
+    }
+}

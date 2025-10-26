@@ -1,8 +1,4 @@
 import {Struct} from "@smuzi/std";
-import {TMigrations} from "#lib/migration.ts";
-
-export type TDatabaseConfig = {
-    migrations: TMigrations,
-};
+import {TDatabaseConfig} from "#lib/types.ts";
 
 export const DatabaseConfig = Struct<TDatabaseConfig>();

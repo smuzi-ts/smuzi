@@ -1,0 +1,31 @@
+{
+  "name": "@smuzi/db-postgres",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "scripts": {},
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "./src"
+  ],
+  "dependencies": {
+    "@smuzi/std": "workspace:*",
+    "@smuzi/tests": "workspace:*",
+    "pg": "^8.16.3"
+  },
+  "peerDependencies": {
+    "@smuzi/database": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

@@ -1,5 +1,11 @@
 import {TInputParams} from "@smuzi/console";
 
-export const usersInfo = (params: TInputParams)=> {
-    console.log('usersInfo', params);
+type User = {
+    id: number,
+    name: string,
+}
+
+export const usersInfo = async (params: TInputParams)=> {
+    const res = await query<User>("SELECT * FROM users")
+    console.log(res.unwrap()[0])
 }

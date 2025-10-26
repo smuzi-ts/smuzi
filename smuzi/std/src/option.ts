@@ -13,6 +13,10 @@ export function None<T extends Val>(): Option<T> {
     return new OptionNone();
 }
 
+export function OptionFromNullable<T>(value: T): Option<T> {
+    return (value === null || value === undefined) ? None() : Some(value);
+}
+
 export class Option<T = unknown> {
     protected _val: T;
     

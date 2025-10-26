@@ -7,7 +7,7 @@ export type TInputCommand = {
     params: TInputParams,
 };
 
-export type CommandAction<P extends TInputParams> = (params: P) => void;
+export type CommandAction<P extends TInputParams> = (output, params: P) => void;
 
 export type ConsoleRoute = { path: string, description: Option<string>};
 export type RouteValue = { description: Option<string>, action: CommandAction<TInputParams>};

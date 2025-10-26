@@ -1,4 +1,4 @@
-import {TInputParser} from "#lib/input-parsers/TInputParser.js";
+import {TInputParser} from "#lib/input-parsers/types.js";
 import {TInputCommand} from "#lib/router.js";
 
 export const SystemInputParser: TInputParser = (processArgv: string[]): TInputCommand => {
