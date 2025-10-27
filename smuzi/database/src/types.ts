@@ -18,18 +18,17 @@ export type TDatabaseClient = {
 }
 
 export type TMigration = {
-    name: string,
     up: () => string,
     down: () => string,
 }
 
 export type TMigrations = {
-    add: (migration: TMigration) => void,
-    getList: () => TMigration[]
+    add: (name: string, migration: TMigration) => void,
+    getList: () => Map<string, TMigration>
 }
 
 export type TDatabaseConfig = {
-    migrations: TMigrations,
+    migrations: () => TMigrations,
     connections: Record<string, TDatabaseClient>,
     connection: TDatabaseClient
 };

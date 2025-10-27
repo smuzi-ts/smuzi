@@ -1,9 +1,9 @@
 export type TOutputConsole = {
     info: (msg: string) => void,
-    success: () => void,
-    warn: () => void,
-    error: () => void,
-    bold: () => void,
+    success: (msg: string) => void,
+    warn: (msg: string) => void,
+    error: (msg: string) => void,
+    bold: (msg: string) => void,
 }
 
 export type TThemaOutputConsole = {

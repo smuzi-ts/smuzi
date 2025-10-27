@@ -1,6 +1,7 @@
 import {TDatabaseConfig} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
+import {buildMigrationsLogRepository} from "#lib/migrationsLogRepository.ts";
 
 export const migrate = (config: TDatabaseConfig) => async (output: TOutputConsole, params)=>  {
     const connectionParam = OptionFromNullable(params.connection);
@@ -11,10 +12,32 @@ export const migrate = (config: TDatabaseConfig) => async (output: TOutputConsol
     })
         .unwrap();
 
+    const migrationsLogRepository = buildMigrationsLogRepository(connection);
 
-    //TODO: create migrations_report table and run only unused migrations
-    for (const migration of config.migrations.getList()) {
-        output.info('Run migration - ' + migration.name)
-        await connection.query(migration.up());
+    (await migrationsLogRepository.createTableIfNotExists()).unwrap();
+
+    const branch = (await migrationsLogRepository.getLastBranch())
+        .match({
+            Some: value => value++,
+            None: () => 1
+        })
+
+    for (const [name, migration] of config.migrations().getList()) {
+        if (await migrationsLogRepository.migrationWillBeRuned(name)) {
+            output.warn('Migration will be runed - ' + name)
+            continue;
+        }
+
+        output.success('Run migration - ' + name)
+
+        const sqlSource = migration.up();
+        await connection.query(sqlSource);
+
+        await migrationsLogRepository.create({
+            name,
+            branch,
+            action: 'up',
+            sqlSource,
+        })
     }
 }

@@ -3,8 +3,6 @@ import createUsersTable from "#users/database/migrations/createUsersTable.ts";
 import {postgresClient} from "@smuzi/db-postgres";
 import { env } from "node:process";
 
-const migrations = Migrations();
-migrations.add(createUsersTable);
 
 const connections = {
     default: await postgresClient({
@@ -17,7 +15,11 @@ const connections = {
 }
 
 export const databaseConfig = new DatabaseConfig({
-    migrations,
+    migrations: () => {
+        const migrations = Migrations();
+        migrations.add('create_users_table', createUsersTable);
+        return migrations;
+    },
     connections,
     connection: connections.default,
 });

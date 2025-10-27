@@ -21,9 +21,17 @@ export function postgresClient(config: Config): TDatabaseClient {
     return  {
         async query(sql, params = None()) {
             try {
-                const { rows } = await pool.query(sql, params.someOr([]));
+                const res = await pool.query({
+                        text: sql,
+                        values: params.someOr([]),
+                        types: {
+                            getTypeParser: () => val => val
+                        },
+                    },
+                );
 
-                return Ok(rows)
+                console.log(res)
+                return Ok(res.rows)
             } catch (err) {
                 return Err({
                     message: err.message,

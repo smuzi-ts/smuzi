@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TableRecord",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Primary key (auto-increment, assigned by DB)"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Unique name of the record"
+    },
+    "branch": {
+      "type": "integer",
+      "description": "Branch ID (foreign key or reference)"
+    },
+    "action": {
+      "type": ["string", "null"],
+      "maxLength": 20,
+      "description": "Optional action label"
+    },
+    "sql_source": {
+      "type": "string",
+      "description": "SQL source code or text"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp (auto-filled by DB)"
+    }
+  },
+  "required": ["name", "branch", "sql_source"],
+  "additionalProperties": false
+}
