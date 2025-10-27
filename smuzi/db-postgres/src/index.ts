@@ -1,7 +1,7 @@
 import { Pool, types } from 'pg'
 import {TDatabaseClient} from "@smuzi/database";
 import {Err, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
-
+export * from "#lib/migrationsLogRepository.ts"
 export type Config = {
     user: string,
     password: string,
@@ -42,4 +42,6 @@ export function postgresClient(config: Config): TDatabaseClient {
         }
     }
 }
+
+
 

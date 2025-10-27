@@ -1,7 +1,7 @@
-import {TDatabaseConfig} from "#lib/types.js";
+import {TDatabaseConfig, TMigrationLogAction} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
-import {buildMigrationsLogRepository, TMigrationLogAction} from "#lib/migrationsLogRepository.ts";
+import {clearSQL} from "#lib/helpers.ts";
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {
@@ -11,18 +11,18 @@ export default function (config: TDatabaseConfig) {
         })
             .unwrap();
 
-        const migrationsLogRepository = buildMigrationsLogRepository(service.client);
+        const migrationsLogRepository = service.buildMigrationLogRepository(service.client);
 
         const branch = await OptionFromNullable(params.branch).match({
             Some: async (param) => param as number,
-            None: async () => (await migrationsLogRepository.getLastBranch()).unwrap(`Last branch not founded in ${migrationsLogRepository.table} table`)
+            None: async () => (await migrationsLogRepository.getLastBranch()).unwrap(`Last branch not founded in ${migrationsLogRepository.getTable()} table`)
         });
 
         output.info("Branch for rollback - " + branch)
 
 
         const logMigrations = (await migrationsLogRepository.listRunedByBranch(branch)).unwrap();
-        const migrations = service.migrations();
+        const migrations = service.buildMigrations();
 
         for (const rowLog of logMigrations) {
             const name = rowLog.name.unwrap();
@@ -30,7 +30,7 @@ export default function (config: TDatabaseConfig) {
 
             output.success('Down migration - ' + name)
 
-            const sql_source = migration.down();
+            const sql_source = clearSQL(migration.down());
             await service.client.query(sql_source);
 
             (await migrationsLogRepository.create({

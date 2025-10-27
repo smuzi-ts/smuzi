@@ -1,7 +1,7 @@
-import {TDatabaseConfig} from "#lib/types.js";
+import {TDatabaseConfig, TMigrationLogAction} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
-import {buildMigrationsLogRepository, TMigrationLogAction} from "#lib/migrationsLogRepository.ts";
+import {clearSQL} from "#lib/helpers.ts";
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {
@@ -11,7 +11,7 @@ export default function (config: TDatabaseConfig) {
         })
             .unwrap();
 
-        const migrationsLogRepository = buildMigrationsLogRepository(service.client);
+        const migrationsLogRepository = service.buildMigrationLogRepository(service.client);
 
         (await migrationsLogRepository.createTableIfNotExists()).unwrap();
 
@@ -21,14 +21,14 @@ export default function (config: TDatabaseConfig) {
                 None: () => 1
             })
 
-        for (const [name, migration] of service.migrations().getList()) {
+        for (const [name, migration] of service.buildMigrations().getList()) {
             if (await migrationsLogRepository.migrationWillBeRuned(name)) {
                 continue;
             }
 
             output.success('Run migration - ' + name)
 
-            const sql_source = migration.up();
+            const sql_source = clearSQL(migration.up());
             await service.client.query(sql_source);
 
             await migrationsLogRepository.create({

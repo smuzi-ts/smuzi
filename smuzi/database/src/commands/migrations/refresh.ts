@@ -1,9 +1,7 @@
-import {TDatabaseConfig} from "#lib/types.js";
+import {TDatabaseConfig, TMigrationLogAction} from "#lib/types.js";
 import {TOutputConsole} from "@smuzi/console";
-import rollback from "#lib/commands/migrations/rollback.ts";
-import run from "#lib/commands/migrations/run.ts";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
-import {buildMigrationsLogRepository, TMigrationLogAction} from "#lib/migrationsLogRepository.ts";
+import {clearSQL} from "#lib/helpers.ts";
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {
@@ -13,10 +11,10 @@ export default function (config: TDatabaseConfig) {
         })
             .unwrap();
 
-        const migrationsLogRepository = buildMigrationsLogRepository(service.client);
+        const migrationsLogRepository = service.buildMigrationLogRepository(service.client);
 
         const sortedLogMigrations = (await migrationsLogRepository.listRuned()).unwrap();
-        const migrations = service.migrations();
+        const migrations = service.buildMigrations();
 
         for (const rowLog of sortedLogMigrations) {
             const name = rowLog.name.unwrap();
@@ -24,7 +22,7 @@ export default function (config: TDatabaseConfig) {
 
             output.success('Down migration - ' + name)
 
-            const sql_source = migration.down();
+            const sql_source = clearSQL(migration.down());
             await service.client.query(sql_source);
 
             (await migrationsLogRepository.create({
@@ -44,7 +42,7 @@ export default function (config: TDatabaseConfig) {
         for (const [name, migration] of migrations.getList()) {
             output.success('Run migration - ' + name)
 
-            const sql_source = migration.up();
+            const sql_source = clearSQL(migration.up());
             await service.client.query(sql_source);
 
             await migrationsLogRepository.create({

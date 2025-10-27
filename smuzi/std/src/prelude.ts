@@ -8,5 +8,6 @@ export * from "./struct.ts";
 export * from "./debug.ts";
 export * from "./common.ts";
 export * from "./traits/url.ts";
+export * from "./dotEnv.ts";
 
 

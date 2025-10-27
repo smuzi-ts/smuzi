@@ -1,32 +1,11 @@
-import {TDatabaseClient} from "#lib/types.ts";
 import {isEmpty, None, Option, Some} from "@smuzi/std";
+import {TDatabaseClient, TMigrationLogAction, TMigrationLogRow, TMigrationsLogRepository} from "@smuzi/database";
 
 const table = 'migrations_log';
 
-export enum TMigrationLogAction {
-    up = 'up',
-    down = 'down',
-}
-
-export type TMigrationLogSave = {
-    name: string,
-    branch: number,
-    action: TMigrationLogAction,
-    sql_source: string,
-}
-
-export type TMigrationLogRow = {
-    id: Option<string>,
-    name: Option<string>,
-    branch: Option<number>,
-    action: Option<string>,
-    sql_source: Option<string>,
-    created_at: Option<Date>,
-}
-
-export const buildMigrationsLogRepository = (client: TDatabaseClient) => {
+export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): TMigrationsLogRepository  => {
     return {
-        table,
+        getTable: () => table,
         createTableIfNotExists()  {
             return client.query(`CREATE TABLE IF NOT EXISTS ${table} (
             id SERIAL PRIMARY KEY,
@@ -53,7 +32,7 @@ export const buildMigrationsLogRepository = (client: TDatabaseClient) => {
                 ? None()
                 : res[0].last_branch as Option<number>
         },
-        create(row: TMigrationLogSave) {
+        create(row) {
             return client.query(`INSERT INTO ${table} (name, branch, action, sql_source) values($1,$2,$3,$4)`, Some([
                 row.name,
                 row.branch,
@@ -74,5 +53,14 @@ export const buildMigrationsLogRepository = (client: TDatabaseClient) => {
                 None: () => false,
             })
         },
+        async freshSchema() {
+            return client.query(`DO $$ DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP;
+END $$;`);
+        }
     }
 }
