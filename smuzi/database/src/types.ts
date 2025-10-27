@@ -30,8 +30,12 @@ export type TMigrations = {
     getGroupName:() => string
 }
 
-export type TDatabaseConfig = {
+export type TDatabaseService = {
+    client: TDatabaseClient,
     migrations: () => TMigrations,
-    connections: Record<string, TDatabaseClient>,
-    connection: TDatabaseClient
+}
+
+export type TDatabaseConfig = {
+    services: Record<string, TDatabaseService>,
+    current: TDatabaseService
 };

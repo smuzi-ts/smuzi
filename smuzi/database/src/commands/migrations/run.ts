@@ -5,15 +5,13 @@ import {buildMigrationsLogRepository, TMigrationLogAction} from "#lib/migrations
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {
-        const connectionParam = OptionFromNullable(params.connection);
-
-        const connection = connectionParam.match({
-            Some: (key) => OkOrNullableAsError(config.connections[key], `Connection "${key}" not exists`),
-            None: () => Ok(config.connection),
+        const service = OptionFromNullable(params.service).match({
+            Some: (key) => OkOrNullableAsError(config.services[key], `Service "${key}" not exists`),
+            None: () => Ok(config.current),
         })
             .unwrap();
 
-        const migrationsLogRepository = buildMigrationsLogRepository(connection);
+        const migrationsLogRepository = buildMigrationsLogRepository(service.client);
 
         (await migrationsLogRepository.createTableIfNotExists()).unwrap();
 
@@ -23,7 +21,7 @@ export default function (config: TDatabaseConfig) {
                 None: () => 1
             })
 
-        for (const [name, migration] of config.migrations().getList()) {
+        for (const [name, migration] of service.migrations().getList()) {
             if (await migrationsLogRepository.migrationWillBeRuned(name)) {
                 continue;
             }
@@ -31,7 +29,7 @@ export default function (config: TDatabaseConfig) {
             output.success('Run migration - ' + name)
 
             const sql_source = migration.up();
-            await connection.query(sql_source);
+            await service.client.query(sql_source);
 
             await migrationsLogRepository.create({
                 name,

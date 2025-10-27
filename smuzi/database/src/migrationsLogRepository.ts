@@ -40,6 +40,9 @@ export const buildMigrationsLogRepository = (client: TDatabaseClient) => {
             CREATE INDEX IF NOT EXISTS idx_branch_name_created ON ${table} (branch, name, created_at DESC);
 `)
         },
+        listRuned() {
+            return client.query<TMigrationLogRow>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
+        },
         listRunedByBranch(branch: number) {
             return client.query<TMigrationLogRow>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} WHERE branch = ${branch} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
         },

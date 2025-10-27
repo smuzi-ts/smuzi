@@ -1,6 +1,6 @@
-import {asString, isString, None, Option} from "@smuzi/std";
+import {asString, None, Option} from "@smuzi/std";
 
-export type TInputParams = Record<string, string>;
+export type TInputParams = Record<string, string|number|boolean>;
 
 export type TInputCommand = {
     path: string,
