@@ -1,6 +1,6 @@
 import { Pool, types } from 'pg'
-import {TDatabaseClient} from "@smuzi/database";
-import {Err, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
+import {preparedSqlFromObjectToArrayParams, TDatabaseClient} from "@smuzi/database";
+import {Err, isArray, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.ts"
 export type Config = {
     user: string,
@@ -20,10 +20,19 @@ export function postgresClient(config: Config): TDatabaseClient {
 
     return  {
         async query(sql, params = None()) {
+            let preparedSql = sql;
+            let preparedParams = params.someOr([]);
+
+            if (! isArray(preparedParams)) {
+                const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, preparedParams).unwrap();
+                preparedSql = preparedRes.sql;
+                preparedParams = preparedRes.params;
+            }
+
             try {
                 const res = await pool.query({
-                        text: sql,
-                        values: params.someOr([]),
+                        text: preparedSql,
+                        values: preparedParams,
                         types: {
                             getTypeParser: () => val => OptionFromNullable(val)
                         },

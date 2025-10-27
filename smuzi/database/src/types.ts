@@ -1,8 +1,8 @@
-import {isEmpty, None, Option, Result, Some} from "@smuzi/std"
+import { Option, Result} from "@smuzi/std"
 
-type Primitive = number | string;
-type Params = Primitive[] | Record<string, Primitive>
-type Row = Record<string, Option<unknown>>
+export type TPrimitive = number | string;
+export type TParams = TPrimitive[] | Record<string, TPrimitive>
+export type TRow = Record<string, Option>
 
 export type QueryError = {
     message: string
@@ -11,12 +11,14 @@ export type QueryError = {
     table: Option<string>
 }
 
-export type QueryResult<Entity = Row> = Promise<Result<Entity[], QueryError>>
+export type QueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
 
-export type TQuery = <Entity = Row> (sql: string, params?: Option<Params>) => QueryResult<Entity>;
+export type TQuery = <Entity = TRow> (sql: string, params?: Option<TParams>) => QueryResult<Entity>;
+export type TQueryInsert = <Entity = TRow> (sql: string, params?: Option<TParams>) => QueryResult<Entity>;
 
 export type TDatabaseClient = {
-    query: TQuery
+    query: TQuery,
+    insertRow: TQuery
 }
 
 export type TMigration = {
