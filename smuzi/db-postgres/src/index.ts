@@ -25,12 +25,11 @@ export function postgresClient(config: Config): TDatabaseClient {
                         text: sql,
                         values: params.someOr([]),
                         types: {
-                            getTypeParser: () => val => val
+                            getTypeParser: () => val => OptionFromNullable(val)
                         },
                     },
                 );
 
-                console.log(res)
                 return Ok(res.rows)
             } catch (err) {
                 return Err({

@@ -2,7 +2,7 @@ import {Option, Result} from "@smuzi/std"
 
 type Primitive = number | string;
 type Params = Primitive[] | Record<string, Primitive>
-type Row = Record<string, unknown>
+type Row = Record<string, Option<unknown>>
 
 type QueryError = {
     message: string
@@ -24,7 +24,10 @@ export type TMigration = {
 
 export type TMigrations = {
     add: (name: string, migration: TMigration) => void,
-    getList: () => Map<string, TMigration>
+    group: (migrations: TMigrations) => void,
+    getList: () => Map<string, TMigration>,
+    getByName: (name: string) => TMigration,
+    getGroupName:() => string
 }
 
 export type TDatabaseConfig = {

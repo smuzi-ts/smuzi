@@ -4,7 +4,7 @@ export default new Migration(
 {
     up() {
         return `
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS users_permissions (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL UNIQUE,
@@ -14,6 +14,6 @@ export default new Migration(
     );`
     },
    down() {
-       return 'DROP TABLE IF EXISTS users;';
+       return 'DROP TABLE IF EXISTS users_permissions;';
    }
 })
