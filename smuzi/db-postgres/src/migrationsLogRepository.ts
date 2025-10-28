@@ -36,7 +36,7 @@ export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): T
             return client.insertRow(table, row);
         },
         async migrationLastAction(name: string) {
-            const res = (await client.query(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, Some([name]))).unwrap();
+            const res = (await client.query(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, [name])).unwrap();
             return isEmpty(res) || isEmpty(res[0]) || isEmpty(res[0].action)
                 ? None()
                 : res[0].action as Option<string>

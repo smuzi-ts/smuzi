@@ -1,4 +1,4 @@
-import { Option, Result} from "@smuzi/std"
+import {keysOfObject, Option, Result} from "@smuzi/std"
 
 export type TPrimitive = number | string;
 export type TParams = TPrimitive[] | Record<string, TPrimitive>
@@ -12,7 +12,7 @@ export type QueryError = {
 }
 
 export type QueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
-export type TQuery = <Entity = TRow> (sql: string, params?: Option<TParams>) => QueryResult<Entity>;
+export type TQuery = <Entity = TRow> (sql: string, params?: TParams) => QueryResult<Entity>;
 export type TQueryInsert = <Entity = TRow> (table: string, row: Entity, idColumn?: string) => QueryResult<Option>;
 
 export type TDatabaseClient = {
@@ -66,6 +66,7 @@ export type TMigrationLogRow = {
     created_at: Option<Date>,
 }
 
+
 export type TMigrationsLogRepository = {
     getTable(): string,
     createTableIfNotExists(): QueryResult,
@@ -77,3 +78,19 @@ export type TMigrationsLogRepository = {
     migrationWillBeRuned(name: string): Promise<boolean>,
     freshSchema(): QueryResult
 };
+
+export type ExcludeSaving<T> = T & { readonly __ExcludeSaving: unique symbol };
+
+export type UnwrapOption<T> = T extends Option<infer U> ? U : T;
+
+export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U>
+    ? (U extends Option<any> ? true : false)
+    : false;
+
+export type ExcludeExcludeSaveKeys<T> = {
+    [K in keyof T]: IsExcludeSaving<T[K]> extends true ? never : K
+}[keyof T];
+
+export type NonOptionalRow<T> = {
+    [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
+}

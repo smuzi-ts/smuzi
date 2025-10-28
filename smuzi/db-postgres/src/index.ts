@@ -18,20 +18,19 @@ export function postgresClient(config: Config): TDatabaseClient {
         process.exit(-1)
     })
 
-    async function query(sql, params = None()) {
+    async function query(sql, params = []) {
         let preparedSql = sql;
-        let preparedParams = params.someOr([]);
 
-        if (! isArray(preparedParams)) {
-            const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, preparedParams).unwrap();
+        if (! isArray(params)) {
+            const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
             preparedSql = preparedRes.sql;
-            preparedParams = preparedRes.params;
+            params = preparedRes.params;
         }
 
         try {
             const res = await pool.query({
                     text: preparedSql,
-                    values: preparedParams,
+                    values: params,
                     types: {
                         getTypeParser: () => val => OptionFromNullable(val)
                     },
@@ -60,7 +59,7 @@ export function postgresClient(config: Config): TDatabaseClient {
             const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
             const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`;
 
-            return (await query(sql, Some(values))).mapOk(rows => rows[0][idColumn]);
+            return (await query(sql, values)).mapOk(rows => rows[0][idColumn]);
         }
     }
 }

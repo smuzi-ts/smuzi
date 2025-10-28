@@ -1,11 +1,13 @@
 import {TInputParams} from "@smuzi/console";
+import {UserRepository} from "#users/repositories/UserRepository.ts";
+import {OptionFromNullable} from "@smuzi/std";
 
-type User = {
-    id: number,
-    name: string,
-}
+export const usersInfo = async (output, params: TInputParams)=> {
+    const userRep = UserRepository();
+    const userId = Number(OptionFromNullable(params.id).unwrap('Param --id is required'));
+    const user = (await userRep.find(userId))
+        .unwrap()
+        .unwrap();
 
-export const usersInfo = async (params: TInputParams)=> {
-    const res = await query<User>("SELECT * FROM users")
-    console.log(res.unwrap()[0])
+    console.log('user', user);
 }
