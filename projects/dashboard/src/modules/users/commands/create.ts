@@ -1,12 +1,17 @@
 import {databaseConfig} from "#configs/database.ts";
 import {Some} from "@smuzi/std";
+import {UserRepository} from "#users/repositories/UserRepository.ts";
 
-type UserCreate = {
-    id: string
-}
 
-export const createUser = async  (params: UserCreate)=>  {
-    console.log('createUser', params);
+export const createUser = async  (output, params)=>  {
+    const userRep = UserRepository();
 
-    console.log(await databaseConfig.connection.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, created_at, updated_at", Some(['test1', 'test2', 'te3st'])))
+    const resp = await userRep.insertRow({
+        name: "test",
+        email: "test",
+        password: "test",
+        created_at: new Date()
+    })
+
+    console.log(resp)
 }

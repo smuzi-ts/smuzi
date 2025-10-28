@@ -41,7 +41,7 @@ export function postgresClient(config: Config): TDatabaseClient {
             return Ok(res.rows)
         } catch (err) {
             return Err({
-                sql: preparedSql,
+                sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
                 message: err.message,
                 code: Some(err.code),
                 detail: Some(err.detail),
