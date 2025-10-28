@@ -9,8 +9,8 @@ export default new Migration(
                 name VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP,
+                updated_at TIMESTAMP
     );`
     },
    down() {
