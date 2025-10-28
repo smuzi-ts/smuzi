@@ -29,14 +29,15 @@ export default function (config: TDatabaseConfig) {
             output.success('Run migration - ' + name)
 
             const sql_source = clearSQL(migration.up());
-            await service.client.query(sql_source);
 
-            await migrationsLogRepository.create({
+            (await service.client.query(sql_source)).unwrap();
+
+            (await migrationsLogRepository.create({
                 name,
                 branch,
                 action: TMigrationLogAction.up,
                 sql_source,
-            })
+            })).unwrap()
         }
     }
 }

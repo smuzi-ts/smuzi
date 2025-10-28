@@ -33,12 +33,7 @@ export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): T
                 : res[0].last_branch as Option<number>
         },
         create(row) {
-            return client.query(`INSERT INTO ${table} (name, branch, action, sql_source) values($1,$2,$3,$4)`, Some([
-                row.name,
-                row.branch,
-                row.action,
-                row.sql_source,
-            ]))
+            return client.insertRow(table, row);
         },
         async migrationLastAction(name: string) {
             const res = (await client.query(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, Some([name]))).unwrap();

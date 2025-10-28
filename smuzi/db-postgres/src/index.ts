@@ -18,36 +18,49 @@ export function postgresClient(config: Config): TDatabaseClient {
         process.exit(-1)
     })
 
-    return  {
-        async query(sql, params = None()) {
-            let preparedSql = sql;
-            let preparedParams = params.someOr([]);
+    async function query(sql, params = None()) {
+        let preparedSql = sql;
+        let preparedParams = params.someOr([]);
 
-            if (! isArray(preparedParams)) {
-                const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, preparedParams).unwrap();
-                preparedSql = preparedRes.sql;
-                preparedParams = preparedRes.params;
-            }
+        if (! isArray(preparedParams)) {
+            const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, preparedParams).unwrap();
+            preparedSql = preparedRes.sql;
+            preparedParams = preparedRes.params;
+        }
 
-            try {
-                const res = await pool.query({
-                        text: preparedSql,
-                        values: preparedParams,
-                        types: {
-                            getTypeParser: () => val => OptionFromNullable(val)
-                        },
+        try {
+            const res = await pool.query({
+                    text: preparedSql,
+                    values: preparedParams,
+                    types: {
+                        getTypeParser: () => val => OptionFromNullable(val)
                     },
-                );
+                },
+            );
 
-                return Ok(res.rows)
-            } catch (err) {
-                return Err({
-                    message: err.message,
-                    code: Some(err.code),
-                    detail: Some(err.detail),
-                    table: OptionFromNullable(err.table),
-                });
-            }
+            return Ok(res.rows)
+        } catch (err) {
+            return Err({
+                sql: preparedSql,
+                message: err.message,
+                code: Some(err.code),
+                detail: Some(err.detail),
+                table: OptionFromNullable(err.table),
+            });
+        }
+    }
+
+
+    return  {
+        query,
+        async insertRow(table, row, idColumn = 'id') {
+            //TODO: protected for injections
+            const columns = Object.keys(row);
+            const values = Object.values(row);
+            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`;
+
+            return (await query(sql, Some(values))).mapOk(rows => rows[0][idColumn]);
         }
     }
 }

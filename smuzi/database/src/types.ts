@@ -12,13 +12,12 @@ export type QueryError = {
 }
 
 export type QueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
-
 export type TQuery = <Entity = TRow> (sql: string, params?: Option<TParams>) => QueryResult<Entity>;
-export type TQueryInsert = <Entity = TRow> (sql: string, params?: Option<TParams>) => QueryResult<Entity>;
+export type TQueryInsert = <Entity = TRow> (table: string, row: Entity, idColumn?: string) => QueryResult<Option>;
 
 export type TDatabaseClient = {
     query: TQuery,
-    insertRow: TQuery
+    insertRow: TQueryInsert,
 }
 
 export type TMigration = {
@@ -73,7 +72,7 @@ export type TMigrationsLogRepository = {
     listRuned(): QueryResult<TMigrationLogRow>,
     listRunedByBranch(branch: number): QueryResult<TMigrationLogRow>,
     getLastBranch(): Promise<Option<number>>,
-    create(row: TMigrationLogSave): QueryResult,
+    create(row: TMigrationLogSave): QueryResult<Option>,
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
     freshSchema(): QueryResult
