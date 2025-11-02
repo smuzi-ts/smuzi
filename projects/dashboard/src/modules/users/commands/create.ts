@@ -8,7 +8,7 @@ export const createUser = async  (output, params)=>  {
         email: faker.string(),
         password: "test",
         created_at: new Date()
-    })).unwrap();
+    }));
 
-    console.log(userId.unwrap());
+    console.log(userId);
 }

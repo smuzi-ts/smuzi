@@ -1,7 +1,9 @@
 import { Pool, types } from 'pg'
 import {preparedSqlFromObjectToArrayParams, TDatabaseClient} from "@smuzi/database";
-import {Err, isArray, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
+import {dump, Err, isArray, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.ts"
+export * from "#lib/entityRepository.ts"
+
 export type Config = {
     user: string,
     password: string,
@@ -18,50 +20,39 @@ export function postgresClient(config: Config): TDatabaseClient {
         process.exit(-1)
     })
 
-    async function query(sql, params = []) {
-        let preparedSql = sql;
+    return {
+        async query(sql, params = []) {
 
-        if (! isArray(params)) {
-            const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
-            preparedSql = preparedRes.sql;
-            params = preparedRes.params;
-        }
+            let preparedSql = sql;
 
-        try {
-            const res = await pool.query({
-                    text: preparedSql,
-                    values: params,
-                    types: {
-                        getTypeParser: () => val => OptionFromNullable(val)
+            if (!isArray(params)) {
+                const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
+                preparedSql = preparedRes.sql;
+                params = preparedRes.params;
+            }
+
+            try {
+                const res = await pool.query({
+                        text: preparedSql,
+                        values: params,
+                        types: {
+                            getTypeParser: () => val => OptionFromNullable(val)
+                        },
                     },
-                },
-            );
+                );
 
-            return Ok(res.rows)
-        } catch (err) {
-            return Err({
-                sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
-                message: err.message,
-                code: Some(err.code),
-                detail: Some(err.detail),
-                table: OptionFromNullable(err.table),
-            });
+                return Ok(res.rows)
+            } catch (err) {
+                return Err({
+                    sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
+                    message: err.message,
+                    code: Some(err.code),
+                    detail: Some(err.detail),
+                    table: OptionFromNullable(err.table),
+                });
+            }
         }
-    }
 
-
-    return  {
-        query,
-        async insertRow(table, row, idColumn = 'id') {
-            //TODO: protected for injections
-            const columns = Object.keys(row);
-            const values = Object.values(row);
-            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
-            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`;
-
-            return (await query(sql, values))
-                .mapOk(rows => OptionFromNullable(rows[0][idColumn]));
-        }
     }
 }
 

@@ -1,7 +1,6 @@
 import {keysOfObject, Option, Result} from "@smuzi/std"
 
-export type TPrimitive = number | string;
-export type TParams = TPrimitive[] | Record<string, TPrimitive>
+export type TParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, Option>
 
 export type QueryError = {
@@ -11,14 +10,12 @@ export type QueryError = {
     table: Option<string>
 }
 
-export type QueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
-export type TQueryMethod = <Entity = TRow> (sql: string, params?: TParams) => QueryResult<Entity>;
+export type TQueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
+export type TQueryMethod = <Entity = TRow> (sql: string, params?: TParams) => TQueryResult<Entity>;
 export type TInsertRowResult<Entity = TRow> = Promise<Result<ExtractPrimaryKey<Entity>, QueryError>>
-export type TInsertRowMethod = <Entity = TRow> (table: string, row: TInsertRow<Entity>, idColumn?: string) => TInsertRowResult<Entity>;
 
 export type TDatabaseClient = {
     query: TQueryMethod,
-    insertRow: TInsertRowMethod,
 }
 
 export type TMigration = {
@@ -38,6 +35,7 @@ export type TDatabaseService = {
     client: TDatabaseClient,
     buildMigrations: () => TMigrations,
     buildMigrationLogRepository:  (client: TDatabaseClient) => TMigrationsLogRepository,
+    buildEntityRepository: (client: TDatabaseClient) => <Entity = TRow>(table: string) => TEntityRepository<Entity>,
 }
 
 export type TDatabaseConfig = {
@@ -70,22 +68,27 @@ export type TMigrationLogRow = {
 
 export type TMigrationsLogRepository = {
     getTable(): string,
-    createTableIfNotExists(): QueryResult,
-    listRuned(): QueryResult<TMigrationLogRow>,
-    listRunedByBranch(branch: number): QueryResult<TMigrationLogRow>,
+    createTableIfNotExists(): TQueryResult,
+    listRuned(): TQueryResult<TMigrationLogRow>,
+    listRunedByBranch(branch: number): TQueryResult<TMigrationLogRow>,
     getLastBranch(): Promise<Option<number>>,
-    create(row: TMigrationLogSave): QueryResult<Option>,
+    create(row: TMigrationLogSave): TQueryResult<Option>,
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
-    freshSchema(): QueryResult
+    freshSchema(): TQueryResult
+};
+
+export type TEntityRepository<Entity = TRow> = {
+    find(id: number, options: { columns: string[], idColumn: string}): TQueryResult<Entity>,
+    insertRow(row: TInsertRow<Entity>, idColumn?: string): TInsertRowResult<Entity>;
 };
 
 export type ExcludeSaving<T> = T & { readonly __ExcludeSaving: unique symbol };
-export type PrimaryKey<T> = T & { readonly __PrimaryKey: unique symbol };
+export type AutoId<T> = T & { readonly __PrimaryKey: unique symbol };
 
 export type UnwrapOption<T> = T extends Option<infer U> ? U : T;
 
-export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U> | PrimaryKey<infer U>
+export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U> | AutoId<infer U>
     ? (U extends Option<any> ? true : false)
     : false;
 
@@ -99,5 +102,5 @@ export type TInsertRow<T> = {
 }
 
 type ExtractPrimaryKey<T> = {
-    [K in keyof T]: T[K] extends PrimaryKey<infer U> ? U : Option
+    [K in keyof T]: T[K] extends AutoId<infer U> ? U : Option
 }[keyof T];

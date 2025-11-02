@@ -1,5 +1,5 @@
 import {DatabaseConfig, Migrations} from "@smuzi/database";
-import {buildPostgresMigrationsLogRepository, postgresClient} from "@smuzi/db-postgres";
+import {buildPostgresEntityRepository, buildPostgresMigrationsLogRepository, postgresClient} from "@smuzi/db-postgres";
 import {usersMigrations} from "#users/database/migrations/index.ts";
 import {env} from "@smuzi/std";
 
@@ -18,7 +18,8 @@ const services = {
 
             return migrations;
         },
-        buildMigrationLogRepository: buildPostgresMigrationsLogRepository
+        buildMigrationLogRepository: buildPostgresMigrationsLogRepository,
+        buildEntityRepository: buildPostgresEntityRepository,
     }
 }
 

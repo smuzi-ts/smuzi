@@ -35,7 +35,7 @@ export class Result<T, E> implements IMatched {
         });
     }
 
-    mapOk<RO>(handlerOk: (value: T) => RO): Result<RO | never, E> {
+    wrapOk<RO>(handlerOk: (value: T) => RO): Result<RO | never, E> {
         if (this instanceof ResultOk) {
             return Ok(handlerOk(this._val))
         }
