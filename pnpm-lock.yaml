@@ -17,6 +17,9 @@ importers:
       '@smuzi/db-postgres':
         specifier: workspace:*
         version: link:../../smuzi/db-postgres
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../../smuzi/faker
       '@smuzi/http':
         specifier: workspace:*
         version: link:../../smuzi/server
@@ -81,9 +84,9 @@ importers:
 
   smuzi/faker:
     dependencies:
-      '@smuzi/std-old':
+      '@smuzi/std':
         specifier: workspace:*
-        version: link:../stdOld
+        version: link:../std
     devDependencies:
       '@smuzi/tests':
         specifier: workspace:*

@@ -12,12 +12,13 @@ export type QueryError = {
 }
 
 export type QueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
-export type TQuery = <Entity = TRow> (sql: string, params?: TParams) => QueryResult<Entity>;
-export type TQueryInsert = <Entity = TRow> (table: string, row: Entity, idColumn?: string) => QueryResult<Option>;
+export type TQueryMethod = <Entity = TRow> (sql: string, params?: TParams) => QueryResult<Entity>;
+export type TInsertRowResult<Entity = TRow> = Promise<Result<ExtractPrimaryKey<Entity>, QueryError>>
+export type TInsertRowMethod = <Entity = TRow> (table: string, row: TInsertRow<Entity>, idColumn?: string) => TInsertRowResult<Entity>;
 
 export type TDatabaseClient = {
-    query: TQuery,
-    insertRow: TQueryInsert,
+    query: TQueryMethod,
+    insertRow: TInsertRowMethod,
 }
 
 export type TMigration = {
@@ -80,17 +81,23 @@ export type TMigrationsLogRepository = {
 };
 
 export type ExcludeSaving<T> = T & { readonly __ExcludeSaving: unique symbol };
+export type PrimaryKey<T> = T & { readonly __PrimaryKey: unique symbol };
 
 export type UnwrapOption<T> = T extends Option<infer U> ? U : T;
 
-export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U>
+export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U> | PrimaryKey<infer U>
     ? (U extends Option<any> ? true : false)
     : false;
+
 
 export type ExcludeExcludeSaveKeys<T> = {
     [K in keyof T]: IsExcludeSaving<T[K]> extends true ? never : K
 }[keyof T];
 
-export type NonOptionalRow<T> = {
+export type TInsertRow<T> = {
     [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
 }
+
+type ExtractPrimaryKey<T> = {
+    [K in keyof T]: T[K] extends PrimaryKey<infer U> ? U : Option
+}[keyof T];

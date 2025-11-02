@@ -20,7 +20,9 @@
     "@smuzi/database": "workspace:*",
     "@smuzi/http": "workspace:*",
     "@smuzi/std": "workspace:*",
-    "@smuzi/tests": "workspace:*"
+    "@smuzi/tests": "workspace:*",
+    "@smuzi/faker": "workspace:*"
+
   },
   "devDependencies": {
     "@types/node": "^22.15.21"

@@ -13,8 +13,8 @@ export function None<T extends Val>(): Option<T> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T>(value: T): Option<T> {
-    return (value === null || value === undefined) ? None() : Some(value);
+export function OptionFromNullable<T>(value: T): Option<T> | T {
+    return (value === null || value === undefined) ? None() : (isOption(value) ? value : Some(value));
 }
 
 export class Option<T = unknown> {
@@ -89,6 +89,6 @@ class OptionNone extends Option<never>{
 }
 
 
-export function isOption(value: unknown): value is Option<unknown> {
+export function isOption<T = unknown>(value: unknown): value is Option<T> {
     return value instanceof Option;
 }

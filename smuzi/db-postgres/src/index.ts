@@ -59,7 +59,8 @@ export function postgresClient(config: Config): TDatabaseClient {
             const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
             const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`;
 
-            return (await query(sql, values)).mapOk(rows => rows[0][idColumn]);
+            return (await query(sql, values))
+                .mapOk(rows => OptionFromNullable(rows[0][idColumn]));
         }
     }
 }

@@ -22,7 +22,7 @@
     "@smuzi/tests": "workspace:*"
   },
   "dependencies": {
-    "@smuzi/std-old": "workspace:*"
+    "@smuzi/std": "workspace:*"
   },
   "imports": {
     "#lib/*": "./src/*"

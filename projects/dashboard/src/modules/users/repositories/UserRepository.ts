@@ -1,9 +1,9 @@
 import {databaseConfig} from "#configs/database.ts";
 import {keysOfObject, Option, OptionFromNullable} from "@smuzi/std";
-import {ExcludeSaving, NonOptionalRow} from "@smuzi/database";
+import {PrimaryKey, TInsertRow} from "@smuzi/database";
 
 type TUserRow = {
-    id: ExcludeSaving<Option<string>>,
+    id: PrimaryKey<Option<string>>,
     name: Option<string>,
     email: Option<string>,
     password: Option<string>,
@@ -21,8 +21,8 @@ export const UserRepository = (client = databaseConfig.current.client) => {
         async find(id: number) {
             return (await client.query<TUserRow>(`SELECT ${publicFields} FROM ${table} where id = $1`, [id])).mapOk(res => OptionFromNullable(res[0]));
         },
-        insertRow(row: NonOptionalRow<TUserRow>) {
-            return client.insertRow(table, row);
+        async insertRow(row: TInsertRow<TUserRow>) {
+            return client.insertRow<TUserRow>(table, row);
         },
     }
 }

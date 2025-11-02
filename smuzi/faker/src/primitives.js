@@ -1,4 +1,4 @@
-import {isEmpty} from "@smuzi/std/utils";
+import {isEmpty} from "@smuzi/std";
 
 export function string({min = 5, max = 10, prefix = '', suffix = ''} = {}) {
     if (min > max) throw new Error('min must be less than or equal to max');

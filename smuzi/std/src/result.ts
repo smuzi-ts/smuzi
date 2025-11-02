@@ -42,7 +42,6 @@ export class Result<T, E> implements IMatched {
 
         return this as unknown as Result<never, E>;
     }
-
 }
 
 
