@@ -18,8 +18,7 @@ const services = {
 
             return migrations;
         },
-        buildMigrationLogRepository: buildPostgresMigrationsLogRepository,
-        buildEntityRepository: buildPostgresEntityRepository,
+        buildMigrationLogRepository: buildPostgresMigrationsLogRepository
     }
 }
 

@@ -1,4 +1,4 @@
-import {keysOfObject, Option, Result} from "@smuzi/std"
+import {Option, Result} from "@smuzi/std"
 
 export type TParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, Option>
@@ -11,11 +11,11 @@ export type QueryError = {
 }
 
 export type TQueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
-export type TQueryMethod = <Entity = TRow> (sql: string, params?: TParams) => TQueryResult<Entity>;
 export type TInsertRowResult<Entity = TRow> = Promise<Result<ExtractPrimaryKey<Entity>, QueryError>>
 
 export type TDatabaseClient = {
-    query: TQueryMethod,
+    query: <Entity = TRow>(sql: string, params?: TParams) => TQueryResult<Entity>,
+    insertRow:  <Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string) => TInsertRowResult<Entity>,
 }
 
 export type TMigration = {
@@ -35,7 +35,6 @@ export type TDatabaseService = {
     client: TDatabaseClient,
     buildMigrations: () => TMigrations,
     buildMigrationLogRepository:  (client: TDatabaseClient) => TMigrationsLogRepository,
-    buildEntityRepository: (client: TDatabaseClient) => <Entity = TRow>(table: string) => TEntityRepository<Entity>,
 }
 
 export type TDatabaseConfig = {
@@ -76,11 +75,6 @@ export type TMigrationsLogRepository = {
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
     freshSchema(): TQueryResult
-};
-
-export type TEntityRepository<Entity = TRow> = {
-    find(id: number, options: { columns: string[], idColumn: string}): TQueryResult<Entity>,
-    insertRow(row: TInsertRow<Entity>, idColumn?: string): TInsertRowResult<Entity>;
 };
 
 export type ExcludeSaving<T> = T & { readonly __ExcludeSaving: unique symbol };

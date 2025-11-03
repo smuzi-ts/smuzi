@@ -1,5 +1,5 @@
 import { Pool, types } from 'pg'
-import {preparedSqlFromObjectToArrayParams, TDatabaseClient} from "@smuzi/database";
+import {preparedSqlFromObjectToArrayParams, TDatabaseClient, TInsertRow} from "@smuzi/database";
 import {dump, Err, isArray, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.ts"
 export * from "#lib/entityRepository.ts"
@@ -46,11 +46,22 @@ export function postgresClient(config: Config): TDatabaseClient {
                 return Err({
                     sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
                     message: err.message,
-                    code: Some(err.code),
-                    detail: Some(err.detail),
+                    code: OptionFromNullable(err.code),
+                    detail: OptionFromNullable(err.detail),
                     table: OptionFromNullable(err.table),
                 });
             }
+        },
+
+        async insertRow(table, row, idColumn = 'id') {
+            //TODO: protected for injections
+            const columns = Object.keys(row);
+            const values = Object.values(row);
+            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`;
+
+            return (await this.query(sql, values))
+                .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
         }
 
     }

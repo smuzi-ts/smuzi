@@ -10,5 +10,5 @@ export const createUser = async  (output, params)=>  {
         created_at: new Date()
     }));
 
-    console.log(userId);
+    console.log(userId.unwrap().unwrap());
 }

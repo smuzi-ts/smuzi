@@ -10,16 +10,22 @@ type TUserRow = {
     created_at: Option<Date>,
 }
 
-export const UserRepository = (service = databaseConfig.current) => {
+export const UserRepository = (client = databaseConfig.current.client) => {
+
     const table = 'users';
 
     const publicFields = keysOfObject<TUserRow>(['id', 'name', 'email', 'created_at'])
             .join(',')
 
-    const entityRep = service.buildEntityRepository(service.client)<TUserRow>(table);
-
     return {
-        ...entityRep,
+        getTable: () => table,
+        async find(id: number) {
+            return (await client.query<TUserRow>(`SELECT ${publicFields} FROM ${table} where id = $1`, [id]))
+                .wrapOk(res => OptionFromNullable(res[0]));
+        },
+        async insertRow(row: TInsertRow<TUserRow>) {
+            return client.insertRow(table, row, 'tt');
+        },
     }
 }
 
