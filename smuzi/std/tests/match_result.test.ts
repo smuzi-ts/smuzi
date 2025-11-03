@@ -1,5 +1,5 @@
 import {assert, describe, errMsg, it, okMsg} from "@smuzi/tests";
-import {Err, Ok, Result} from "#std/result.ts";
+import {Err, Ok, Result} from "#lib/result.ts";
 
 describe("Std-Result", () => {
     it(okMsg("Matched Ok"), () => {

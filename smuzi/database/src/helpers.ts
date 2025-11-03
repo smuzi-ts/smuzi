@@ -1,12 +1,12 @@
 import {Err, isEmpty, Ok, Result} from "@smuzi/std";
-import {TParams, TPrimitive} from "#lib/types.ts";
+import {TQueryParams} from "#lib/types.ts";
 
 export function clearSQL(sql: string): string
 {
     return sql.trim();
 }
 
-export function preparedSqlFromObjectToArrayParams(sql: string, params: TParams): Result<{sql: string, params: any[]}, string>
+export function preparedSqlFromObjectToArrayParams(sql: string, params: TQueryParams): Result<{sql: string, params: any[]}, string>
 {
     let paramArray = [];
     let index = 1;

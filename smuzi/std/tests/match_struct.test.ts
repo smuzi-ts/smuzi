@@ -1,6 +1,6 @@
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
-import { match } from "#std/match.ts";
-import { Struct } from "#std/struct.ts";
+import { match } from "#lib/match.ts";
+import { Struct } from "#lib/struct.ts";
 
 describe("Std-match-Struct", () => {
     it(okMsg("Simple http router"), () => {

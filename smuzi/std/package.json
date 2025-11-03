@@ -1,18 +1,22 @@
 {
   "name": "@smuzi/std",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
   "description": "",
   "scripts": {
-    "test": "tsx --test"
+    "test": "tsx --test",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "keywords": ["std","standart library", "match", "pattern matching", "result", "option"],
+  "author": "Denis Ratshniak",
   "license": "ISC",
-  "files": ["./src"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["./src", "./dist"],
    "exports": {
-     ".": "./src/prelude.ts"
+     ".": "./src/prelude.js"
    },
   "dependencies": {
     "@smuzi/faker": "workspace:*",

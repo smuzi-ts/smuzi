@@ -1,5 +1,5 @@
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
-import { Pipe } from "#std/pipeline.ts";
+import { Pipe } from "#lib/pipeline.ts";
 
 describe("Std-Pipeline", () => {
     it(okMsg("Do with strings"), () => {
