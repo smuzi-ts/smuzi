@@ -13,7 +13,7 @@ export function None<T extends Val>(): Option<T> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T>(value: T): Option<T> | T {
+export function OptionFromNullable<T>(value: T | Option<T>): Option<T> {
     return (value === null || value === undefined) ? None() : (isOption(value) ? value : Some(value));
 }
 

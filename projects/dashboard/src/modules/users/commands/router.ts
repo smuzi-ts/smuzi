@@ -1,6 +1,6 @@
 import {CreateConsoleRouter} from "@smuzi/console";
-import {createUser} from "#users/commands/create.js";
-import {usersInfo} from "#users/commands/info.js";
+import {createUser} from "#users/commands/create.ts";
+import {usersInfo} from "#users/commands/info.ts";
 import {Some} from "@smuzi/std";
 
 export const usersConsole = CreateConsoleRouter('users:');

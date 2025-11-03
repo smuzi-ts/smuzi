@@ -23,7 +23,7 @@ export default function (config: TDatabaseConfig) {
             output.success('Down migration - ' + name)
 
             const sql_source = clearSQL(migration.down());
-            await service.client.query(sql_source);
+            (await service.client.query(sql_source)).unwrap();
 
             (await migrationsLogRepository.create({
                 name,

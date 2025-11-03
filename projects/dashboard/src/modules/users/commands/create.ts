@@ -1,6 +1,7 @@
 import {UserRepository} from "#users/repositories/UserRepository.ts";
 import { faker } from "@smuzi/faker"
-export const createUser = async  (output, params)=>  {
+import {ConsoleCommand} from "@smuzi/console";
+export const createUser = ConsoleCommand(async (output, params)=>  {
     const userRep = UserRepository();
 
     const userId = (await userRep.insertRow({
@@ -11,4 +12,4 @@ export const createUser = async  (output, params)=>  {
     }));
 
     console.log(userId.unwrap().unwrap());
-}
+})

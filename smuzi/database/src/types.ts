@@ -1,6 +1,6 @@
 import {Option, Result} from "@smuzi/std"
 
-export type TParams = unknown[] | Record<string, unknown>
+export type TQueryParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, Option>
 
 export type QueryError = {
@@ -14,7 +14,7 @@ export type TQueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
 export type TInsertRowResult<Entity = TRow> = Promise<Result<ExtractPrimaryKey<Entity>, QueryError>>
 
 export type TDatabaseClient = {
-    query: <Entity = TRow>(sql: string, params?: TParams) => TQueryResult<Entity>,
+    query: <Entity = TRow>(sql: string, params?: TQueryParams) => TQueryResult<Entity>,
     insertRow:  <Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string) => TInsertRowResult<Entity>,
 }
 
@@ -71,7 +71,7 @@ export type TMigrationsLogRepository = {
     listRuned(): TQueryResult<TMigrationLogRow>,
     listRunedByBranch(branch: number): TQueryResult<TMigrationLogRow>,
     getLastBranch(): Promise<Option<number>>,
-    create(row: TMigrationLogSave): TQueryResult<Option>,
+    create(row: TMigrationLogSave): TInsertRowResult<TMigrationLogSave>,
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
     freshSchema(): TQueryResult

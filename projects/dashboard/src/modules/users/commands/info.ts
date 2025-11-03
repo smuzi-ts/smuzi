@@ -1,13 +1,11 @@
-import {TInputParams} from "@smuzi/console";
+import {ConsoleCommand, TInputParams} from "@smuzi/console";
 import {UserRepository} from "#users/repositories/UserRepository.ts";
 import {OptionFromNullable} from "@smuzi/std";
 
-export const usersInfo = async (output, params: TInputParams)=> {
+export const usersInfo = ConsoleCommand(async (output, params: TInputParams)=> {
     const userRep = UserRepository();
     const userId = Number(OptionFromNullable(params.id).unwrap('Param --id is required'));
-    const user = (await userRep.find(userId))
-        .unwrap()
-        .unwrap();
+    const user = (await userRep.find(userId));
 
-    console.log('user', user);
-}
+    console.log('user', user.unwrap().unwrap().created_at.unwrap());
+})

@@ -9,7 +9,7 @@ export * from "#lib/router.ts"
 export * from "#lib/output/types.ts"
 export * from "#lib/output/printers/StandardOutput.ts"
 export * from "#lib/config.ts"
-
+export * from "#lib/command.ts"
 
 export type TNotFoundHandle = (input: TInputCommand) => never
 
@@ -36,3 +36,4 @@ export function handle(
 
     matchedCommand.action(config.output, inputParsed.params)
 }
+
