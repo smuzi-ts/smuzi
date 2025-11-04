@@ -12,7 +12,7 @@
   "types": "build/index.d.ts",
   "keywords": [
     "std",
-    "standart library",
+    "standart library",c
     "match",
     "pattern matching",
     "result",
