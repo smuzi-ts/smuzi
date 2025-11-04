@@ -1,6 +1,6 @@
-import {asString} from "./checker.ts";
-import {type IMatched } from "./match.ts";
-import { panic } from "./panic.ts";
+import {asString} from "./checker.js";
+import {type IMatched } from "./match.js";
+import { panic } from "./panic.js";
 
 type Val = NonNullable<unknown>;
 export type ResultPatterns<T, E, RO, RE> = { Ok: (value: T) => RO; Err: (error: E) => RE | RO; }

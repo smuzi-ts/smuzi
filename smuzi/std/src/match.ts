@@ -1,6 +1,6 @@
-import { isRegExp, isArray, isString, isFunction, isNumber, isObject, asFunction } from "./checker.ts";
-import { dump } from "./debug.ts";
-import { None, Option, Some } from "./option.ts";
+import { isRegExp, isArray, isString, isFunction, isNumber, isObject, asFunction } from "./checker.js";
+import { dump } from "./debug.js";
+import { None, Option, Some } from "./option.js";
 
 
 type Checker<T> = (v: T) => boolean;

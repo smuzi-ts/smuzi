@@ -1,5 +1,5 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { Some, None } from "#lib/option.ts";
+import { Some, None } from "#lib/option.js";
 
 describe("Std-match-Option", () => {
     it(okMsg("Matched to Some"), () => {

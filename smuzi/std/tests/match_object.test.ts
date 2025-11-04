@@ -1,5 +1,5 @@
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
-import { match } from "#lib/match.ts";
+import { match } from "#lib/match.js";
 
 describe("Std-match-Object", () => {
     it(okMsg("Matched all properties"), () => {

@@ -1,4 +1,4 @@
-import {None, Option, OptionFromNullable} from "#lib/option.ts";
+import {None, Option, OptionFromNullable} from "#lib/option.js";
 
 export function env(key: string, defaultValue: Option<string> = None()): string {
     let val = defaultValue;

@@ -1,4 +1,4 @@
-import { impl, isImpl, Struct } from "#lib/struct.ts";
+import { impl, isImpl, Struct } from "#lib/struct.js";
 import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
 
 

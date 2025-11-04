@@ -1,5 +1,5 @@
 import {assert, describe, it, skip, okMsg} from "@smuzi/tests";
-import {MapNumberPatterns, match} from "#lib/match.ts";
+import {MapNumberPatterns, match} from "#lib/match.js";
 
 describe("Std-match-Numbers", () => {
     it(okMsg("Matched value via Number patterns"), () => {

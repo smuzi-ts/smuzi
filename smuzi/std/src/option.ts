@@ -1,6 +1,6 @@
-import { asObject } from "./checker.ts";
-import { dump } from "./debug.ts";
-import { panic } from "./panic.ts";
+import { asObject } from "./checker.js";
+import { dump } from "./debug.js";
+import { panic } from "./panic.js";
 
 type Val = NonNullable<unknown>;
 export type OptionPatterns<T , R> = { Some: (value: T) => R; None: () => R; }

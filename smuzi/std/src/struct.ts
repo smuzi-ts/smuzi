@@ -1,4 +1,4 @@
-import { dump } from "./debug.ts";
+import { dump } from "./debug.js";
 
 const Traits = new Set();
 

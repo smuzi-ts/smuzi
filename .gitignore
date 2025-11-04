@@ -9,3 +9,11 @@ ssl
 .DS_Store
 
 .env
+
+# TypeScript build cache
+*.tsbuildinfo
+*.tsbuildinfo.json
+
+# compiled output
+build/
+dist/

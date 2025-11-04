@@ -1,5 +1,5 @@
 import {assert, describe, it, okMsg} from "@smuzi/tests";
-import {MapStringPatterns, match} from "#lib/match.ts";
+import {MapStringPatterns, match} from "#lib/match.js";
 
 describe("Std-match-Strings", () => {
     it(okMsg("Matched value String via String patterns"), () => {

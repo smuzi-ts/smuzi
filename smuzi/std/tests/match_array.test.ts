@@ -1,5 +1,5 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { match } from "#lib/match.ts";
+import { match } from "#lib/match.js";
 
 describe("Std-match-Array", () => {
     it(okMsg("Matched all values is Strings"), () => {
