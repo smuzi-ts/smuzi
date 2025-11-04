@@ -1,5 +1,5 @@
 import {ConsoleCommand, TInputParams} from "@smuzi/console";
-import {UserRepository} from "#users/repositories/UserRepository.ts";
+import {UserRepository} from "#users/repositories/UserRepository.js";
 import {OptionFromNullable} from "@smuzi/std";
 
 export const usersInfo = ConsoleCommand(async (output, params: TInputParams)=> {

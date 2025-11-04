@@ -1,4 +1,4 @@
-import {databaseConfig} from "#configs/database.ts";
+import {databaseConfig} from "#configs/database.js";
 import {keysOfObject, Option, OptionFromNullable} from "@smuzi/std";
 import {AutoId, TInsertRow} from "@smuzi/database";
 
@@ -24,7 +24,7 @@ export const UserRepository = (client = databaseConfig.current.client) => {
                 .wrapOk(res => OptionFromNullable(res[0]));
         },
         async insertRow(row: TInsertRow<TUserRow>) {
-            return client.insertRow(table, row, 'tt');
+            return client.insertRow(table, row);
         },
     }
 }

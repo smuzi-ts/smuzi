@@ -1,5 +1,5 @@
 import {ConsoleConfig, CreateConsoleRouter, StandardOutput, StandardThema, SystemInputParser} from "@smuzi/console";
-import {usersConsole} from "#users/commands/router.ts";
+import {usersConsole} from "#users/commands/router.js";
 import {databaseConsole} from "@smuzi/database";
 import {databaseConfig} from "#configs/database.js";
 

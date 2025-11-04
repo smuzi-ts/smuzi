@@ -1,4 +1,4 @@
-import {databaseConfig} from "#configs/database.ts";
-import "./global.d.ts"
+import {databaseConfig} from "#configs/database.js";
+import "./global.d.js"
 
 globalThis.query = databaseConfig.current.client.query

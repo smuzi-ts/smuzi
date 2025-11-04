@@ -2,7 +2,6 @@
   "extends": "./tsconfig.common.json",
   "include": [],
   "references": [
-    { "path": "smuzi/std" },
     { "path": "smuzi/server" },
     { "path": "smuzi/console" },
     { "path": "smuzi/database" },

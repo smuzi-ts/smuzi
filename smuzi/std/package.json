@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/std",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --test",
@@ -8,8 +8,7 @@
     "prepublishOnly": "npm run build"
   },
   "type": "module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "types": "./build/index.d.ts",
   "keywords": [
     "std",
     "standart library",
@@ -27,7 +26,10 @@
     "./build"
   ],
   "exports": {
-    ".": "./src/index.js"
+    ".": "./build/index.js"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
   },
   "dependencies": {
   },
@@ -36,8 +38,6 @@
     "tsx": "^4.20.6",
     "@smuzi/faker": "workspace:*",
     "@smuzi/tests": "workspace:*"
-  },
-  "imports": {
-    "#lib/*": "./src/*"
   }
+
 }

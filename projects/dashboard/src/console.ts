@@ -1,5 +1,5 @@
-import "./globals.ts";
-import {consoleConfig} from "#configs/console.ts";
+import "./globals.js";
+import {consoleConfig} from "#configs/console.js";
 import * as process from "node:process";
 import {handle} from "@smuzi/console";
 
