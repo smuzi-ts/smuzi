@@ -1,7 +1,7 @@
 import {TDatabaseConfig, TMigrationLogAction} from "#lib/types.js";
 import {TOutputConsole} from "@smuzi/console";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
-import {clearSQL} from "#lib/helpers.ts";
+import {clearSQL} from "#lib/helpers.js";
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {

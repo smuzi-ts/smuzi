@@ -17,7 +17,8 @@
     "result",
     "option"
   ],
-  "author": "Denis Ratshniak",
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
+
   "license": "ISC",
   "publishConfig": {
     "access": "public"
@@ -26,7 +27,12 @@
     "./build"
   ],
   "exports": {
-    ".": "./build/index.js"
+    ".": {
+      "development": "./src/index.ts",
+      "import": "./build/index.js",
+      "require": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
   },
   "imports": {
     "#lib/*": "./src/*"

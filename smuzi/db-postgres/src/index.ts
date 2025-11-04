@@ -1,8 +1,8 @@
-import { Pool, types } from 'pg'
-import {preparedSqlFromObjectToArrayParams, TDatabaseClient, TInsertRow} from "@smuzi/database";
-import {dump, Err, isArray, isEmpty, match, None, Ok, Option, OptionFromNullable, Result, Some} from "@smuzi/std";
-export * from "#lib/migrationsLogRepository.ts"
-export * from "#lib/entityRepository.ts"
+import { Pool } from 'pg'
+import {preparedSqlFromObjectToArrayParams, TDatabaseClient} from "@smuzi/database";
+import { Err, isArray, Ok, OptionFromNullable} from "@smuzi/std";
+export * from "#lib/migrationsLogRepository.js"
+export * from "#lib/entityRepository.js"
 
 export type Config = {
     user: string,

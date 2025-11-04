@@ -1,6 +1,6 @@
-export * from "#lib/migration.ts"
-export * from "#lib/commands/router.ts"
-export * from "#lib/config.ts"
-export * from "#lib/types.ts"
-export * from "#lib/helpers.ts"
+export * from "#lib/migration.js"
+export * from "#lib/commands/router.js"
+export * from "#lib/config.js"
+export * from "#lib/types.js"
+export * from "#lib/helpers.js"
 

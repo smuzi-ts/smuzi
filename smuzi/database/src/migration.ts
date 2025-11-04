@@ -1,4 +1,4 @@
-import {TMigration, TMigrations} from "#lib/types.ts";
+import {TMigration, TMigrations} from "#lib/types.js";
 import {panic, Struct} from "@smuzi/std";
 import {ConsoleRoute} from "@smuzi/console";
 

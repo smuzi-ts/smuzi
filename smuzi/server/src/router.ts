@@ -2,7 +2,7 @@ import {
     asRegExp,
     asString,
     match,
-    MathedData,
+    MatchedData,
     None,
     Option,
     ParamsMatchedData,
@@ -107,7 +107,7 @@ export function CreateHttpRouter(groupRoute: GroupRoute): Router
     const add = (route: Route | GroupRoute, action) => {
         route.path = processPath(contactPaths(groupRoute.path, route.path));
 
-        routes.set(route, (data: MathedData) => {
+        routes.set(route, (data: MatchedData) => {
     const context = new SContext({
         request: data.val,
         params: data.params.flatByKey('path'),

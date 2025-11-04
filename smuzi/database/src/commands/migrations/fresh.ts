@@ -1,6 +1,6 @@
 import {TDatabaseConfig} from "#lib/types.js";
 import {TOutputConsole} from "@smuzi/console";
-import run from "#lib/commands/migrations/run.ts";
+import run from "#lib/commands/migrations/run.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 
 export default function (config: TDatabaseConfig) {

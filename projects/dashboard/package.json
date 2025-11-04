@@ -19,7 +19,7 @@
     "@smuzi/db-postgres": "workspace:*",
     "@smuzi/database": "workspace:*",
     "@smuzi/http": "workspace:*",
-    "@smuzi/std": "0.1.5",
+    "@smuzi/std": "0.1.6",
     "@smuzi/tests": "workspace:*",
     "@smuzi/faker": "workspace:*"
 

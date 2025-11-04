@@ -24,8 +24,8 @@ importers:
         specifier: workspace:*
         version: link:../../smuzi/server
       '@smuzi/std':
-        specifier: 0.1.5
-        version: 0.1.5
+        specifier: 0.1.6
+        version: 0.1.6
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../../smuzi/tests
@@ -317,8 +317,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@smuzi/std@0.1.5':
-    resolution: {integrity: sha512-PfVVhQR5diJLFpnGmjcqVOS1SgvsRCTkeonL940rlchiz7hWfNSuRHM6ZGW6s3vtST4LG/xyK9QIXEO0V0LBhw==}
+  '@smuzi/std@0.1.6':
+    resolution: {integrity: sha512-G+lkM1ZWBxNBaUXQfnmxKi4tUlgoaBj7Cl1Z/WvFPklPqn+D2Brxd3rydiyFA2bm2h+PkIEVILKv++Drdf9gNg==}
 
   '@types/node@22.16.3':
     resolution: {integrity: sha512-sr4Xz74KOUeYadexo1r8imhRtlVXcs+j3XK3TcoiYk7B1t3YRVJgtaD3cwX73NYb71pmVuMLNRhJ9XKdoDB74g==}
@@ -489,7 +489,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@smuzi/std@0.1.5': {}
+  '@smuzi/std@0.1.6': {}
 
   '@types/node@22.16.3':
     dependencies:

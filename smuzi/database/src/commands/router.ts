@@ -1,8 +1,8 @@
 import {CreateConsoleRouter} from "@smuzi/console";
-import migrationsRun from "#lib/commands/migrations/run.ts";
-import migrationsRollback from "#lib/commands/migrations/rollback.ts";
-import migrationsRefresh from "#lib/commands/migrations/refresh.ts";
-import migrationsFresh from "#lib/commands/migrations/fresh.ts";
+import migrationsRun from "#lib/commands/migrations/run.js";
+import migrationsRollback from "#lib/commands/migrations/rollback.js";
+import migrationsRefresh from "#lib/commands/migrations/refresh.js";
+import migrationsFresh from "#lib/commands/migrations/fresh.js";
 
 
 export const databaseConsole = (config) => {
