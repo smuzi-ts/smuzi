@@ -1,31 +1,59 @@
+//TODO: abstraction from Node modules
+
 import * as _assert from "node:assert/strict";
 import {AssertionError} from "node:assert";
-import {None, Some, Option, isOption, isString, match, isObject, isImpl} from "@smuzi/std";
+import {
+    None,
+    Some,
+    Option,
+    isOption,
+    isString,
+    match,
+    isObject,
+    isImpl,
+    isBoolean,
+    isNumber,
+    isEmpty,
+    TEmpty, isArray
+} from "@smuzi/std";
+import object from "#lib/asserts/object.ts";
+import array from "#lib/asserts/array.ts";
 
-type ClassBuilder<T = any> = new (...args: T[]) => T
 
 export type Assert = {
-  equal: typeof _assert.equal;
-  deepEqual: typeof _assert.deepEqual;
-  ok: typeof _assert.ok;
-  fail: typeof _assert.fail;
+    equal: typeof _assert.equal;
+    deepEqual: typeof _assert.deepEqual;
+    ok: typeof _assert.ok;
+    fail: typeof _assert.fail;
 
-  isTrue: (actual: unknown) => asserts actual is true,
-  isFalse: (actual: unknown) => asserts actual is false,
-    
-  isOption(actual: unknown): asserts actual is Option<unknown>,
-  equalSome(actual: Option<unknown>, expectedInnerValue: unknown): asserts actual;
-  equalNone(actual: Option<unknown>): asserts actual;
+    isEmpty: (actual: unknown) => asserts actual is TEmpty,
+    isNumber: (actual: unknown) => asserts actual is number,
 
-  isObject(actual: unknown): asserts actual is Record<string, unknown>;
-  objHasProperty(actual: unknown, property: string, value: Option<unknown>);
+    isString: (actual: unknown) => asserts actual is string,
 
-  isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
-  isNotImpl<T>(trait: new () => T, actual: unknown): asserts actual is unknown;
+    isBoolean: (actual: unknown) => asserts actual is boolean,
+    isTrue: (actual: unknown) => asserts actual is true,
+    isFalse: (actual: unknown) => asserts actual is false,
+
+    isArray: (actual: unknown) => asserts actual is unknown[],
+    arrayHasValue<T>(array: T[], value: unknown): asserts value is T;
+
+    isOption(actual: unknown): asserts actual is Option<unknown>,
+    equalSome(actual: Option<unknown>, expectedInnerValue: unknown): asserts actual;
+    equalNone(actual: Option<unknown>): asserts actual;
+
+    isObject(actual: unknown): asserts actual is Record<string, unknown>;
+    objectHasProperty(obj: Record<string, unknown>, property: string, value?: Option<unknown>);
+    objectHasValue<T>(obj: Record<string, T>, value: unknown): asserts value is T;
+
+    isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
+    isNotImpl<T>(trait: new () => T, actual: unknown): asserts actual is unknown;
 };
 
 const signalOk = new Error('__OK__')
-const sendSignalOk = () => { throw signalOk; };
+const sendSignalOk = () => {
+    throw signalOk;
+};
 const isSignalOk = (actual: unknown) => Object.is(actual, signalOk);
 
 export const assert: Assert = {
@@ -35,69 +63,97 @@ export const assert: Assert = {
     ok: _assert.ok,
     fail: _assert.fail,
 
-    ///Booleans
+    ...object,
+    ...array,
+    isEmpty(actual) {
+        if (!isEmpty(actual)) {
+            throw new AssertionError({
+                    message: "Expected TEmpty, but get other",
+                    actual,
+                    expected: "TEmpty",
+                    operator: 'isEmpty'
+                }
+            )
+        }
+    },
+
+    //Numbers
+    isNumber(actual) {
+        if (!isNumber(actual)) {
+            throw new AssertionError({
+                    message: "Expected number, but get other",
+                    actual,
+                    expected: "number",
+                    operator: 'isNumber'
+                }
+            )
+        }
+    },
+
+    //Strings
+    isString(actual) {
+        if (!isString(actual)) {
+            throw new AssertionError({
+                    message: "Expected string, but get other",
+                    actual,
+                    expected: "string",
+                    operator: 'isString'
+                }
+            )
+        }
+    },
+
+    //Booleans
+    isBoolean(actual) {
+        if (!isBoolean(actual)) {
+            throw new AssertionError({
+                    message: "Expected boolean, but get other",
+                    actual,
+                    expected: "boolean",
+                    operator: 'isBoolean'
+                }
+            )
+        }
+    },
     isTrue: (actual) => _assert.equal(actual, true),
     isFalse: (actual) => _assert.equal(actual, false),
 
     isOption: (actual) => {
-      if (! isOption(actual)) {
-        throw new AssertionError({
-                message: "Expected Option, but get other",
-                actual,
-                expected: "Option",
-                operator: 'isOption'
-            }
-          )
-      }
+        if (!isOption(actual)) {
+            throw new AssertionError({
+                    message: "Expected Option, but get other",
+                    actual,
+                    expected: "Option",
+                    operator: 'isOption'
+                }
+            )
+        }
     },
     equalSome(actual: Option<unknown>, expectedInnerValue: unknown = None()) {
-      actual.match({
-        Some: (val) => {
-          assert.equal(val, expectedInnerValue);
-        },
-        None: () => {
-          assert.fail("Expected Some, but get None")
-        }
-      })
+        actual.match({
+            Some: (val) => {
+                assert.equal(val, expectedInnerValue);
+            },
+            None: () => {
+                assert.fail("Expected Some, but get None")
+            }
+        })
     },
     equalNone(actual: Option<unknown>) {
-      actual.match({
-        Some: (_) => {
-            assert.fail("Expected None, but get Some")
-        },
-        None: () => {}
-      })
-    },
-    isObject(actual) {
-      if (! isObject(actual)) {
-        throw new AssertionError({
-                message: "Expected Object, but get other",
-                actual,
-                expected: "Object",
-                operator: 'isObject'
+        actual.match({
+            Some: (_) => {
+                assert.fail("Expected None, but get Some")
+            },
+            None: () => {
             }
-          )
-      }
+        })
     },
-    objHasProperty(actual, property, value = None()) {
-      assert.isObject(actual);
 
-      // Some objects are created without a prototype (e.g., Object.create(null)),
-      // so they do not have the hasOwnProperty method. Use Object.prototype.hasOwnProperty.call(...) instead.
-      assert.ok(Object.prototype.hasOwnProperty.call(actual, property), "Expected that object has property " + property)
-    
-      value.match({
-        Some: (expected) => {
-           assert.equal(actual[property], expected);
-        },
-        None: () => {},
-      });
-    },
     isImpl(trait, actual) {
         assert.ok(isImpl(trait, actual), "Expected that object is implemented trait");
     },
 
     isNotImpl(trait, actual) {
-        assert.ok(! isImpl(trait, actual), "Expected that object is NOT implemented trait");
+        assert.ok(!isImpl(trait, actual), "Expected that object is NOT implemented trait");
     },
 }

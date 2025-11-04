@@ -20,5 +20,8 @@
   },
   "dependencies": {
     "@smuzi/std": "workspace:*"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
   }
 }

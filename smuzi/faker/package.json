@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "test": "node --test --no-warnings"
+    "test": "tsx --test --no-warnings"
   },
   "type": "module",
   "keywords": [],

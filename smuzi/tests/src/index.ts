@@ -5,7 +5,6 @@ export const okMsg = (msg = ""): string => `${msg} - exp ok`;
 export const errMsg = (msg = ""): string => `${msg} - exp err`;
 export const invalidMsg = (msg = ""): string => `${msg} - exp invalid`;
 
-// repeatIt с типами:
 export function repeatIt(
     repeat: number = 1,
     name: string = "",

@@ -1,3 +1,5 @@
+export type TEmpty = null | undefined | '' | never[];
+
 export function asString(val: unknown): val is string {
     return typeof val === "string";
 }
@@ -26,6 +28,11 @@ export function asRegExp(val: unknown): val is RegExp {
     return val instanceof RegExp;
 }
 
+export function asEmpty(val: unknown): val is TEmpty
+{
+    return isEmpty(val);
+}
+
 export function isNone(val: unknown): boolean {
     return val === undefined || val === null;
 }
@@ -43,7 +50,7 @@ export function isNumber(val: unknown): boolean {
     return typeof val === "number";
 }
 
-export function isBool(val: unknown): boolean {
+export function isBoolean(val: unknown): boolean {
     return typeof val === "boolean";
 }
 

@@ -8,22 +8,33 @@
     "prepublishOnly": "npm run build"
   },
   "type": "module",
-  "keywords": ["std","standart library", "match", "pattern matching", "result", "option"],
+  "keywords": [
+    "std",
+    "standart library",
+    "match",
+    "pattern matching",
+    "result",
+    "option"
+  ],
   "author": "Denis Ratshniak",
   "license": "ISC",
   "publishConfig": {
     "access": "public"
   },
-  "files": ["./src", "./dist"],
-   "exports": {
-     ".": "./src/prelude.js"
-   },
+  "files": [
+    "./src",
+    "./dist"
+  ],
+  "exports": {
+    ".": "./src/index.js"
+  },
   "dependencies": {
     "@smuzi/faker": "workspace:*",
     "@smuzi/tests": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.15.21"
+    "@types/node": "^22.15.21",
+    "tsx": "^4.20.6"
   },
   "imports": {
     "#lib/*": "./src/*"
