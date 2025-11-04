@@ -8,8 +8,8 @@
     "prepublishOnly": "npm run build"
   },
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "keywords": [
     "std",
     "standart library",
