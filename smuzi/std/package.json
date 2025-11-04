@@ -1,7 +1,7 @@
 {
   "name": "@smuzi/std",
-  "version": "0.1.3",
-  "description": "",
+  "version": "0.1.4",
+  "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --test",
     "build": "tsc --project tsconfig.build.json",
