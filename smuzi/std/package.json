@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/std",
-  "version": "0.1.2",
+  "version": "0.1.2.1",
   "description": "",
   "scripts": {
     "test": "tsx --test",
