@@ -2,11 +2,28 @@
 
 A lightweight standard library for JavaScript and TypeScript.
 
-> Provides core functionality and utility methods for working with **Pattern Matching**, **Option**, **Result**, and many more.
+Provides core functionality and utility methods for working with **Pattern Matching**, **Option**, **Result** , **env**, and many more.
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ```bash
 npm install @smuzi/std
+```
+
+---
+
+## 🚀 Examples
+> 💡 **Note:** This library is written in TypeScript and works with both ESM and CommonJS.
+
+```ts
+const handlers = new Map([
+    ["A", "isA"],
+    ["B", "isB"],
+    ["C", "isC"],
+]);
+
+const result = match("B", handlers, "isDefault")
+assert.equal(result, "isB")
+```
