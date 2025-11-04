@@ -10,12 +10,13 @@ export type QueryError = {
     table: Option<string>
 }
 
-export type TQueryResult<Entity = TRow> = Promise<Result<Entity[], QueryError>>
-export type TInsertRowResult<Entity = TRow> = Promise<Result<ExtractPrimaryKey<Entity>, QueryError>>
+export type TQueryResult<Entity = unknown> = Result<Entity, QueryError>
+export type TInsertRowResult<Entity = TRow> = Result<ExtractPrimaryKey<Entity>, QueryError>
 
 export type TDatabaseClient = {
-    query: <Entity = TRow>(sql: string, params?: TQueryParams) => TQueryResult<Entity>,
-    insertRow:  <Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string) => TInsertRowResult<Entity>,
+    query: <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>,
+    insertRow:  <Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>,
+    insertManyRows:  <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>,
 }
 
 export type TMigration = {
@@ -67,14 +68,14 @@ export type TMigrationLogRow = {
 
 export type TMigrationsLogRepository = {
     getTable(): string,
-    createTableIfNotExists(): TQueryResult,
-    listRuned(): TQueryResult<TMigrationLogRow>,
-    listRunedByBranch(branch: number): TQueryResult<TMigrationLogRow>,
+    createTableIfNotExists(): Promise<TQueryResult>,
+    listRuned(): Promise<TQueryResult<TMigrationLogRow>>,
+    listRunedByBranch(branch: number): Promise<TQueryResult<TMigrationLogRow>>,
     getLastBranch(): Promise<Option<number>>,
-    create(row: TMigrationLogSave): TInsertRowResult<TMigrationLogSave>,
+    create(row: TMigrationLogSave): Promise<TInsertRowResult<TMigrationLogSave>>,
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
-    freshSchema(): TQueryResult
+    freshSchema(): Promise<TQueryResult>
 };
 
 export type ExcludeSaving<T> = T & { readonly __ExcludeSaving: unique symbol };

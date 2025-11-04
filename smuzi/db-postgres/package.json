@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "tests": "tsx --test --env-file=.env"
+  },
   "type": "module",
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
   "dependencies": {
     "@smuzi/std": "workspace:*",
     "@smuzi/tests": "workspace:*",
+    "@smuzi/faker": "workspace:*",
     "pg": "^8.16.3"
   },
   "peerDependencies": {

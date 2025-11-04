@@ -1,6 +1,6 @@
 import {AssertionError} from "node:assert";
 import {isObject, None} from "@smuzi/std";
-import {assert} from "#lib/assert.ts";
+import {assert} from "#lib/assert.js";
 
 export default {
     isObject(actual) {
@@ -15,10 +15,6 @@ export default {
         }
     },
     objectHasProperty(actual, property, value = None()) {
-        this.isObject(actual);
-
-        // Some objects are created without a prototype (e.g., Object.create(null)),
-        // so they do not have the hasOwnProperty method. Use Object.prototype.hasOwnProperty.call(...) instead.
         assert.ok(Object.prototype.hasOwnProperty.call(actual, property), "Expected that object has property " + property)
 
         value.match({
@@ -30,8 +26,6 @@ export default {
         });
     },
     objectHasValue(obj, value) {
-        this.isObject(obj);
-
         if (! Object.values(obj).includes(value)) {
             throw new AssertionError({
                     message: "Expected object has value",

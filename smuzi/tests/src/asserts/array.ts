@@ -1,6 +1,5 @@
 import {AssertionError} from "node:assert";
-import {isArray, isObject, None} from "@smuzi/std";
-import {assert} from "#lib/assert.ts";
+import {isArray} from "@smuzi/std";
 
 export default {
     isArray(actual) {
@@ -15,8 +14,6 @@ export default {
         }
     },
     arrayHasValue(array: unknown[], value: unknown) {
-        this.isArray(array)
-
         if (!array.includes(value)) {
             throw new AssertionError({
                     message: "Expected array has value",

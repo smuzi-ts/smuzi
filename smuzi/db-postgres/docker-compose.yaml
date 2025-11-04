@@ -1,5 +1,5 @@
 services:
-  calcuspace_postgres:
+  smuzi-db-pg-test:
     image: postgres:16
     ports:
       - '${DB_PORT:-5432}:5432'
@@ -8,9 +8,9 @@ services:
       POSTGRES_USER: '${DB_USER}'
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
     volumes:
-      - 'calcuspace_postgres:/var/lib/postgresql/data'
+      - 'smuzi-db-pg-test:/var/lib/postgresql/data'
     networks:
-      - calcuspace_network
+      - smuzi
     healthcheck:
       test:
         [
@@ -22,9 +22,9 @@ services:
       retries: 5
 
 networks:
-  calcuspace_network:
+  smuzi:
     driver: bridge
 
 volumes:
-  calcuspace_postgres:
+  smuzi-db-pg-test:
     driver: local

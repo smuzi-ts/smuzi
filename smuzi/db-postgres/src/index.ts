@@ -58,11 +58,30 @@ export function postgresClient(config: Config): TDatabaseClient {
             const columns = Object.keys(row);
             const values = Object.values(row);
             const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
-            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`;
+            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${idColumn}` ;
 
             return (await this.query(sql, values))
                 .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
-        }
+        },
+
+        async insertManyRows(table, rows, idColumn = 'id') {
+            if (rows.length === 0) return Ok([]);
+
+            const columns = Object.keys(rows[0]);
+            const values: any[] = [];
+            const placeholders = rows.map((row, rowIndex) => {
+                return `(${columns.map((_, colIndex) => {
+                    const placeholderIndex = rowIndex * columns.length + colIndex + 1;
+                    return `$${placeholderIndex}`;
+                }).join(', ')})`;
+            }).join(', ');
+
+            rows.forEach(row => values.push(...Object.values(row)));
+
+            return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
+                .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
+        },
+
 
     }
 }

@@ -2,6 +2,7 @@
 
 import * as _assert from "node:assert/strict";
 import {AssertionError} from "node:assert";
+
 import {
     None,
     Some,
@@ -16,8 +17,9 @@ import {
     isEmpty,
     TEmpty, isArray
 } from "@smuzi/std";
-import object from "#lib/asserts/object.ts";
-import array from "#lib/asserts/array.ts";
+import object from "#lib/asserts/object.js";
+import array from "#lib/asserts/array.js";
+import {assertionError} from "#lib/index.js";
 
 
 export type Assert = {
@@ -43,7 +45,7 @@ export type Assert = {
     equalNone(actual: Option<unknown>): asserts actual;
 
     isObject(actual: unknown): asserts actual is Record<string, unknown>;
-    objectHasProperty(obj: Record<string, unknown>, property: string, value?: Option<unknown>);
+    objectHasProperty<T extends Record<string, unknown>>(obj: T, property: keyof T, value?: Option<unknown>);
     objectHasValue<T>(obj: Record<string, T>, value: unknown): asserts value is T;
 
     isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
@@ -67,7 +69,7 @@ export const assert: Assert = {
     ...array,
     isEmpty(actual) {
         if (!isEmpty(actual)) {
-            throw new AssertionError({
+            assertionError({
                     message: "Expected TEmpty, but get other",
                     actual,
                     expected: "TEmpty",
@@ -80,7 +82,7 @@ export const assert: Assert = {
     //Numbers
     isNumber(actual) {
         if (!isNumber(actual)) {
-            throw new AssertionError({
+            assertionError({
                     message: "Expected number, but get other",
                     actual,
                     expected: "number",
@@ -93,7 +95,7 @@ export const assert: Assert = {
     //Strings
     isString(actual) {
         if (!isString(actual)) {
-            throw new AssertionError({
+            assertionError({
                     message: "Expected string, but get other",
                     actual,
                     expected: "string",
@@ -106,7 +108,7 @@ export const assert: Assert = {
     //Booleans
     isBoolean(actual) {
         if (!isBoolean(actual)) {
-            throw new AssertionError({
+            assertionError({
                     message: "Expected boolean, but get other",
                     actual,
                     expected: "boolean",
@@ -120,7 +122,7 @@ export const assert: Assert = {
 
     isOption: (actual) => {
         if (!isOption(actual)) {
-            throw new AssertionError({
+            assertionError({
                     message: "Expected Option, but get other",
                     actual,
                     expected: "Option",

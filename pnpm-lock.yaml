@@ -68,6 +68,9 @@ importers:
       '@smuzi/database':
         specifier: workspace:*
         version: link:../database
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std

@@ -9,6 +9,7 @@ ssl
 .DS_Store
 
 .env
+.env.*
 
 # TypeScript build cache
 *.tsbuildinfo
