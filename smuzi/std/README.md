@@ -14,8 +14,7 @@ npm install @smuzi/std
 
 ---
 
-## 🚀 Examples
-> 💡 **Note:** This library is written in TypeScript and works with both ESM and CommonJS.
+## Examples
 
 ```ts
 const handlers = new Map([
