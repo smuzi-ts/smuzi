@@ -30,12 +30,12 @@
     ".": "./src/index.js"
   },
   "dependencies": {
-    "@smuzi/faker": "workspace:*",
-    "@smuzi/tests": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "@smuzi/faker": "workspace:*",
+    "@smuzi/tests": "workspace:*"
   },
   "imports": {
     "#lib/*": "./src/*"
