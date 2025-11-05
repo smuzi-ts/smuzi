@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "test": "tsx  --test --env-file=.env --test-global-setup=tests/setup.ts"
+    "test": "tsx  --test --env-file=.env"
   },
   "type": "module",
   "keywords": [],

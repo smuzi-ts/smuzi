@@ -6,7 +6,6 @@ import usersTable from "./migrations/usersTable.js";
 const dbClient = buildClient();
 
 export async function globalSetup() {
-
     const migrations = [
         usersTable,
     ]

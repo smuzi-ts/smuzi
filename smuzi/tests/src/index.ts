@@ -1,6 +1,6 @@
 import {AssertionError} from "node:assert";
 
-export {it, describe, skip} from "node:test";
+export {it, describe, skip, beforeEach, before, afterEach, after} from "node:test";
 export {assert} from "#lib/assert.js"
 
 export const okMsg = (msg = ""): string => `${msg} - exp ok`;

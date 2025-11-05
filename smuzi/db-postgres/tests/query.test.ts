@@ -1,11 +1,12 @@
-import {assert, describe, it, okMsg} from "@smuzi/tests";
-import {buildClient, globalSetup} from "./setup.js";
+import {assert, describe, it, okMsg, before, after} from "@smuzi/tests";
+import {buildClient, globalSetup, globalTeardown} from "./setup.js";
 import {TUserRow} from "./entities/User.js";
 
 describe("db-postgres - query", () => {
-    it(okMsg("SELECT"), async () => {
-        await globalSetup();
+    before(globalSetup);
+    after(globalTeardown);
 
+    it(okMsg("SELECT"), async () => {
         const dbClient = buildClient();
 
         const result = (await dbClient.query<TUserRow[]>('SELECT id, name, email FROM users'));
