@@ -2,7 +2,7 @@
 
 A lightweight standard library for JavaScript and TypeScript.
 
-Provides core functionality and utility methods for working with **Pattern Matching**, **Option**, **Result** , **env**, and many more.
+Provides core functionality and utility methods for working with **Patterns Matching**, **Option**, **Result** , **env**, and many more.
 
 ---
 
@@ -13,8 +13,9 @@ npm install @smuzi/std
 ```
 
 ---
+> See more examples in the [tests folder](./tests).
 
-## Examples
+## Patterns Matching
 
 ```ts
 const handlers = new Map([
