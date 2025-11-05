@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/std",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --test",
@@ -24,7 +24,8 @@
     "access": "public"
   },
   "files": [
-    "./build"
+    "./build",
+    "./tests"
   ],
   "exports": {
     ".": {
