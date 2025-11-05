@@ -28,12 +28,7 @@
     "./tests"
   ],
   "exports": {
-    ".": {
-      "development": "./src/index.ts",
-      "import": "./build/index.js",
-      "require": "./build/index.js",
-      "types": "./build/index.d.ts"
-    }
+    ".": "./src/index.js"
   },
   "imports": {
     "#lib/*": "./src/*"

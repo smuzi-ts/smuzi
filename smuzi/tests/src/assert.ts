@@ -20,6 +20,7 @@ import {
 import object from "#lib/asserts/object.js";
 import array from "#lib/asserts/array.js";
 import {assertionError} from "#lib/index.js";
+import {assertResult, TAssertResult} from "#lib/asserts/result.js";
 
 
 export type Assert = {
@@ -50,6 +51,8 @@ export type Assert = {
 
     isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
     isNotImpl<T>(trait: new () => T, actual: unknown): asserts actual is unknown;
+
+    result: TAssertResult
 };
 
 const signalOk = new Error('__OK__')
@@ -67,6 +70,8 @@ export const assert: Assert = {
 
     ...object,
     ...array,
+    result: assertResult,
+
     isEmpty(actual) {
         if (!isEmpty(actual)) {
             assertionError({

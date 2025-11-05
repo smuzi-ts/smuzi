@@ -8,4 +8,12 @@ export const faker = Object.freeze({
     ...datetime,
     object,
     array,
+    repeat<T extends unknown>(count: number, callback: () => T): T[] {
+        const res = [];
+        for (let i = 0; i < count; ++i) {
+            res.push(callback());
+        }
+
+        return res;
+    }
 })

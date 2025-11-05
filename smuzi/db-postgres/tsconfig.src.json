@@ -2,14 +2,18 @@
   "extends": "../../tsconfig.common.json",
   "include": ["./src"],
   "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "lib": ["ESNext", "dom"],
+    "useDefineForClassFields": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
     "types": ["node"],
-    "outDir": "build/src",
-    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
     "rootDir": "src",
     "composite": true,
     "baseUrl": "./src",
     "paths": {
       "#lib/*": ["*"]
-  },
+    }
   }
 }

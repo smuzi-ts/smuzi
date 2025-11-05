@@ -2,11 +2,13 @@
   "extends": "../../tsconfig.common.json",
   "include": ["./tests"],
   "references": [
-    { "path": "tsconfig.src.json" },
+    { "path": "tsconfig.src.json" }
   ],
   "compilerOptions": {
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "rootDir": "tests",
-    "noEmit": true,
-  }
+    "noEmit": true
+  },
 }

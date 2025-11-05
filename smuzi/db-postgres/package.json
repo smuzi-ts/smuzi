@@ -4,26 +4,27 @@
   "private": true,
   "description": "",
   "scripts": {
-    "tests": "tsx --test --env-file=.env"
+    "test": "tsx  --test --env-file=.env --test-global-setup=tests/setup.ts"
   },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "files": [
-    "./src"
+    "./tests"
   ],
   "dependencies": {
+    "@smuzi/faker": "workspace:*",
     "@smuzi/std": "workspace:*",
     "@smuzi/tests": "workspace:*",
-    "@smuzi/faker": "workspace:*",
     "pg": "^8.16.3"
   },
   "peerDependencies": {
     "@smuzi/database": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.15.21"
+    "@types/node": "^22.15.21",
+    "tsconfig-paths": "^4.2.0"
   },
   "imports": {
     "#lib/*": "./src/*"

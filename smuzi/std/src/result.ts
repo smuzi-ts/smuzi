@@ -17,6 +17,11 @@ export function OkOrNullableAsError<T extends unknown, E = string>(value: T, err
     return value === null || value === undefined ? Err((errIfNullable ?? "Nullable value") as E) : Ok(value);
 }
 
+function unwrapErrorPanic(e): never
+{
+    panic(asString(e) ? e : JSON.stringify(e));
+}
+
 export class Result<T, E> implements IMatched {
     protected _val: T | E;
 
@@ -31,7 +36,7 @@ export class Result<T, E> implements IMatched {
     unwrap(): T | never {
         return this.match({
             Ok: (v) => v,
-            Err: (e) => panic(asString(e) ? e : JSON.stringify(e)),
+            Err: unwrapErrorPanic,
         });
     }
 
@@ -41,6 +46,14 @@ export class Result<T, E> implements IMatched {
         }
 
         return this as unknown as Result<never, E>;
+    }
+
+    wrapErr<RE>(handlerErr: (value: E) => RE): never | T | RE {
+        if (this instanceof ResultErr) {
+            return handlerErr(this._val);
+        }
+
+        return this._val as T;
     }
 }
 
