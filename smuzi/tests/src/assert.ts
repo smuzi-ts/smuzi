@@ -17,10 +17,11 @@ import {
     isEmpty,
     TEmpty, isArray
 } from "@smuzi/std";
-import object from "#lib/asserts/object.js";
-import array from "#lib/asserts/array.js";
+import {assertObject, TAssertObject} from "#lib/asserts/object.js";
+import {assertArray, TAssertArray} from "#lib/asserts/array.js";
 import {assertionError} from "#lib/index.js";
 import {assertResult, TAssertResult} from "#lib/asserts/result.js";
+import {assertString, TAssertString} from "#lib/asserts/string.js";
 
 
 export type Assert = {
@@ -39,20 +40,20 @@ export type Assert = {
     isFalse: (actual: unknown) => asserts actual is false,
 
     isArray: (actual: unknown) => asserts actual is unknown[],
-    arrayHasValue<T>(array: T[], value: unknown): asserts value is T;
 
-    isOption(actual: unknown): asserts actual is Option<unknown>,
-    equalSome(actual: Option<unknown>, expectedInnerValue: unknown): asserts actual;
-    equalNone(actual: Option<unknown>): asserts actual;
+    isOption(actual: unknown): asserts actual is Option,
+    equalSome(actual: unknown, expectedInnerValue: unknown): asserts actual is Option;
+    equalNone(actual: unknown): asserts actual is Option;
 
     isObject(actual: unknown): asserts actual is Record<string, unknown>;
-    objectHasProperty<T extends Record<string, unknown>>(obj: T, property: keyof T, value?: Option<unknown>);
-    objectHasValue<T>(obj: Record<string, T>, value: unknown): asserts value is T;
 
     isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
     isNotImpl<T>(trait: new () => T, actual: unknown): asserts actual is unknown;
 
     result: TAssertResult
+    array: TAssertArray
+    object: TAssertObject
+    string: TAssertString
 };
 
 const signalOk = new Error('__OK__')
@@ -68,9 +69,10 @@ export const assert: Assert = {
     ok: _assert.ok,
     fail: _assert.fail,
 
-    ...object,
-    ...array,
+    object: assertObject,
+    array: assertArray,
     result: assertResult,
+    string: assertString,
 
     isEmpty(actual) {
         if (!isEmpty(actual)) {
@@ -125,6 +127,28 @@ export const assert: Assert = {
     isTrue: (actual) => _assert.equal(actual, true),
     isFalse: (actual) => _assert.equal(actual, false),
 
+    isArray(actual) {
+        if (!isArray(actual)) {
+            assertionError({
+                    message: "Expected array, but get other",
+                    actual,
+                    expected: "array",
+                    operator: 'isArray'
+                }
+            )
+        }
+    },
+    isObject(actual) {
+        if (!isObject(actual)) {
+            assertionError({
+                    message: "Expected object, but get other",
+                    actual,
+                    expected: "object",
+                    operator: 'isObject'
+                }
+            )
+        }
+    },
     isOption: (actual) => {
         if (!isOption(actual)) {
             assertionError({

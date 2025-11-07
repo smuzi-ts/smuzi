@@ -16,9 +16,9 @@ describe("db-postgres - query", () => {
             Ok: (rows) => {
                 assert.isArray(rows);
                 assert.isObject(rows[0]);
-                assert.objectHasProperty(rows[0], 'id');
-                assert.objectHasProperty(rows[0], 'name');
-                assert.objectHasProperty(rows[0], 'email');
+                assert.object.hasProperty(rows[0], 'id');
+                assert.object.hasProperty(rows[0], 'name');
+                assert.object.hasProperty(rows[0], 'email');
             },
         })
     })

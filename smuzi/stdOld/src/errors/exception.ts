@@ -1,8 +1,8 @@
-import {isNone} from "#lib/prelude.js";
+import {isNull} from "#lib/prelude.js";
 
 let initialized = false;
 
-const isCustomized = () => ! isNone(Error.prepareStackTrace);
+const isCustomized = () => ! isNull(Error.prepareStackTrace);
 const isInitialized = () => initialized;
 
 export class Exception extends Error {
@@ -24,7 +24,7 @@ export class Exception extends Error {
     }
 
     setLastCallSite() {
-        if (! isNone(this?.stack.last)) {
+        if (! isNull(this?.stack.last)) {
             this.typeName = this.stack.last.getTypeName();
             this.function = this.stack.last.getFunctionName();
             this.method = this.stack.last.getMethodName();
@@ -33,7 +33,7 @@ export class Exception extends Error {
             this.column = this.stack.last.getColumnNumber();
         }
 
-        if (! isNone(this?.stack.traceAsString)) {
+        if (! isNull(this?.stack.traceAsString)) {
             this.stack = this.stack.traceAsString;
         }
     }
@@ -47,7 +47,7 @@ const defaultInitPrepareStackTrace = () => {
 
     const nativePrepareStackTrace = Error.prepareStackTrace;
 
-    if (isNone(nativePrepareStackTrace)) {
+    if (isNull(nativePrepareStackTrace)) {
         initialized = true;
 
         return;

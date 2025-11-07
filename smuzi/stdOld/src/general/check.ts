@@ -1,9 +1,9 @@
-export function isNone(val) {
+export function isNull(val) {
     return val === undefined || val === null;
 }
 
 export function isEmpty(val) {
-    return isNone(val) || val === "" || (Array.isArray(val) && val.length === 0);
+    return isNull(val) || val === "" || (Array.isArray(val) && val.length === 0);
 }
 
 export function isString(val) {

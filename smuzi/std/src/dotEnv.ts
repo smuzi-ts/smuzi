@@ -15,5 +15,5 @@ export function env(key: string, defaultValue: Option<string> = None()): string 
         val = OptionFromNullable(process.env[key]);
     }
 
-    return  (val.isNone() ? defaultValue : val).unwrap();
+    return  (val.isNull() ? defaultValue : val).unwrap();
 }

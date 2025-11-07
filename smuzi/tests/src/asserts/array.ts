@@ -1,19 +1,12 @@
 import {AssertionError} from "node:assert";
 import {isArray} from "@smuzi/std";
 
-export default {
-    isArray(actual) {
-        if (!isArray(actual)) {
-            throw new AssertionError({
-                    message: "Expected array, but get other",
-                    actual,
-                    expected: "array",
-                    operator: 'isArray'
-                }
-            )
-        }
-    },
-    arrayHasValue(array: unknown[], value: unknown) {
+export type TAssertArray = {
+    hasValue<T>(array: T[], value: T): asserts value is T
+}
+
+export const assertArray: TAssertArray = {
+    hasValue(array, value) {
         if (!array.includes(value)) {
             throw new AssertionError({
                     message: "Expected array has value",

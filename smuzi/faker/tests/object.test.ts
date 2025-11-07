@@ -7,7 +7,7 @@ describe("Faker-Object", () => {
         const prop = faker.object.getProperty(obj);
 
         assert.isString(prop);
-        assert.objectHasProperty(obj, prop);
+        assert.object.hasProperty(obj, prop);
     });
 
     it("getProperty() — returns empty when object has no keys", () => {
@@ -22,7 +22,7 @@ describe("Faker-Object", () => {
         const value = faker.object.getPropertyValue(obj);
 
         assert.isNumber(value);
-        assert.objectHasValue(obj, value);
+        assert.object.hasValue(obj, value);
     });
 
     it("getPropertyValue() — works correctly with string values", () => {
@@ -30,7 +30,7 @@ describe("Faker-Object", () => {
         const value = faker.object.getPropertyValue(obj);
 
         assert.isString(value);
-        assert.objectHasValue(obj, value);
+        assert.object.hasValue(obj, value);
     });
 
     it("getPropertyValue() — returns empty for empty object", () => {

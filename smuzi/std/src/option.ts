@@ -28,7 +28,7 @@ export class Option<T = unknown> {
         return handlers.None();
     }
 
-    isNone(): this is OptionNone {
+    isNull(): this is OptionNone {
         return this instanceof OptionNone;
     }
     
@@ -91,4 +91,8 @@ class OptionNone extends Option<never>{
 
 export function isOption<T = unknown>(value: unknown): value is Option<T> {
     return value instanceof Option;
+}
+
+export function isNone<T = unknown>(value: unknown): value is Option<never> {
+    return value instanceof OptionNone;
 }

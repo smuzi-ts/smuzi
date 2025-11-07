@@ -1,5 +1,5 @@
 import {assert, describe, it} from "@smuzi/tests";
-import {faker} from "#lib/index.ts";
+import {faker} from "#lib/index.js";
 
 describe("Faker-Array", () => {
     it("items() — returns an array with default length", () => {
@@ -29,14 +29,14 @@ describe("Faker-Array", () => {
         const source = ["apple", "banana", "cherry"];
         const result = faker.array.getItem(source);
 
-        assert.arrayHasValue(source, result)
+        assert.array.hasValue(source, result)
     });
 
     it("getItem() — works correctly with number arrays", () => {
         const source = [1, 2, 3, 4, 5];
         const result = faker.array.getItem(source);
 
-        assert.arrayHasValue(source, result)
+        assert.array.hasValue(source, result)
         assert.isNumber(result);
     });
 

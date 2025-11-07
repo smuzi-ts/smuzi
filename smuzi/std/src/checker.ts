@@ -33,12 +33,12 @@ export function asEmpty(val: unknown): val is TEmpty
     return isEmpty(val);
 }
 
-export function isNone(val: unknown): boolean {
+export function isNull(val: unknown): boolean {
     return val === undefined || val === null;
 }
 
 export function isEmpty(val: unknown): boolean {
-    return isNone(val) || val === "" || (Array.isArray(val) && val.length === 0);
+    return isNull(val) || val === "" || (Array.isArray(val) && val.length === 0);
 }
 
 export function isString(val: unknown): boolean {

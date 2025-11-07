@@ -22,13 +22,13 @@ describe("Utils-Check", () => {
         assert.isFalse(U.isInteger(true));
     })
 
-    it("isNone", () => {
-        assert.isTrue(U.isNone(null));
-        assert.isTrue(U.isNone());
+    it("isNull", () => {
+        assert.isTrue(U.isNull(null));
+        assert.isTrue(U.isNull());
 
-        assert.isFalse(U.isNone(''));
-        assert.isFalse(U.isNone(0));
-        assert.isFalse(U.isNone(false));
+        assert.isFalse(U.isNull(''));
+        assert.isFalse(U.isNull(0));
+        assert.isFalse(U.isNull(false));
     })
 
     it("isBool", () => {
