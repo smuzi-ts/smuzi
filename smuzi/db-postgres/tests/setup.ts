@@ -9,27 +9,27 @@ export async function globalSetup() {
     const migrations = [
         usersTable,
     ]
-        .map(sql => () => dbClient.query(sql));
+        .map(sql => dbClient.query(sql));
 
     (await promiseAll(migrations)).unwrap();
 
     const seeds = [
         insertUsers,
     ]
-        .map(seed => () => seed(dbClient));
+        .map(seed => seed(dbClient));
 
     (await promiseAll(seeds)).unwrap();
 }
 
 export async function globalTeardown() {
-    (await dbClient.query(
-    `DO $$ DECLARE
-    r RECORD;
-BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-    END LOOP;
-END $$;`)).unwrap();
+//     (await dbClient.query(
+//     `DO $$ DECLARE
+//     r RECORD;
+// BEGIN
+//     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+//         EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+//     END LOOP;
+// END $$;`)).unwrap();
 
 }
 

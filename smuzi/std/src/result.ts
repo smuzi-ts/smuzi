@@ -3,7 +3,8 @@ import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
 import {json} from "#lib/json.js";
 
-type Val = NonNullable<unknown>;
+type Val = unknown;
+
 export type ResultPatterns<T, E, RO, RE> = { Ok: (value: T) => RO; Err: (error: E) => RE | RO; }
 
 export function Ok<T extends Val>(value: T): Result<T, never> {

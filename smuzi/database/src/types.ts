@@ -13,11 +13,17 @@ export type QueryError = {
 export type TQueryResult<Entity = unknown> = Result<Entity, QueryError>
 export type TInsertRowResult<Entity = TRow> = Result<ExtractPrimaryKey<Entity>, QueryError>
 
+export type TQueryMethod = <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
+export type TInsertMethod = <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
+export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>,
+export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
+
 export type TDatabaseClient = {
-    query: <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>,
-    insertRow:  <Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>,
-    insertManyRows:  <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>,
-    updateRow:  <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>,
+    query: TQueryMethod
+    insertRow: TInsertMethod,
+    insertManyRows: TInsertManyRowsMethod,
+    updateRow: TUpdateRowMethod,
+    updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
 }
 
 export type TMigration = {

@@ -1,6 +1,6 @@
 import { Pool } from 'pg'
-import {preparedSqlFromObjectToArrayParams, TDatabaseClient} from "@smuzi/database";
-import { Err, isArray, Ok, OptionFromNullable} from "@smuzi/std";
+import {preparedSqlFromObjectToArrayParams, TDatabaseClient, TQueryParams} from "@smuzi/database";
+import {Err, isArray, None, Ok, OptionFromNullable} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.js"
 export * from "#lib/entityRepository.js"
 
@@ -20,39 +20,40 @@ export function postgresClient(config: Config): TDatabaseClient {
         process.exit(-1)
     })
 
-    return {
-        async query(sql, params = []) {
+    async function query(sql: string, params: TQueryParams = []) {
 
-            let preparedSql = sql;
+        let preparedSql = sql;
 
-            if (!isArray(params)) {
-                const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
-                preparedSql = preparedRes.sql;
-                params = preparedRes.params;
-            }
+        if (!isArray(params)) {
+            const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
+            preparedSql = preparedRes.sql;
+            params = preparedRes.params;
+        }
 
-            try {
-                const res = await pool.query({
-                        text: preparedSql,
-                        values: params,
-                        types: {
-                            getTypeParser: () => val => OptionFromNullable(val)
-                        },
+        try {
+            const res = await pool.query({
+                    text: preparedSql,
+                    values: params,
+                    types: {
+                        getTypeParser: () => val => OptionFromNullable(val)
                     },
-                );
+                },
+            );
 
-                return Ok(res.rows)
-            } catch (err) {
-                return Err({
-                    sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
-                    message: err.message,
-                    code: OptionFromNullable(err.code),
-                    detail: OptionFromNullable(err.detail),
-                    table: OptionFromNullable(err.table),
-                });
-            }
-        },
+            return Ok(res.rows)
+        } catch (err) {
+            return Err({
+                sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
+                message: err.message,
+                code: OptionFromNullable(err.code),
+                detail: OptionFromNullable(err.detail),
+                table: OptionFromNullable(err.table),
+            });
+        }
+    }
 
+    return {
+        query,
         async insertRow(table, row, idColumn = 'id') {
             //TODO: protected for injections
             const columns = Object.keys(row);
@@ -60,7 +61,7 @@ export function postgresClient(config: Config): TDatabaseClient {
             const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
             const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${idColumn}` ;
 
-            return (await this.query(sql, values))
+            return (await query(sql, values))
                 .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
         },
 
@@ -79,21 +80,28 @@ export function postgresClient(config: Config): TDatabaseClient {
 
             rows.forEach(row => values.push(...Object.values(row)));
 
-            return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
+            return (await query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
                 .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
         },
 
         async updateRow(table, id, row, idColumn = 'id') {
-            //TODO: protected for injections
-            const columns = Object.keys(row);
-            const values = Object.values(row);
-            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
-            const sql = `UPDATE ${table} SET WHERE ${idColumn} = ${id}` ;
-
-            return (await this.query(sql, values))
-                .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
+            return this.updateManyRows(table, row, `${idColumn} = ${id}`)
         },
 
+        async updateManyRows(table, values, where) {
+            //TODO: protected for injections
+            const entries = Object.entries(values);
+
+            const setClause = entries
+                .map(([key], i) => `${key} = $${i + 1}`)
+                .join(", ");
+
+            const sql = `UPDATE ${table} SET ${setClause} WHERE ${where};`;
+
+            const params = entries.map(([, val]) => val);
+
+            return (await query(sql, params)).wrapOk(v);
+        },
 
     }
 }
