@@ -1,0 +1,46 @@
+{
+  "name": "@smuzi/http-client",
+  "version": "0.0.1",
+  "description": "HTTP client for JavaScript and TypeScript",
+  "scripts": {
+    "test": "tsx --test",
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "type": "module",
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "http",
+    "api",
+    "rest",
+    "json",
+    "request"
+  ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
+
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "./build",
+    "./tests"
+  ],
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "tsx": "^4.20.6",
+    "@smuzi/faker": "workspace:*",
+    "@smuzi/tests": "workspace:*",
+    "@smuzi/std": "workspace:*"
+
+  }
+
+}

@@ -4,7 +4,7 @@ import { methodFromString, SInputMessage,} from "#lib/router.js";
 import {isArray, isObject, isString, json, match, matchUnknown, UrlTrait} from '@smuzi/std';
 import {TServerConfig} from "#lib/index.js";
 
-export function Http2StrategyServer(config: TServerConfig & UrlTrait) {
+export function Http2ServerDriver(config: TServerConfig & UrlTrait) {
     const server = http2.createSecureServer({
         key: fs.readFileSync(config.cert.key),
         cert: fs.readFileSync(config.cert.cert),

@@ -9,6 +9,7 @@
     { "path": "smuzi/faker" },
     { "path": "smuzi/tests" },
     { "path": "smuzi/db-postgres" },
+    { "path": "smuzi/http-client" },
     { "path": "project/dashboard" }
   ]
 }
