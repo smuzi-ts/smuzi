@@ -1,6 +1,6 @@
 import { match } from "@smuzi/std";
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import {type Context, CreateHttpRouter, Method, type Router, SInputMessage} from "#lib/router.ts";
+import {type Context, CreateHttpRouter, Method, type Router, SInputMessage} from "#lib/router.js";
 
 describe("Std-Router", () => {
     it(okMsg("Routing with special string-pattern"), () => {

@@ -24,19 +24,23 @@ function replacer(this, key, value) {
     return value;
 }
 
-type JsonParsingError = {
+type JsonToStringError = {
+    message: string
+}
+
+type JsonFromStringError = {
     message: string
 }
 
 export const json = {
-    fromString(value: string): Result<unknown, JsonParsingError> {
+    fromString(value: string): Result<unknown, JsonFromStringError> {
         try {
             return Ok(JSON.parse(value, reviver));
         } catch (e) {
             return Err({message: e.message});
         }
     },
-    toString(value: unknown) {
+    toString(value: unknown):Result<string, JsonToStringError> {
         try {
             return Ok(JSON.stringify(value, replacer));
         } catch (e) {

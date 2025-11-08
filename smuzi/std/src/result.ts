@@ -1,6 +1,7 @@
 import {asString} from "./checker.js";
 import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
+import {json} from "#lib/json.js";
 
 type Val = NonNullable<unknown>;
 export type ResultPatterns<T, E, RO, RE> = { Ok: (value: T) => RO; Err: (error: E) => RE | RO; }
@@ -19,7 +20,10 @@ export function OkOrNullableAsError<T extends unknown, E = string>(value: T, err
 
 function unwrapErrorPanic(e): never
 {
-    panic(asString(e) ? e : JSON.stringify(e));
+    panic(asString(e) ? e : json.toString(e).match({
+        Ok: (v) => v,
+        Err: (e) => e.message
+    }));
 }
 
 export class Result<T, E> implements IMatched {

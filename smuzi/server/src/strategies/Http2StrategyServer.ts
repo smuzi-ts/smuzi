@@ -1,8 +1,8 @@
 import http2, { IncomingHttpHeaders, ServerHttp2Stream } from 'node:http2';
 import fs from 'node:fs';
-import { methodFromString, SInputMessage,} from "@smuzi/router";
-import {isArray, isObject, isString, match, matchUnknown, UrlTrait} from '@smuzi/std';
-import {TServerConfig} from "#lib/index.ts";
+import { methodFromString, SInputMessage,} from "#lib/router.js";
+import {isArray, isObject, isString, json, match, matchUnknown, UrlTrait} from '@smuzi/std';
+import {TServerConfig} from "#lib/index.js";
 
 export function Http2StrategyServer(config: TServerConfig & UrlTrait) {
     const server = http2.createSecureServer({
@@ -40,7 +40,17 @@ export function Http2StrategyServer(config: TServerConfig & UrlTrait) {
                 ':status': 200,
             });
 
-            stream.end(JSON.stringify(response));
+            stream.end(json.toString(response).match({
+                Ok: (json) => json,
+                Err: (err) => {
+                    stream.respond({
+                        'content-type': 'application/json; charset=utf-8',
+                        ':status': 500,
+                    });
+
+                    return `{"error":"Internal Server Error"}`;
+                }
+            }));
         });
 
 
