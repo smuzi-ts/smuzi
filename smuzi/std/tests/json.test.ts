@@ -74,6 +74,82 @@ describe("Std-json", () => {
             },
         })
     })
+    it(okMsg("fromString - with Result Ok"), () => {
+        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"ok","val":true}}, {"id":2,"name": "user2"}]}`;
+
+        const result = json.fromString(inputString);
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (actual) => {
+                const expectedObj = Some({
+                    "data": Some([
+                        Some({"id": Some(1), "name": None(), "login": Ok(Some(true))}),
+                        Some({"id": Some(2), "name": Some("user2")}),
+                    ])
+                });
+
+                assert.deepEqual(actual, expectedObj);            },
+        })
+    })
+
+    it(okMsg("fromString - with Result Err"), () => {
+        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"err","val":"Some Error"}}, {"id":2,"name": "user2"}]}`;
+
+        const result = json.fromString(inputString);
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (actual) => {
+                const expectedObj = Some({
+                    "data": Some([
+                        Some({"id": Some(1), "name": None(), "login": Err(Some("Some Error"))}),
+                        Some({"id": Some(2), "name": Some("user2")}),
+                    ])
+                });
+
+                assert.deepEqual(actual, expectedObj);            },
+        })
+    })
+
+    it(okMsg("fromString - object with property '__type', but not Ok/Err"), () => {
+        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"custom","val":"custom val"}}, {"id":2,"name": "user2"}]}`;
+
+        const result = json.fromString(inputString);
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (actual) => {
+                const expectedObj = Some({
+                    "data": Some([
+                        Some({"id": Some(1), "name": None(), "login": Some({"__type": Some("custom"), "val": Some("custom val")})}),
+                        Some({"id": Some(2), "name": Some("user2")}),
+                    ])
+                });
+
+                assert.deepEqual(actual, expectedObj);            },
+        })
+    })
+
+    it(okMsg("fromString - object with property '__type' equals Ok/Err, but property 'val' is not found"), () => {
+        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"ok","custom_val":"custom val"}}, {"id":2,"name": "user2"}]}`;
+
+        const result = json.fromString(inputString);
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (actual) => {
+                const expectedObj = Some({
+                    "data": Some([
+                        Some({"id": Some(1), "name": None(), "login": Some({"__type": Some("ok"), "custom_val": Some("custom val")})}),
+                        Some({"id": Some(2), "name": Some("user2")}),
+                    ])
+                });
+
+                assert.deepEqual(actual, expectedObj);            },
+        })
+    })
+
 
     it(errMsg("fromString - bad json"), () => {
         const inputString = '{"name":"' + faker.string() + '", "email": "' + faker.string() + '"/}';
@@ -103,7 +179,7 @@ describe("Std-json", () => {
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (jsonStr) => {
-                assert.equal(jsonStr, `{"data":[{"id":1,"name":null},{"id":2,"name":"${name}"}],"meta":{"__type":"ok","v":{"more_records":true}}}`);
+                assert.equal(jsonStr, `{"data":[{"id":1,"name":null},{"id":2,"name":"${name}"}],"meta":{"__type":"ok","val":{"more_records":true}}}`);
             },
         })
     })
@@ -162,7 +238,7 @@ describe("Std-json", () => {
 
         resultOk.match({
             Ok: (actual) => {
-                assert.equal(actual, `{"__type":"ok","v":"${strVal}"}`);
+                assert.equal(actual, `{"__type":"ok","val":"${strVal}"}`);
             },
             Err: error => assert.fail(error.message),
         })
@@ -172,7 +248,7 @@ describe("Std-json", () => {
 
         resultErr.match({
             Ok: (actual) => {
-                assert.equal(actual, `{"__type":"err","v":"${strVal}"}`);
+                assert.equal(actual, `{"__type":"err","val":"${strVal}"}`);
             },
             Err: error => assert.fail(error.message),
         })

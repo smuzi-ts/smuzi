@@ -17,6 +17,7 @@ export type TDatabaseClient = {
     query: <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>,
     insertRow:  <Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>,
     insertManyRows:  <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>,
+    updateRow:  <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>,
 }
 
 export type TMigration = {
@@ -84,7 +85,7 @@ export type AutoId<T> = T & { readonly __PrimaryKey: unique symbol };
 export type UnwrapOption<T> = T extends Option<infer U> ? U : T;
 
 export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U> | AutoId<infer U>
-    ? (U extends Option<any> ? true : false)
+    ? (U extends Option ? true : false)
     : false;
 
 

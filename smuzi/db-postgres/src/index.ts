@@ -66,6 +66,7 @@ export function postgresClient(config: Config): TDatabaseClient {
 
         async insertManyRows(table, rows, idColumn = 'id') {
             if (rows.length === 0) return Ok([]);
+            //TODO: protected for injections
 
             const columns = Object.keys(rows[0]);
             const values: any[] = [];
@@ -80,6 +81,17 @@ export function postgresClient(config: Config): TDatabaseClient {
 
             return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
                 .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
+        },
+
+        async updateRow(table, id, row, idColumn = 'id') {
+            //TODO: protected for injections
+            const columns = Object.keys(row);
+            const values = Object.values(row);
+            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+            const sql = `UPDATE ${table} SET WHERE ${idColumn} = ${id}` ;
+
+            return (await this.query(sql, values))
+                .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
         },
 
 

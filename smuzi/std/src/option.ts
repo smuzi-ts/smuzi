@@ -2,19 +2,20 @@ import { asObject } from "./checker.js";
 import { dump } from "./debug.js";
 import { panic } from "./panic.js";
 
-type Val = NonNullable<unknown>;
+type Val<T = unknown> = NonNullable<T>;
+
 export type OptionPatterns<T , R> = { Some: (value: T) => R; None: () => R; }
 
-export function Some<T extends Val>(value: T): Option<T> {
-    return new OptionSome<T>(value);
+export function Some<T>(value: NonNullable<T>): Option<T> {
+    return new OptionSome<NonNullable<T>>(value);
 }
 
-export function None<T extends Val>(): Option<T> {
+export function None(): Option<never> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T>(value: T | Option<T>): Option<T> {
-    return (value === null || value === undefined) ? None() : (isOption(value) ? value : Some(value));
+export function OptionFromNullable<T>(value: Option<T> | T): Option<T> | Option<never> {
+    return (value === null || value === undefined) ? None()  : (isOption(value) ? value : Some(value));
 }
 
 export class Option<T = unknown> {
@@ -48,20 +49,20 @@ export class Option<T = unknown> {
         return this;
     }
 
-    get(property: string): Option {
+    get(property: string | number): Option {
         return this.match({
-            Some: (v) => asObject(v) ? Reflect.has(v, property) ? Some(v[property]) : None() : None(),
-            None: () => None(),
+            Some: (v) => asObject(v) ? Reflect.has(v, property) ? OptionFromNullable(v[property]) : None() : None(),
+            None: () => this,
         });
     }
 
-    unwrapByKey(property: string): unknown | never {
+    unwrapByKey(property: string | number): unknown | never {
         const msg = `Unwrapped None variant for property '${property}'`;
 
         return this.get(property).unwrap(msg);
     }
 
-    flatByKey(property: string): Option<T> | Option {
+    flatByKey(property: string | number): Option<T> | Option {
         return this.get(property).flat();
     }
 
@@ -88,11 +89,10 @@ class OptionNone extends Option<never>{
     }
 }
 
-
-export function isOption<T = unknown>(value: unknown): value is Option<T> {
+export function isOption(value: unknown): value is Option {
     return value instanceof Option;
 }
 
-export function isNone<T = unknown>(value: unknown): value is Option<never> {
+export function isNone(value: unknown): value is Option<never> {
     return value instanceof OptionNone;
 }

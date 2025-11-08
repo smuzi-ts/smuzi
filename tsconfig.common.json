@@ -7,6 +7,7 @@
     "checkJs": false,
     "noEmit": true,
     "strict": false,
+    "strictNullChecks": true,
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

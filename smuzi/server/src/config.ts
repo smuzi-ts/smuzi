@@ -1,5 +1,5 @@
 import {impl, Struct, UrlTrait} from "@smuzi/std";
-import {Index} from "@smuzi/router";
+import {Router} from "#lib/router.js";
 
 export enum HttpProtocol {
     HTTPS = "https",
@@ -14,7 +14,7 @@ export type TServerConfig = {
         key: string,
         cert: string,
     },
-    router: Index,
+    router: Router,
 };
 
 const StructServerConfig = Struct<TServerConfig>();
