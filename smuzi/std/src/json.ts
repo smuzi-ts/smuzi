@@ -1,13 +1,27 @@
 import {isNull, isString} from "#lib/checker.js";
-import {isNone, None, Some} from "#lib/option.js";
-import {Err, Ok, Result} from "#lib/result.js";
+import {isNone, isOption, None, Some} from "#lib/option.js";
+import {Err, isResult, Ok, Result} from "#lib/result.js";
 
 function reviver(this, key, value) {
     return isNull(value) ? None() : Some(value);
 }
 
 function replacer(this, key, value) {
-    return isNone(value) ? null : value;
+    if (isOption(value)) {
+        return value.match({
+            None:() => null,
+            Some: (v) => v
+        });
+    }
+
+    if (isResult(value)) {
+        return value.match({
+            Ok:(v) => ({__type:'ok',v}),
+            Err: (v) => ({__type:'err',v}),
+        });
+    }
+
+    return value;
 }
 
 type JsonParsingError = {

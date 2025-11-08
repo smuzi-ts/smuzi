@@ -72,3 +72,7 @@ class ResultErr<E extends Val> extends Result<never, E> {
     }
 }
 
+
+export function isResult(value: unknown): value is Result<unknown, unknown> {
+    return value instanceof Result;
+}
