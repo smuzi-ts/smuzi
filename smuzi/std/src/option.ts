@@ -14,7 +14,7 @@ export function None(): Option<never> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T>(value: Option<T> | T): Option<T> | Option<never> {
+export function OptionFromNullable<T>(value: Option<T> | T): Option<T> {
     return (value === null || value === undefined) ? None()  : (isOption(value) ? value : Some(value));
 }
 

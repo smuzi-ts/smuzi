@@ -3,27 +3,27 @@ import {Option, Result} from "@smuzi/std"
 export type TQueryParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, Option>
 
-export type QueryError = {
+export type TQueryError = {
     message: string
     code: Option<string>
     detail: Option<string>
     table: Option<string>
 }
 
-export type TQueryResult<Entity = unknown> = Result<Entity, QueryError>
-export type TInsertRowResult<Entity = TRow> = Result<ExtractPrimaryKey<Entity>, QueryError>
+export type TQueryResult<Entity = unknown> = Result<Entity, TQueryError>
+export type TInsertRowResult<Entity = TRow> = Result<ExtractPrimaryKey<Entity>, TQueryError>
 
-export type TQueryMethod = <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
-export type TInsertMethod = <Entity = unknown>(sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
-export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>,
+export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
+export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
+export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>;
 export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
 
 export type TDatabaseClient = {
-    query: TQueryMethod
-    insertRow: TInsertMethod,
-    insertManyRows: TInsertManyRowsMethod,
-    updateRow: TUpdateRowMethod,
-    updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
+    query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>>;
+    insertRow<Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string): Promise<TInsertRowResult<Entity>>;
+    // insertManyRows: TInsertManyRowsMethod,
+    // updateRow: TUpdateRowMethod,
+    // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
 }
 
 export type TMigration = {

@@ -10,7 +10,7 @@ export const createUser = ConsoleCommand(async (output, params)=>  {
         email: faker.string(),
         password: "test",
         created_at: new Date()
-    }));
+    })).unwrap().unwrap();
 
-    console.log(userId.unwrap().unwrap());
+    console.log(userId);
 })

@@ -1,5 +1,11 @@
 import { Pool } from 'pg'
-import {preparedSqlFromObjectToArrayParams, TDatabaseClient, TQueryParams} from "@smuzi/database";
+import {
+    preparedSqlFromObjectToArrayParams,
+    TDatabaseClient, TInsertRow, TInsertRowResult,
+    TQueryMethod,
+    TQueryParams,
+    TQueryResult, TRow
+} from "@smuzi/database";
 import {Err, isArray, None, Ok, OptionFromNullable} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.js"
 export * from "#lib/entityRepository.js"
@@ -12,6 +18,7 @@ export type Config = {
     database: string,
 }
 
+
 export function postgresClient(config: Config): TDatabaseClient {
     const pool = new Pool(config)
 
@@ -20,7 +27,76 @@ export function postgresClient(config: Config): TDatabaseClient {
         process.exit(-1)
     })
 
-    async function query(sql: string, params: TQueryParams = []) {
+    class PostgresClient implements TDatabaseClient {
+        async query<Entity = unknown>(sql: string, params: TQueryParams = []): Promise<TQueryResult<Entity>> {
+            {
+                let preparedSql = sql;
+
+                if (!isArray(params)) {
+                    const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
+                    preparedSql = preparedRes.sql;
+                    params = preparedRes.params;
+                }
+
+                try {
+                    const res = await pool.query({
+                            text: preparedSql,
+                            values: params,
+                            types: {
+                                getTypeParser: () => val => OptionFromNullable(val)
+                            },
+                        },
+                    );
+
+                    return Ok(res.rows)
+                } catch (err) {
+                    return Err({
+                        sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
+                        message: err.message,
+                        code: OptionFromNullable(err.code),
+                        detail: OptionFromNullable(err.detail),
+                        table: OptionFromNullable(err.table),
+                    });
+                }
+            }    }
+
+        // insertManyRows<Entity>(table: string, rows: TInsertRow<Entity>[], idColumn: string | undefined): Promise<TInsertRowResult<Entity>[]> {
+        //     return Promise.resolve([]);
+        // }
+
+        async  insertRow<Entity = TRow>(table, row: TInsertRow<Entity>, idColumn = 'id'): Promise<TInsertRowResult<Entity>> {
+            //TODO: protected for injections
+            const columns = Object.keys(row);
+            const values = Object.values(row);
+            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${idColumn}` ;
+
+            return (await this.query<TInsertRowResult<Entity>[]>(sql, values))
+                .wrapOk(rows => {
+                    const row = OptionFromNullable(rows[0]);
+                    return row.match({
+                        Some: (rowV)=>  {
+
+                        },
+                        None: () => {
+                            return new QueryError();
+                        }
+                    })
+                });
+        }
+
+        // updateManyRows<Entity>(table: string, values: TInsertRow<Entity>, where: string): Promise<TQueryResult> {
+        //     return Promise.resolve(undefined);
+        // }
+        //
+        // updateRow<Entity>(table: string, id: string | number, row: TInsertRow<Entity>, idColumn: string | undefined): Promise<TQueryResult> {
+        //     return Promise.resolve(undefined);
+        // }
+    }
+
+
+    const client: TDatabaseClient =  {
+        query: async <Entity>(sql, params = [])=>  {
 
         let preparedSql = sql;
 
@@ -50,10 +126,7 @@ export function postgresClient(config: Config): TDatabaseClient {
                 table: OptionFromNullable(err.table),
             });
         }
-    }
-
-    return {
-        query,
+    },
         async insertRow(table, row, idColumn = 'id') {
             //TODO: protected for injections
             const columns = Object.keys(row);
@@ -61,7 +134,7 @@ export function postgresClient(config: Config): TDatabaseClient {
             const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
             const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${idColumn}` ;
 
-            return (await query(sql, values))
+            return (await this.query(sql, values))
                 .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
         },
 
@@ -80,7 +153,7 @@ export function postgresClient(config: Config): TDatabaseClient {
 
             rows.forEach(row => values.push(...Object.values(row)));
 
-            return (await query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
+            return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
                 .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
         },
 
@@ -100,10 +173,12 @@ export function postgresClient(config: Config): TDatabaseClient {
 
             const params = entries.map(([, val]) => val);
 
-            return (await query(sql, params)).wrapOk(v);
+            return (await this.query(sql, params)).wrapOk(v);
         },
 
     }
+
+    return client;
 }
 
 
