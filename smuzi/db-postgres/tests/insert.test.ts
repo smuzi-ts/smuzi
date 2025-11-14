@@ -7,6 +7,23 @@ describe("db-postgres - query", () => {
     before(globalSetup);
     // after(globalTeardown);
 
+    it(okMsg("INSERT ROW"), async () => {
+        const dbClient = buildClient();
+
+        const result = (await dbClient.insertRow<TUserRow>('users', {
+            name: faker.string(),
+            email: faker.string(),
+            password: faker.string(),
+            created_at: faker.date(),
+        }));
+
+        result.debug().match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (rowId) => {
+            },
+        })
+    })
+
     // it(okMsg("SELECT"), async () => {
     //     const dbClient = buildClient();
     //

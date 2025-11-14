@@ -12,5 +12,6 @@ export * from "./dotEnv.js";
 export * from "./object.js";
 export * from "./promise.js";
 export * from "./json.js";
+export * from "./utilTypes.js";
 
 

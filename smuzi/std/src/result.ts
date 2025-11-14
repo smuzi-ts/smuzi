@@ -45,6 +45,11 @@ export class Result<T, E> implements IMatched {
         });
     }
 
+    debug(): this {
+        console.trace(this);
+        return this;
+    }
+
     wrapOk<RO>(handlerOk: (value: T) => RO): Result<RO | never, E> {
         if (this instanceof ResultOk) {
             return Ok(handlerOk(this._val))

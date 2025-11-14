@@ -1,12 +1,13 @@
 import { Pool } from 'pg'
 import {
+    ExtractPrimaryKey,
     preparedSqlFromObjectToArrayParams,
     TDatabaseClient, TInsertRow, TInsertRowResult,
     TQueryMethod,
     TQueryParams,
     TQueryResult, TRow
 } from "@smuzi/database";
-import {Err, isArray, None, Ok, OptionFromNullable} from "@smuzi/std";
+import {asArray, asObject, Err, isArray, None, Ok, OptionFromNullable} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.js"
 export * from "#lib/entityRepository.js"
 
@@ -18,96 +19,29 @@ export type Config = {
     database: string,
 }
 
+export class PostgresClient implements TDatabaseClient {
+    readonly #pool: Pool;
 
-export function postgresClient(config: Config): TDatabaseClient {
-    const pool = new Pool(config)
+    constructor(private readonly config: Config) {
+         this.#pool = new Pool(config)
 
-    pool.on('error', (err, client) => {
-        console.error('Unexpected error on idle client', err)
-        process.exit(-1)
-    })
+         this.#pool.on('error', (err, config) => {
+            console.error('Unexpected error on idle client', err)
+            process.exit(-1)
+        })
 
-    class PostgresClient implements TDatabaseClient {
-        async query<Entity = unknown>(sql: string, params: TQueryParams = []): Promise<TQueryResult<Entity>> {
-            {
-                let preparedSql = sql;
-
-                if (!isArray(params)) {
-                    const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
-                    preparedSql = preparedRes.sql;
-                    params = preparedRes.params;
-                }
-
-                try {
-                    const res = await pool.query({
-                            text: preparedSql,
-                            values: params,
-                            types: {
-                                getTypeParser: () => val => OptionFromNullable(val)
-                            },
-                        },
-                    );
-
-                    return Ok(res.rows)
-                } catch (err) {
-                    return Err({
-                        sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
-                        message: err.message,
-                        code: OptionFromNullable(err.code),
-                        detail: OptionFromNullable(err.detail),
-                        table: OptionFromNullable(err.table),
-                    });
-                }
-            }    }
-
-        // insertManyRows<Entity>(table: string, rows: TInsertRow<Entity>[], idColumn: string | undefined): Promise<TInsertRowResult<Entity>[]> {
-        //     return Promise.resolve([]);
-        // }
-
-        async  insertRow<Entity = TRow>(table, row: TInsertRow<Entity>, idColumn = 'id'): Promise<TInsertRowResult<Entity>> {
-            //TODO: protected for injections
-            const columns = Object.keys(row);
-            const values = Object.values(row);
-            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
-            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${idColumn}` ;
-
-            return (await this.query<TInsertRowResult<Entity>[]>(sql, values))
-                .wrapOk(rows => {
-                    const row = OptionFromNullable(rows[0]);
-                    return row.match({
-                        Some: (rowV)=>  {
-
-                        },
-                        None: () => {
-                            return new QueryError();
-                        }
-                    })
-                });
-        }
-
-        // updateManyRows<Entity>(table: string, values: TInsertRow<Entity>, where: string): Promise<TQueryResult> {
-        //     return Promise.resolve(undefined);
-        // }
-        //
-        // updateRow<Entity>(table: string, id: string | number, row: TInsertRow<Entity>, idColumn: string | undefined): Promise<TQueryResult> {
-        //     return Promise.resolve(undefined);
-        // }
     }
-
-
-    const client: TDatabaseClient =  {
-        query: async <Entity>(sql, params = [])=>  {
-
+    async query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>> {
         let preparedSql = sql;
 
-        if (!isArray(params)) {
+        if (asObject(params)) {
             const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
             preparedSql = preparedRes.sql;
             params = preparedRes.params;
         }
 
         try {
-            const res = await pool.query({
+            const res = await this.#pool.query({
                     text: preparedSql,
                     values: params,
                     types: {
@@ -126,59 +60,66 @@ export function postgresClient(config: Config): TDatabaseClient {
                 table: OptionFromNullable(err.table),
             });
         }
-    },
-        async insertRow(table, row, idColumn = 'id') {
-            //TODO: protected for injections
-            const columns = Object.keys(row);
-            const values = Object.values(row);
-            const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
-            const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${idColumn}` ;
-
-            return (await this.query(sql, values))
-                .wrapOk(rows => OptionFromNullable(rows[0][idColumn]));
-        },
-
-        async insertManyRows(table, rows, idColumn = 'id') {
-            if (rows.length === 0) return Ok([]);
-            //TODO: protected for injections
-
-            const columns = Object.keys(rows[0]);
-            const values: any[] = [];
-            const placeholders = rows.map((row, rowIndex) => {
-                return `(${columns.map((_, colIndex) => {
-                    const placeholderIndex = rowIndex * columns.length + colIndex + 1;
-                    return `$${placeholderIndex}`;
-                }).join(', ')})`;
-            }).join(', ');
-
-            rows.forEach(row => values.push(...Object.values(row)));
-
-            return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
-                .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
-        },
-
-        async updateRow(table, id, row, idColumn = 'id') {
-            return this.updateManyRows(table, row, `${idColumn} = ${id}`)
-        },
-
-        async updateManyRows(table, values, where) {
-            //TODO: protected for injections
-            const entries = Object.entries(values);
-
-            const setClause = entries
-                .map(([key], i) => `${key} = $${i + 1}`)
-                .join(", ");
-
-            const sql = `UPDATE ${table} SET ${setClause} WHERE ${where};`;
-
-            const params = entries.map(([, val]) => val);
-
-            return (await this.query(sql, params)).wrapOk(v);
-        },
-
     }
 
-    return client;
+    async insertRow<Entity = TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC = ['id'] as RC): Promise<TInsertRowResult<RC>> {
+        //TODO: protected for injections
+        const columns = Object.keys(row);
+        const values = Object.values(row);
+        const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+        const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
+
+        return (await this.query<TInsertRowResult<RC>[]>(sql, values)).debug()
+            .wrapOk(rows =>  {
+                const res = OptionFromNullable(rows[0]);
+                return res;
+            });
+    }
+
+    async insertManyRows(table, rows, idColumn = 'id') {
+        if (rows.length === 0) return Ok([]);
+        //TODO: protected for injections
+
+        const columns = Object.keys(rows[0]);
+        const values: any[] = [];
+        const placeholders = rows.map((row, rowIndex) => {
+            return `(${columns.map((_, colIndex) => {
+                const placeholderIndex = rowIndex * columns.length + colIndex + 1;
+                return `$${placeholderIndex}`;
+            }).join(', ')})`;
+        }).join(', ');
+
+        rows.forEach(row => values.push(...Object.values(row)));
+
+        return (await this.query<TRow[]>(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
+            .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
+    }
+
+    // async updateRow(table, id, row, idColumn = 'id') {
+    //     return this.updateManyRows(table, row, `${idColumn} = ${id}`)
+    // }
+
+    // async updateManyRows(table, values, where) {
+    //     //TODO: protected for injections
+    //     const entries = Object.entries(values);
+    //
+    //     const setClause = entries
+    //         .map(([key], i) => `${key} = $${i + 1}`)
+    //         .join(", ");
+    //
+    //     const sql = `UPDATE ${table} SET ${setClause} WHERE ${where};`;
+    //
+    //     const params = entries.map(([, val]) => val);
+    //
+    //     return (await this.query(sql, params)).wrapOk(v);
+    // }
+
+}
+
+
+
+export function postgresClient(config: Config): TDatabaseClient {
+    return new PostgresClient(config);
 }
 
 

@@ -1,4 +1,4 @@
-import {Option, Result} from "@smuzi/std"
+import {Option, RecordFromKeys, Result} from "@smuzi/std"
 
 export type TQueryParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, Option>
@@ -11,16 +11,16 @@ export type TQueryError = {
 }
 
 export type TQueryResult<Entity = unknown> = Result<Entity, TQueryError>
-export type TInsertRowResult<Entity = TRow> = Result<ExtractPrimaryKey<Entity>, TQueryError>
+export type TInsertRowResult<Columns = string[]> = Result<RecordFromKeys<Columns>, TQueryError>
 
 export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
-export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
-export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>;
-export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
+// export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
+// export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>;
+// export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
 
-export type TDatabaseClient = {
+export interface TDatabaseClient {
     query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>>;
-    insertRow<Entity = TRow>(table: string, row: TInsertRow<Entity>, idColumn?: string): Promise<TInsertRowResult<Entity>>;
+    insertRow<Entity = TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns?: RC): Promise<TInsertRowResult<RC>>;
     // insertManyRows: TInsertManyRowsMethod,
     // updateRow: TUpdateRowMethod,
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
@@ -103,6 +103,6 @@ export type TInsertRow<T> = {
     [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
 }
 
-type ExtractPrimaryKey<T> = {
+export type ExtractPrimaryKey<T> = {
     [K in keyof T]: T[K] extends AutoId<infer U> ? U : Option
 }[keyof T];

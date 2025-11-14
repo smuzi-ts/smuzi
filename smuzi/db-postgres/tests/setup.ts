@@ -13,12 +13,12 @@ export async function globalSetup() {
 
     (await promiseAll(migrations)).unwrap();
 
-    const seeds = [
-        insertUsers,
-    ]
-        .map(seed => seed(dbClient));
-
-    (await promiseAll(seeds)).unwrap();
+    // const seeds = [
+    //     insertUsers,
+    // ]
+    //     .map(seed => seed(dbClient));
+    //
+    // (await promiseAll(seeds)).unwrap();
 }
 
 export async function globalTeardown() {
