@@ -2,12 +2,23 @@ import { Pool } from 'pg'
 import {
     ExtractPrimaryKey,
     preparedSqlFromObjectToArrayParams,
-    TDatabaseClient, TInsertRow, TInsertRowResult,
+    TDatabaseClient, TInsertRow, TInsertRowResult, TQueryError,
     TQueryMethod,
     TQueryParams,
     TQueryResult, TRow
 } from "@smuzi/database";
-import {asArray, asObject, Err, isArray, None, Ok, OptionFromNullable} from "@smuzi/std";
+import {
+    asArray,
+    asObject,
+    Err,
+    isArray,
+    None,
+    Ok,
+    OptionFromNullable,
+    RecordFromKeys,
+    Simplify,
+    Some
+} from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.js"
 export * from "#lib/entityRepository.js"
 
@@ -62,17 +73,26 @@ export class PostgresClient implements TDatabaseClient {
         }
     }
 
-    async insertRow<Entity = TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC = ['id'] as RC): Promise<TInsertRowResult<RC>> {
+    async insertRow<Entity extends TRow = TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC = ['id'] as RC): Promise<TInsertRowResult<RC, Entity>> {
         //TODO: protected for injections
         const columns = Object.keys(row);
         const values = Object.values(row);
         const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
         const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query<TInsertRowResult<RC>[]>(sql, values)).debug()
-            .wrapOk(rows =>  {
-                const res = OptionFromNullable(rows[0]);
-                return res;
+        return (await this.query<Simplify<RecordFromKeys<RC, Entity>>[]>(sql, values))
+            .okThen(rows => {
+                if (0 in rows) {
+                    return Ok(rows[0]);
+                }
+
+                return Err({
+                    sql: sql,
+                    message: 'Result of query insert row not contain any rows',
+                    code: Some("SYSTEM:1000"),
+                    detail: None(),
+                    table: Some(table)
+                });
             });
     }
 
@@ -92,7 +112,7 @@ export class PostgresClient implements TDatabaseClient {
         rows.forEach(row => values.push(...Object.values(row)));
 
         return (await this.query<TRow[]>(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
-            .wrapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
+            .mapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
     }
 
     // async updateRow(table, id, row, idColumn = 'id') {
@@ -111,7 +131,7 @@ export class PostgresClient implements TDatabaseClient {
     //
     //     const params = entries.map(([, val]) => val);
     //
-    //     return (await this.query(sql, params)).wrapOk(v);
+    //     return (await this.query(sql, params)).mapOk(v);
     // }
 
 }

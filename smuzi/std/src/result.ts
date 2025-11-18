@@ -1,4 +1,4 @@
-import {asString} from "./checker.js";
+import {asString, isNull} from "./checker.js";
 import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
 import {json} from "#lib/json.js";
@@ -50,17 +50,33 @@ export class Result<T, E> implements IMatched {
         return this;
     }
 
-    wrapOk<RO>(handlerOk: (value: T) => RO): Result<RO | never, E> {
+    okThen<RO extends  Result<unknown, E | unknown>>(handler: (value: T) => RO): RO  {
         if (this instanceof ResultOk) {
-            return Ok(handlerOk(this._val))
+            return handler(this._val);
+        }
+
+        return this as unknown as RO;
+    }
+
+    errThen<RE extends  Result<unknown, unknown>>(handler: (value: T) => RE): RE | Result<T, never> {
+        if (this instanceof ResultErr) {
+            return handler(this._val);
+        }
+
+        return this as unknown as Result<T, never>;
+    }
+
+    mapOk<RO>(handler: (value: T) => RO): Result<RO | never, E> {
+        if (this instanceof ResultOk) {
+            return Ok(handler(this._val));
         }
 
         return this as unknown as Result<never, E>;
     }
 
-    wrapErr<RE>(handlerErr: (value: E) => RE): never | T | RE {
+    mapErr<RE>(handler: (value: E) => RE): never | T | RE {
         if (this instanceof ResultErr) {
-            return handlerErr(this._val);
+            return handler(this._val);
         }
 
         return this._val as T;

@@ -7,7 +7,7 @@ export type TAssertResult = {
 
 export const assertResult: TAssertResult = {
     failIfError(result) {
-        result.wrapErr((e) => {
+        result.mapErr((e) => {
             assert.fail(asString(e) ? e : json.toString(e))
         });
     },

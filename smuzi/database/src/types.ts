@@ -1,4 +1,4 @@
-import {Option, RecordFromKeys, Result} from "@smuzi/std"
+import {Option, RecordFromKeys, Result, Simplify} from "@smuzi/std"
 
 export type TQueryParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, Option>
@@ -11,7 +11,7 @@ export type TQueryError = {
 }
 
 export type TQueryResult<Entity = unknown> = Result<Entity, TQueryError>
-export type TInsertRowResult<Columns = string[]> = Result<RecordFromKeys<Columns>, TQueryError>
+export type TInsertRowResult<Columns extends string[], Entity extends TRow> = Result<Simplify<RecordFromKeys<Columns, Entity>>, TQueryError>
 
 export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
 // export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
@@ -20,7 +20,7 @@ export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams
 
 export interface TDatabaseClient {
     query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>>;
-    insertRow<Entity = TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns?: RC): Promise<TInsertRowResult<RC>>;
+    insertRow<Entity extends TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns?: RC): Promise<TInsertRowResult<RC, Entity>>;
     // insertManyRows: TInsertManyRowsMethod,
     // updateRow: TUpdateRowMethod,
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
@@ -57,10 +57,10 @@ export enum TMigrationLogAction {
 }
 
 export type TMigrationLogSave = {
-    name: string,
-    branch: number,
-    action: TMigrationLogAction,
-    sql_source: string,
+    name: Option<string>,
+    branch: Option<number>,
+    action: Option<TMigrationLogAction>,
+    sql_source: Option<string>,
 }
 
 export type TMigrationLogRow = {
@@ -79,7 +79,7 @@ export type TMigrationsLogRepository = {
     listRuned(): Promise<TQueryResult<TMigrationLogRow>>,
     listRunedByBranch(branch: number): Promise<TQueryResult<TMigrationLogRow>>,
     getLastBranch(): Promise<Option<number>>,
-    create(row: TMigrationLogSave): Promise<TInsertRowResult<TMigrationLogSave>>,
+    create<RC extends string[] = ['id']>(row: TMigrationLogSave, returningColumns?: RC): Promise<TInsertRowResult<[], TMigrationLogSave>>,
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
     freshSchema(): Promise<TQueryResult>

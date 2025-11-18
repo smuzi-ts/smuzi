@@ -2,6 +2,7 @@ import {assert, describe, it, okMsg, before, after} from "@smuzi/tests";
 import {buildClient, globalSetup, globalTeardown} from "./setup.js";
 import {TUserRow} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
+import {RecordFromKeys, Simplify} from "@smuzi/std";
 
 describe("db-postgres - query", () => {
     before(globalSetup);
@@ -15,13 +16,10 @@ describe("db-postgres - query", () => {
             email: faker.string(),
             password: faker.string(),
             created_at: faker.date(),
-        }));
+        })).unwrap().id.unwrap();
 
-        result.debug().match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (rowId) => {
-            },
-        })
+
+
     })
 
     // it(okMsg("SELECT"), async () => {

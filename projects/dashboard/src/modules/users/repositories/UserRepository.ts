@@ -21,7 +21,7 @@ export const UserRepository = (client = databaseConfig.current.client) => {
         getTable: () => table,
         async find(id: number) {
             return (await client.query<TUserRow>(`SELECT ${publicFields} FROM ${table} where id = $1`, [id]))
-                .wrapOk(res => OptionFromNullable(res[0]));
+                .mapOk(res => OptionFromNullable(res[0]));
         },
         async insertRow(row: TInsertRow<TUserRow>) {
             return client.insertRow(table, row);
