@@ -1,24 +1,46 @@
 import { Ok, Pipe, Result } from "@smuzi/std"
 
-type  TestResults = Result<string, string>[];
+type TestResults = Result<string, string>[];
+type TestCase<Setup extends unknown> = (setup: Setup) => Promise<void>
 
-    async function setupTests<Setup>(fn: () => Promise<Result<Setup, string>>) {
-        return await fn();
+
+const describe = <Setup>(msg: string, cases: TestCase<Setup>[]) => async (setup: Setup): Promise<void> => {
+    for (const caseTest of cases) {
+        await caseTest(setup);
     }
+}
 
-    async function deacribe<Setup>(setup: Setup): Promise<Result<Setup, string>> {
-        return (msg, tests: () => ) => {
+const it = <Setup>(msg: string, fn: TestCase<Setup>) => async (setup: Setup): Promise<void> => {
+    await fn(setup);
+}
 
+
+type MysSetup = { dbClient: string };
+
+async function pipeline<Setup>(
+    groups: TestCase<Setup>[]
+) {
+    return async (setup: Setup) => {
+        for (const group of groups) {
+            await group(setup);
         }
     }
 
+}
 
-type MysSetup = {dbClient: string};
+const mySetup = { dbClient: "Postgres" };
 
+const pipelineUser = pipeline<MysSetup>(
+    [
+        describe("users - ", [
+            it("get user", async () => {
 
-const setup = await setupTests(async () => {
-    return Ok({dbClient: "MySQL"})
-});
+            })
+        ])
+    ]
+)
 
-const 
+const pipelines = [
+    pipelineUser
+];
 
