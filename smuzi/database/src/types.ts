@@ -11,7 +11,7 @@ export type TQueryError = {
 }
 
 export type TQueryResult<Entity = unknown> = Result<Entity, TQueryError>
-export type TInsertRowResult<Columns extends string[], Entity extends TRow> = Result<Simplify<RecordFromKeys<Columns, Entity>>, TQueryError>
+export type TInsertRowResult<Columns extends readonly string[], Entity extends TRow> = Result<Simplify<RecordFromKeys<Columns, Entity>>, TQueryError>
 
 export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
 // export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
@@ -20,7 +20,7 @@ export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams
 
 export interface TDatabaseClient {
     query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>>;
-    insertRow<Entity extends TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns?: RC): Promise<TInsertRowResult<RC, Entity>>;
+    insertRow<Entity extends TRow, const RC extends readonly string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC): Promise<TInsertRowResult<RC, Entity>>;
     // insertManyRows: TInsertManyRowsMethod,
     // updateRow: TUpdateRowMethod,
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,

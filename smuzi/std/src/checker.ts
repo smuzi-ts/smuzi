@@ -21,7 +21,7 @@ export function asArray<T = unknown>(val: unknown): val is T[] {
 }
 
 export function asObject(val: unknown): val is Record<string, unknown> {
-    return Object.prototype.toString.call(val) === "[object Object]";
+    return typeof val === "object"
 }
 
 export function asRegExp(val: unknown): val is RegExp {
@@ -31,6 +31,10 @@ export function asRegExp(val: unknown): val is RegExp {
 export function asEmpty(val: unknown): val is TEmpty
 {
     return isEmpty(val);
+}
+
+export function asNull(val: unknown): val is null|undefined {
+    return val === undefined || val === null;
 }
 
 export function isNull(val: unknown): boolean {
@@ -67,7 +71,7 @@ export function isArray(val: unknown): boolean {
 }
 
 export function isObject(val: unknown): boolean {
-    return Object.prototype.toString.call(val) === "[object Object]";
+    return typeof val === "object";
 }
 
 export function isRegExp(val: unknown): boolean {

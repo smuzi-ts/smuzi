@@ -18,7 +18,7 @@
     "@smuzi/console": "workspace:*",
     "@smuzi/db-postgres": "workspace:*",
     "@smuzi/database": "workspace:*",
-    "@smuzi/http": "workspace:*",
+    "@smuzi/http-server": "workspace:*",
     "@smuzi/std": "workspace:*",
     "@smuzi/tests": "workspace:*",
     "@smuzi/faker": "workspace:*"

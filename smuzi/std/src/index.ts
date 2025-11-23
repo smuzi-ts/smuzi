@@ -13,5 +13,7 @@ export * from "./object.js";
 export * from "./promise.js";
 export * from "./json.js";
 export * from "./utilTypes.js";
-
+export * from "./path.js";
+export * from "./http.js";
+export * from "./error.js";
 

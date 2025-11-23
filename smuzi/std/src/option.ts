@@ -1,4 +1,4 @@
-import { asObject } from "./checker.js";
+import { asFunction, asNull, asObject } from "./checker.js";
 import { dump } from "./debug.js";
 import { panic } from "./panic.js";
 
@@ -14,8 +14,9 @@ export function None(): Option<never> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T>(value: Option<T> | T): Option<T> {
-    return (value === null || value === undefined) ? None()  : (isOption(value) ? value : Some(value));
+
+export function OptionFromNullable<T>(value: Option<T> | T): Option<T extends null | undefined ? never : T> {
+    return asNull(value) ? None()  : (isOption(value) ? value  : Some(value as NonNullable<T>)) as any;
 }
 
 export class Option<T = unknown> {
@@ -29,6 +30,14 @@ export class Option<T = unknown> {
         return handlers.None();
     }
 
+    mapOr<R>(some: ((value: T) => R) | R, none: (() => R) | R): R {
+        if (this instanceof OptionSome) {
+            return asFunction(some) ? some(this._val as T) : some;
+        }
+        
+        return asFunction(none) ? none() : none;
+    }
+
     isNull(): this is OptionNone {
         return this instanceof OptionNone;
     }
@@ -40,7 +49,7 @@ export class Option<T = unknown> {
         });
     }
 
-    flat(): Option<T> | Option
+    flat(): this | T
     {
         if (isOption(this._val)) {
             return this._val;
@@ -49,20 +58,20 @@ export class Option<T = unknown> {
         return this;
     }
 
-    get(property: string | number): Option {
+    get<K extends Extract<keyof T, string>>(property: K): Option<T[K] | never> {
         return this.match({
             Some: (v) => asObject(v) ? Reflect.has(v, property) ? OptionFromNullable(v[property]) : None() : None(),
-            None: () => this,
+            None: () => None(),
         });
     }
 
-    unwrapByKey(property: string | number): unknown | never {
+    unwrapByKey<K extends Extract<keyof T, string>>(property: K): T[K] | never {
         const msg = `Unwrapped None variant for property '${property}'`;
 
         return this.get(property).unwrap(msg);
     }
 
-    flatByKey(property: string | number): Option<T> | Option {
+    flatByKey<K extends Extract<keyof T, string>>(property: K): Option<T[K]> | T[K] {
         return this.get(property).flat();
     }
 
@@ -73,6 +82,14 @@ export class Option<T = unknown> {
             None: () => none,
         });
     }
+
+     mapSome<R extends NonNullable<unknown>>(handler: (value: T) => R): Option<R | never> {
+            if (isSome(this)) {
+                return Some(handler(this._val));
+            }
+    
+            return this as unknown as Option<never>;
+        }
 }
 
 
@@ -92,6 +109,11 @@ class OptionNone extends Option<never>{
 export function isOption(value: unknown): value is Option {
     return value instanceof Option;
 }
+
+export function isSome(value: unknown): value is Option<unknown> {
+    return value instanceof OptionSome;
+}
+
 
 export function isNone(value: unknown): value is Option<never> {
     return value instanceof OptionNone;

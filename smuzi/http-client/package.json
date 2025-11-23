@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "HTTP client for JavaScript and TypeScript",
   "scripts": {
-    "test": "tsx --test",
+    "test": "tsx --env-file=.env --test",
     "build": "tsc --project tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },
@@ -33,14 +33,14 @@
     "#lib/*": "./src/*"
   },
   "dependencies": {
+    "@smuzi/std": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
     "@smuzi/faker": "workspace:*",
     "@smuzi/tests": "workspace:*",
-    "@smuzi/std": "workspace:*"
-
+    "@smuzi/http-server": "workspace:*"
   }
 
 }

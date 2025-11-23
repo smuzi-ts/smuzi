@@ -73,7 +73,7 @@ export class PostgresClient implements TDatabaseClient {
         }
     }
 
-    async insertRow<Entity extends TRow = TRow, RC extends string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC = ['id'] as RC): Promise<TInsertRowResult<RC, Entity>> {
+    async insertRow<Entity extends TRow = TRow,   const RC extends readonly string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC): Promise<TInsertRowResult<RC, Entity>> {
         //TODO: protected for injections
         const columns = Object.keys(row);
         const values = Object.values(row);

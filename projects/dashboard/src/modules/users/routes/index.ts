@@ -1,6 +1,6 @@
-import {CreateRouter} from "@smuzi/router";
+import {CreateHttpRouter} from "@smuzi/http-server";
 
-export const router = CreateRouter({path: 'users/'});
+export const router = CreateHttpRouter({path: 'users/'});
 
 router.get('index', function (ctx) {
     console.log(ctx)

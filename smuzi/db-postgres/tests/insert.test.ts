@@ -11,12 +11,27 @@ describe("db-postgres - query", () => {
     it(okMsg("INSERT ROW"), async () => {
         const dbClient = buildClient();
 
+        function test<const C extends readonly string[]>(
+            columns: C
+        ): RecordFromKeys<C, TUserRow> {
+            return {} as any;
+        }
+
+        const res1 = test(['name', 'email']);
+
         const result = (await dbClient.insertRow<TUserRow>('users', {
             name: faker.string(),
             email: faker.string(),
             password: faker.string(),
             created_at: faker.date(),
-        })).unwrap().id.unwrap();
+        }, ['name']));
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (row) => {
+
+            },
+        })
 
 
 

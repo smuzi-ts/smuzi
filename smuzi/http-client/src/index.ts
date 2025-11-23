@@ -1,3 +1,5 @@
+import {dump, None, Option} from "@smuzi/std";
+
 export enum HttpMethod {
     GET = "GET",
     POST = "POST",
@@ -7,13 +9,10 @@ export enum HttpMethod {
 }
 
 export type RequestConfig = {
-    method?: HttpMethod;
-    headers?: Record<string, string>;
-    query?: Record<string, string | number | boolean | undefined>;
-    body?: unknown;
-    signal?: AbortSignal;
-    // если true — не парсить ответ как JSON
-    rawResponse?: boolean;
+    method: HttpMethod;
+    headers: Option<Record<string, string>>;
+    query: Option<Record<string, string | number | boolean>>;
+    body: Option<unknown>;
 };
 
 export type HttpResponse<T = unknown> = {
@@ -24,89 +23,100 @@ export type HttpResponse<T = unknown> = {
     headers: Headers;
 };
 
-function buildUrl(url: string, query?: Record<string, string | number | boolean | undefined>) {
-    if (!query) return url;
-    const params = new URLSearchParams();
-    for (const [key, value] of Object.entries(query)) {
-        if (value !== undefined) params.append(key, String(value));
-    }
-    const qs = params.toString();
-    return qs ? `${url}?${qs}` : url;
+function buildUrl(baseUrl: Option<string>, url: string, query: Option<Record<string, string | number | boolean>>) {
+    const fullUrl = baseUrl.someOr("") + url;
+
+    return query.match({
+        None: () => fullUrl,
+        Some: (query) => {
+            const params = new URLSearchParams();
+            for (const [key, value] of Object.entries(query)) {
+                params.append(key, String(value));
+            }
+            const qs = params.toString();
+            return qs ? `${fullUrl}?${qs}` : fullUrl;
+        }
+    })
+
+
 }
 
-export const httpClient = {
-    async request<T = unknown>(url: string, config: RequestConfig = {}): Promise<HttpResponse<T>> {
+export type HttpClientConfig = {
+    baseUrl?: Option<string>
+    baseHeaders?: Option<Record<string, string>>
+}
+
+
+export function buildHttpClient({baseUrl = None(), baseHeaders = None()}: HttpClientConfig = {}){
+
+    async function request<T = unknown>(url: string, config: RequestConfig): Promise<HttpResponse<T>> {
         const {
             method = HttpMethod.GET,
             headers = {},
             query,
             body,
-            signal,
             rawResponse = false,
         } = config;
 
-        const finalUrl = buildUrl(url, query);
+        const finalUrl = buildUrl(baseUrl, url, config.query);
 
+        dump(finalUrl);
         const init: RequestInit = {
-            method,
-            headers: {
-                Accept: "application/json",
-                ...headers,
-            },
-            signal,
-        };
+        method,
+        headers: {
+            Accept: "application/json",
+            ...headers,
+        },
+    };
 
-        if (body !== undefined && method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
-            if (typeof body === "object" && !(body instanceof FormData)) {
-                init.headers = { "Content-Type": "application/json", ...init.headers };
-                init.body = JSON.stringify(body);
-            } else {
-                init.body = body as any;
-            }
-        }
-
-        const response = await fetch(finalUrl, init);
-
-        let data: any;
-        if (rawResponse) {
-            data = await response.text();
+    if (body !== undefined && method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
+        if (typeof body === "object" && !(body instanceof FormData)) {
+            init.headers = { "Content-Type": "application/json", ...init.headers };
+            init.body = JSON.stringify(body);
         } else {
-            const contentType = response.headers.get("Content-Type") || "";
-            if (contentType.includes("application/json")) {
-                data = await response.json().catch(() => null);
-            } else {
-                data = await response.text();
-            }
+            init.body = body as any;
         }
+    }
 
-        if (!response.ok) {
-            throw new Error(
-                `HTTP error ${response.status}: ${response.statusText}\n${JSON.stringify(data)}`
-            );
+    try {
+        const response = await fetch(finalUrl, init);
+    } catch(e) {
+        console.log("OPAAA");
+        console.log(e);
+        return "";
+    }
+
+    let data: any;
+    if (rawResponse) {
+        data = await response.text();
+    } else {
+        const contentType = response.headers.get("Content-Type") || "";
+        if (contentType.includes("application/json")) {
+            data = await response.json().catch(() => null);
+        } else {
+            data = await response.text();
         }
+    }
 
-        return {
-            ok: response.ok,
-            status: response.status,
-            statusText: response.statusText,
-            data: data as T,
-            headers: response.headers,
-        };
-    },
+    if (! response.ok) {
+        throw new Error(
+            `HTTP error ${response.status}: ${response.statusText}\n${JSON.stringify(data)}`
+        );
+    }
 
-    get<T = unknown>(url: string, config?: Omit<RequestConfig, "method" | "body">) {
-        return this.request<T>(url, { ...config, method: HttpMethod.GET });
-    },
+    return {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        data: data as T,
+        headers: response.headers,
+    };
+}
 
-    post<T = unknown>(url: string, body?: unknown, config?: Omit<RequestConfig, "method" | "body">) {
-        return this.request<T>(url, { ...config, method: HttpMethod.POST, body });
-    },
+    return {
 
-    put<T = unknown>(url: string, body?: unknown, config?: Omit<RequestConfig, "method" | "body">) {
-        return this.request<T>(url, { ...config, method: HttpMethod.PUT, body });
+    get<T = unknown>(url, config: Omit<RequestConfig, "method" | "body"> = { query: None(), headers: None() }) {
+        return request<T>(url, { ...config, method: HttpMethod.GET });
     },
-
-    delete<T = unknown>(url: string, config?: Omit<RequestConfig, "method" | "body">) {
-        return this.request<T>(url, { ...config, method: HttpMethod.DELETE });
-    },
-};
+}
+}

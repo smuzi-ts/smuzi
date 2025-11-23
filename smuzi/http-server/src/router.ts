@@ -85,7 +85,7 @@ export function toStartWithPattern(input: PathParam): RegExp {
 
 export function methodFromString(method: string): Option<Method>
 {
-    const handers = new Map([
+    const handers = new Map<string, Option<Method>>([
         ['GET', Some(Method.GET)],
         ['POST', Some(Method.POST)],
         ['PUT', Some(Method.PUT)],

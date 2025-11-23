@@ -254,9 +254,9 @@ function checkPatternAsArray(v, p)
     return { res: true, params: Some(match.slice(1)) }
  }
 
- function checkersForPatterns(): Map<Function, (v, p) => MatchResult>
+ function checkersForPatterns()
  {
-    return new Map([
+    return new Map<Function, (v, p) => MatchResult>([
         [isString, checkPatternAsString],
         [isNumber, checkPatternAsNumber],
         [isFunction, checkPatternAsFunction],

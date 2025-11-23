@@ -1,5 +1,5 @@
 import "./globals.js";
-import {Http2StrategyServer} from '@smuzi/http';
-import {serverConfig} from "#configs/server.js";
+import {http2ServerRun} from '@smuzi/http-server';
+import {httpServerConfig} from "#configs/server.js";
 
-Http2StrategyServer(serverConfig)
+const server = await http2ServerRun(httpServerConfig)
