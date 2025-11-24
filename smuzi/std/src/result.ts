@@ -81,6 +81,10 @@ export class Result<T, E> implements IMatched {
 
         return this._val as T;
     }
+
+     isErr(): this is ResultErr<E> {
+        return this instanceof ResultErr
+    }
 }
 
 

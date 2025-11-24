@@ -3,25 +3,27 @@
   "version": "0.0.1",
   "private": true,
   "description": "",
-  "scripts": {},
+  "scripts": {
+
+  },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "main": "./src/index.ts",
-  "files": [
-    "./src"
-  ],
-  "exports": {
-    ".": "./src/index.ts"
+  "files": ["./src"],
+  "dependencies": {
+
+  },
+  "peerDependencies": {
+    "@smuzi/std": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21"
   },
-  "dependencies": {
-    "@smuzi/std": "workspace:*"
-  },
   "imports": {
     "#lib/*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.js"
   }
 }

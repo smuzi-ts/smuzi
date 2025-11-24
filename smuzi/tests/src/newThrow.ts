@@ -1,6 +1,6 @@
 import { Ok, Option, Pipe, Result } from "@smuzi/std"
 
-import user from "#lib/user.js";
+import user from "#lib/userThrow.js";
 import { TAssertionError } from "./index.js";
 import { log } from "console";
 
@@ -11,8 +11,8 @@ export type AssertionError = {
     operator: string,
 }
 
-type AssertResult = Result<true, TAssertionError>;
-type TestCase<Setup extends unknown> = (setup: Setup) => AsyncGenerator<AssertResult>
+type AssertResult = void;
+type TestCase<Setup extends unknown> = (setup: Setup) => Promise<AssertResult>
 type It<Setup extends unknown> =  (describeMsg: string, setup: Setup) => Promise<AssertResult>
 
 
@@ -24,17 +24,14 @@ export function describe<Setup>(msg: string, cases: It<Setup>[]) {
     }
 }
 
-export function it<Setup>(msg: string, fn: TestCase<Setup>): It<Setup> {
-    return async (describeMsg: string, setup: Setup): Promise<AssertResult> => {
+export function it<Setup>(msg: string, testCase: TestCase<Setup>): It<Setup> {
+    return async (describeMsg: string, setup: Setup): Promise<void> => {
         console.info(describeMsg + msg);
-
-         for await (const caseResult of fn(setup)) {
-            if(caseResult.isErr()) {
-                return caseResult;
-            }
-            log(caseResult);
+        try {
+            await testCase(setup);
+        } catch(error) {
+            console.error("Error", error);
         }
-        return Ok(true);
     }
 }
 

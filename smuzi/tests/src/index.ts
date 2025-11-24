@@ -7,7 +7,7 @@ export const okMsg = (msg = ""): string => `${msg} - exp ok`;
 export const errMsg = (msg = ""): string => `${msg} - exp err`;
 export const invalidMsg = (msg = ""): string => `${msg} - exp invalid`;
 
-exportype TAssertionError = {
+export type TAssertionError = {
     message: string,
     actual: unknown,
     expected: unknown,
