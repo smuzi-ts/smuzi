@@ -1,8 +1,4 @@
-import { Ok, Option, Pipe, Result } from "@smuzi/std"
-
-import user from "#lib/userThrow.js";
-import { TAssertionError } from "./index.js";
-import { log } from "console";
+import { None, Option, Some } from "@smuzi/std";
 
 export type AssertionError = {
     message: string,
@@ -11,42 +7,64 @@ export type AssertionError = {
     operator: string,
 }
 
-type AssertResult = void;
-type TestCase<Setup extends unknown> = (setup: Setup) => Promise<AssertResult>
-type It<Setup extends unknown> =  (describeMsg: string, setup: Setup) => Promise<AssertResult>
+type GlobalSetup = Option;
+
+type PipelineOptions = {
+    beforeGlobal: Option<() => Promise<GlobalSetup>>;
+    afterGlobal: Option<(globalSetup: GlobalSetup) => Promise<void>>;
+    beforeEachCase: Option<() => Promise<void>>;
+    afterEachCase: Option<() => Promise<void>>;
+    descibes: Describe[];
+};
+
+type DescribeOptions = {
+    beforeEachCase: Option<() => Promise<void>>;
+    afterEachCase: Option<() => Promise<void>>;
+};
 
 
-export function describe<Setup>(msg: string, cases: It<Setup>[]) {
-    return async (setup: Setup): Promise<void> => {
+type TestCase = () => Promise<void>
+type It = (describeMsg: string) => Promise<void>
+type Describe = (options: DescribeOptions ) => Promise<void>
+
+export function describe(msg: string, cases: It[]): Describe {
+    return async (options: DescribeOptions = {
+        beforeEachCase: None(),
+        afterEachCase: None(),
+     }) => {
         for (const it of cases) {
-            await it(msg, setup);
+            await options.beforeEachCase.asyncMapSome();
+            await it(msg);
+            await options.afterEachCase.asyncMapSome();
         }
     }
 }
 
-export function it<Setup>(msg: string, testCase: TestCase<Setup>): It<Setup> {
-    return async (describeMsg: string, setup: Setup): Promise<void> => {
+export function it(msg: string, testCase: TestCase): It {
+    return async (describeMsg: string): Promise<void> => {
         console.info(describeMsg + msg);
         try {
-            await testCase(setup);
-        } catch(error) {
+            await testCase();
+        } catch (error) {
             console.error("Error", error);
         }
     }
 }
 
 
-export type MysSetup = { dbClient: string };
-
-
-//Client code
-
-const mySetup = { dbClient: "Postgres" };
-
-const pipelines = [
-    user
-];
-
-for (const pipe of pipelines) {
-    await pipe(mySetup)
+export async function pipelineTest(
+    options: PipelineOptions = {
+        beforeGlobal: None(),
+        afterGlobal: None(),
+        beforeEachCase: None(),
+        afterEachCase: None(),
+        descibes: []
+    }
+)   {
+    for (const describe of options.descibes) {
+        const globalSetup = await options.beforeGlobal.asyncMapSome();
+        await describe({beforeEachCase: options.beforeEachCase, afterEachCase: options.afterEachCase,});
+        await options.afterGlobal.asyncMapSome(globalSetup);
+    }
 }
+

@@ -1,8 +1,6 @@
-import {AssertionError} from "node:assert";
 
-export {it, describe, skip, beforeEach, before, afterEach, after} from "node:test";
 export {assert} from "#lib/assert.js"
-
+export * from "#lib/newThrow.js"
 export const okMsg = (msg = ""): string => `${msg} - exp ok`;
 export const errMsg = (msg = ""): string => `${msg} - exp err`;
 export const invalidMsg = (msg = ""): string => `${msg} - exp invalid`;
@@ -15,7 +13,7 @@ export type TAssertionError = {
 }
 
 export function assertionError(details: TAssertionError) {
-    throw new AssertionError(details);
+    throw details;
 }
 
 export function repeatIt(

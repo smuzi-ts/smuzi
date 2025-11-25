@@ -1,12 +1,13 @@
 import { env, path, Some, HttpProtocol, buildHttpUrl, dump, None } from "@smuzi/std";
 import { CreateHttpRouter, http2ServerRun, HttpServer, buildHttpServerConfig } from "@smuzi/http-server";
 import { faker } from "@smuzi/faker";
+import { pipelineTests } from "@smuzi/tests";
 
 let server: HttpServer;
 
 const router = CreateHttpRouter({path: ''});
 
-export const serverConfig = buildHttpServerConfig({
+const serverConfig = buildHttpServerConfig({
     host: env("APP_HOST", Some("localhost")),
     port: parseInt(env("APP_PORT", Some('81'))),
     router,
@@ -25,10 +26,12 @@ router.get('users', () => {
 })
 
 
-export async function globalSetup() {
-  server = (await http2ServerRun(serverConfig)).unwrap();
-}
+server = (await http2ServerRun(serverConfig)).unwrap();
 
-export async function globalTeardown() {
+const pipelineTest = new TestPipeline<unknown>([
+
+])
+
+export async function teardown() {
   await server.close();
 }
