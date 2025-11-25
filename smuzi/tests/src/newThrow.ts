@@ -10,10 +10,10 @@ export type AssertionError = {
 type GlobalSetup = Option;
 
 type PipelineOptions = {
-    beforeGlobal: Option<() => Promise<GlobalSetup>>;
-    afterGlobal: Option<(globalSetup: GlobalSetup) => Promise<void>>;
-    beforeEachCase: Option<() => Promise<void>>;
-    afterEachCase: Option<() => Promise<void>>;
+    beforeGlobal?: Option<() => Promise<GlobalSetup | void>>;
+    afterGlobal?: Option<(globalSetup: GlobalSetup) => Promise<void>>;
+    beforeEachCase?: Option<() => Promise<void>>;
+    afterEachCase?: Option<() => Promise<void>>;
     descibes: Describe[];
 };
 
@@ -63,7 +63,10 @@ export async function pipelineTest(
 )   {
     for (const describe of options.descibes) {
         const globalSetup = await options.beforeGlobal.asyncMapSome();
-        await describe({beforeEachCase: options.beforeEachCase, afterEachCase: options.afterEachCase,});
+        await describe({
+            beforeEachCase: options.beforeEachCase,
+            afterEachCase: options.afterEachCase,
+        });
         await options.afterGlobal.asyncMapSome(globalSetup);
     }
 }

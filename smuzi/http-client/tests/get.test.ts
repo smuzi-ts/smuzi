@@ -1,7 +1,7 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
 import { dump, None, Some } from "@smuzi/std";
 import { buildHttpClient } from "#lib/index.js";
-import {  serverEndpoint } from "./setup.js";
+import {  serverEndpoint } from "./config.js";
 
 
 export default describe("http-client - GET", [
