@@ -7,11 +7,9 @@ export type AssertionError = {
     operator: string,
 }
 
-type GlobalSetup = Option;
-
-type PipelineOptions = {
-    beforeGlobal?: Option<() => Promise<GlobalSetup | void>>;
-    afterGlobal?: Option<(globalSetup: GlobalSetup) => Promise<void>>;
+type PipelineOptions<GS extends unknown> = {
+    beforeGlobal?: Option<() => Promise<GS | void>>;
+    afterGlobal?: Option<(globalSetup: Option<GS>) => Promise<void>>;
     beforeEachCase?: Option<() => Promise<void>>;
     afterEachCase?: Option<() => Promise<void>>;
     descibes: Describe[];
@@ -51,23 +49,21 @@ export function it(msg: string, testCase: TestCase): It {
     }
 }
 
-
-export async function pipelineTest(
-    options: PipelineOptions = {
-        beforeGlobal: None(),
-        afterGlobal: None(),
-        beforeEachCase: None(),
-        afterEachCase: None(),
-        descibes: []
-    }
+export async function pipelineTest<GS extends unknown>(
+     {
+        beforeGlobal = None(),
+        afterGlobal = None(),
+        beforeEachCase = None(),
+        afterEachCase = None(),
+        descibes = []
+    }: PipelineOptions<GS> = { descibes: [] }
 )   {
-    for (const describe of options.descibes) {
-        const globalSetup = await options.beforeGlobal.asyncMapSome();
+    for (const describe of descibes) {
+        const globalSetup = await beforeGlobal.asyncMapSome();
         await describe({
-            beforeEachCase: options.beforeEachCase,
-            afterEachCase: options.afterEachCase,
+            beforeEachCase: beforeEachCase,
+            afterEachCase: afterEachCase,
         });
-        await options.afterGlobal.asyncMapSome(globalSetup);
+        await afterGlobal.asyncMapSome(globalSetup);
     }
 }
-

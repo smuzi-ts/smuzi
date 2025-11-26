@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "HTTP client for JavaScript and TypeScript",
   "scripts": {
-    "test": "tsx --env-file=.env --test",
+    "test": "tsx --env-file=./tests/.env tests/index.ts",
     "build": "tsc --project tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },

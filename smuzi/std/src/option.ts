@@ -1,9 +1,5 @@
 import { asFunction, asNull, asObject } from "./checker.js";
-import { dump } from "./debug.js";
 import { panic } from "./panic.js";
-
-
-export const NONE = None();
 
 type Val<T = unknown> = NonNullable<T>;
 
@@ -16,7 +12,6 @@ export function Some<T>(value: NonNullable<T>): Option<T> {
 export function None(): Option<never> {
     return new OptionNone();
 }
-
 
 export function OptionFromNullable<T>(value: Option<T> | T): Option<T extends null | undefined ? never : T> {
     return asNull(value) ? None()  : (isOption(value) ? value  : Some(value as NonNullable<T>)) as any;
@@ -63,8 +58,8 @@ export class Option<T = unknown> {
 
     get<K extends Extract<keyof T, string>>(property: K): Option<T[K] | never> {
         return this.match({
-            Some: (v) => asObject(v) ? Reflect.has(v, property) ? OptionFromNullable(v[property]) : NONE : NONE,
-            None: () => NONE,
+            Some: (v) => asObject(v) ? Reflect.has(v, property) ? OptionFromNullable(v[property]) : None() : None(),
+            None: () => None(),
         });
     }
 
@@ -91,15 +86,15 @@ export class Option<T = unknown> {
                 return Some(handler(this._val));
             }
     
-            return NONE;
+            return None();
         }
 
-    async asyncMapSome<R extends NonNullable<unknown>>(argumentsForSome: Option = NONE): Promise<Option<R | never>> {
+    async asyncMapSome<R extends NonNullable<unknown>>(argumentsForSome: Option = None()): Promise<Option<R | never>> {
         if (isSome(this)) {
-            return Some(asFunction(this._val) ?  await this._val(argumentsForSome) : this._val);
+            return asFunction(this._val) ? OptionFromNullable(await this._val(argumentsForSome)) : this as unknown as Option<R>;
         }
     
-        return NONE;
+        return None();
     }
 }
 

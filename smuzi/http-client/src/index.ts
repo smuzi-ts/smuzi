@@ -20,7 +20,7 @@ export type HttpResponse<T = unknown> = {
     status: number;
     statusText: string;
     data: T;
-    headers: Headers;
+    headers: [];
 };
 
 function buildUrl(baseUrl: Option<string>, url: string, query: Option<Record<string, string | number | boolean>>) {
@@ -60,7 +60,6 @@ export function buildHttpClient({baseUrl = None(), baseHeaders = None()}: HttpCl
 
         const finalUrl = buildUrl(baseUrl, url, config.query);
 
-        dump(finalUrl);
         const init: RequestInit = {
         method,
         headers: {
@@ -80,12 +79,6 @@ export function buildHttpClient({baseUrl = None(), baseHeaders = None()}: HttpCl
 
     try {
         const response = await fetch(finalUrl, init);
-    } catch(e) {
-        console.log("OPAAA");
-        console.log(e);
-        return "";
-    }
-
     let data: any;
     if (rawResponse) {
         data = await response.text();
@@ -109,8 +102,20 @@ export function buildHttpClient({baseUrl = None(), baseHeaders = None()}: HttpCl
         status: response.status,
         statusText: response.statusText,
         data: data as T,
-        headers: response.headers,
+        headers: [],
     };
+
+} catch(e) {
+        console.log("OPAAA");
+        console.log(e);
+      return {
+        ok: false,
+        status: 500,
+        statusText: e,
+        data: e,
+        headers: []
+    };
+    }
 }
 
     return {

@@ -7,7 +7,7 @@ import { HttpServer, HttpServerRunError, ServerConfig } from "#lib/index.js";
 
 type NativeServer = Http2SecureServer | Http2Server;
 
-class StdHttp2Server implements HttpServer {
+export class StdHttp2Server implements HttpServer {
     readonly #server: NativeServer
 
     constructor(server: NativeServer) {
