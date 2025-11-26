@@ -1,10 +1,13 @@
-import { match } from "@smuzi/std";
+import { dump, match, Option } from "@smuzi/std";
 import { assert, describe, it, okMsg } from "@smuzi/tests";
 import {type Context, CreateHttpRouter, Method, type Router, SInputMessage} from "#lib/router.js";
 
-describe("Std-Router", () => {
-    it(okMsg("Routing with special string-pattern"), () => {
-        function actionBooksFind(context: Context) {
+type BookContext = Context<Option<{id: Option<string>}>>;
+type UserContext = Context<Option<{id: Option<string>}>>;
+
+export default describe("Std-Router", [
+    it(okMsg("Routing with special string-pattern"), async () => {
+        function actionBooksFind(context: BookContext) {
             return "books find id=" + context.params.unwrapByKey('id')
         }
 
@@ -12,8 +15,7 @@ describe("Std-Router", () => {
 
         router.get("users", () => "list"); //<-- request1
         router.post("users", () => "create"); //<-- request2
-        router.get("users/{id}", (context: Context) => {
-            console.log('context', context)
+        router.get("users/{id}", (context: UserContext) => {
             return "user find id=" + context.params.unwrapByKey('id')
         }); //<-- request3
 
@@ -40,5 +42,6 @@ describe("Std-Router", () => {
             const actualResponse = match(new SInputMessage(request), router.getMapRoutes(), "not found")
             assert.equal(actualResponse, expectedResponse);
         }
-    });
-})
+    ;
+    })
+])

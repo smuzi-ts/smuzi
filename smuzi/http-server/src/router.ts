@@ -38,9 +38,9 @@ export type InputMessage = { path: string, method: Method};
 
 export const SInputMessage = Struct<InputMessage>();
 
-export type Context = {
+export type Context<Params extends ParamsMatchedData = ParamsMatchedData> = {
     request: InputMessage,
-    params: ParamsMatchedData,
+    params: Params,
 }
 
 export const SContext = Struct<Context>();

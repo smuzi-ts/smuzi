@@ -10,7 +10,7 @@ export default describe("http-client - GET", [
             baseUrl: None(),
         });
 
-        const jsonResponse = await httpClient.get(serverEndpoint + '/users');
+        const jsonResponse = await httpClient.get(serverEndpoint + '/users/list');
 
         console.log(jsonResponse);
     })

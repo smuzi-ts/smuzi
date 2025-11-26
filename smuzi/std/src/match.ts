@@ -124,7 +124,7 @@ export function match<R, T>(
         [(v) => isArray(v) || isObject(v), matchObj],
     ]), matchUnknown, true);
 
-    return matchHandler(val, handlers, deflt, returnAsFn);
+   return matchHandler(val, handlers, deflt, returnAsFn);
 }
 
 function matchPrimitive<T extends string|number, R>(
@@ -147,7 +147,6 @@ function matchObj(
     deflt,
     returnAsFn = false
 ) {
-
     for (const [patternsList, handler] of handlers) {
         let matched = true;
 
@@ -163,7 +162,7 @@ function matchObj(
 
             const checker = matchChecherForPattern(patternsList[patternIndex])
             let res = checker(val[patternIndex], patternsList[patternIndex]);
-
+         
             if (! res.res) {
                 matched = false;
                 break;

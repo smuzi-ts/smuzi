@@ -34,24 +34,17 @@ export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpSe
             const isHttps = nativeRequest.socket instanceof TLSSocket;
             const pathname = new URL(fullUrl, (isHttps ? "http" : "https") + `://${nativeRequest.headers.host}`).pathname;
             const path = OptionFromNullable(pathname).unwrap();
-            
-            path.replace(/^\//, '').replace(/\/$/, '');;
-
             const request = {
-                path: path,
+                path:  path.replace(/^\//, '').replace(/\/$/, ''),
                 method: methodFromString(methodStr).unwrap(`Error: undefined http method '${methodStr}'`),
             };
 
             console.log(`Incoming request: ${request.method} ${request.path}`);
 
-            
-            dump(config.router.getMapRoutes());
-            dump({request});
-            
+
             const response = match(new SInputMessage(request), config.router.getMapRoutes(), "not found")
             const handlers = new Map();
-
-
+            
             handlers.set(isString, (response) => {
                 nativeResponse.writeHead(200, {
                     "Content-Type": "text/html; charset=utf-8",
@@ -62,25 +55,25 @@ export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpSe
             handlers.set(
                 (response) => isObject(response) || isArray(response),
                 (response) => {
-                    nativeResponse.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
-
+                    //TODO: return respons on top instead of changed nativeResponse inner
+                    nativeResponse.setHeader("Content-Type", "application/json; charset=utf-8" );
+                    
                     try {
-                        const body = json.toString(response).match({
-                            Ok: (jsonStr) => jsonStr,
-                            Err: (err) => {
-                                return '{"error":"Internal Server Error"}';
-                            },
+                        const resp = json.toString(response).match({
+                            Ok: (jsonStr) => ({status: 200, data: jsonStr })
+                                ,
+                            Err: (err) => ({status: 500 , data: '{"error":"Internal Server Error"}' }),
                         });
-
-                        nativeResponse.end(body);
+                        nativeResponse.statusCode = resp.status;
+                        nativeResponse.end(resp.data);
                     } catch (err) {
+                        nativeResponse.statusCode = 500;
                         nativeResponse.end('{"error":"Internal Server Error"}');
                     }
                 }
             );
 
-            // fallback
-            matchUnknown(response, handlers, (_, res) => {
+            matchUnknown(response, handlers, () => {
                 nativeResponse.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
                 nativeResponse.end("Internal Server Error");
             }, false);
