@@ -5,57 +5,48 @@ import {
     MatchedData,
     None,
     Option,
-    ParamsMatchedData,
     Some,
-    Struct
+    Struct,
+    HttpMethod,
+    HttpResponse,
 } from "@smuzi/std";
 
-
-export enum Method {
-    GET = "GET",
-    POST = "POST",
-    PUT = "PUT",
-    DELETE = "DELETE"
-}
-
-export type Action = any
+export type ActionResponse = string | number | Record<string, unknown> | any[] | HttpResponse;
+export type Action = (context: Context) => ActionResponse
 export type PathParam = string | RegExp;
 
-type Route = { path: PathParam, method: Method };
-type GroupRoute = { path: PathParam};
+type Route = { path: PathParam, method: HttpMethod };
+type GroupRoute = { path: PathParam };
 
 export type Router = {
     group: (groupRouter: Router) => void
     getMapRoutes: () => Map<Route, Action>
     getGroupRoute(): GroupRoute
-    get: (path: PathParam, action) => void
-    post: (path: PathParam, action) => void
-    put: (path: PathParam, action) => void
-    delete: (path: PathParam, action) => void
+    get: (path: PathParam, action: Action) => void
+    post: (path: PathParam, action: Action) => void
+    put: (path: PathParam, action: Action) => void
+    delete: (path: PathParam, action: Action) => void
+    getNotFoundHandler: () => Action
+    match: (request: InputMessage) => ActionResponse
 }
 
-export type InputMessage = { path: string, method: Method};
+export type InputMessage = { path: string, method: HttpMethod, query: URLSearchParams};
 
-export const SInputMessage = Struct<InputMessage>();
-
-export type Context<Params extends ParamsMatchedData = ParamsMatchedData> = {
+export type Context<Params = unknown> = {
     request: InputMessage,
     params: Params,
 }
 
-export const SContext = Struct<Context>();
-
 export function processPath(path: PathParam): PathParam {
-    if (! asString(path)) return path;
+    if (!asString(path)) return path;
     if (! /\{[a-zA-Z0-9_]+\}/g.test(path)) return path;
 
-    const pattern = `^${ path.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, name) => `(?<${name}>[^/]+)`).replace(/\//g, '\\/') }$`;
+    const pattern = `^${path.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, name) => `(?<${name}>[^/]+)`).replace(/\//g, '\\/')}$`;
     return new RegExp(pattern);
 
 }
 
-export function contactPaths(path1: PathParam, path2: PathParam): PathParam | never
-{
+export function contactPaths(path1: PathParam, path2: PathParam): PathParam | never {
     const path1AsRegExp = asRegExp(path1);
     const path2AsRegExp = asRegExp(path2);
 
@@ -83,13 +74,12 @@ export function toStartWithPattern(input: PathParam): RegExp {
 }
 
 
-export function methodFromString(method: string): Option<Method>
-{
-    const handers = new Map<string, Option<Method>>([
-        ['GET', Some(Method.GET)],
-        ['POST', Some(Method.POST)],
-        ['PUT', Some(Method.PUT)],
-        ['DELETE', Some(Method.DELETE)],
+export function methodFromString(method: string): Option<HttpMethod> {
+    const handers = new Map<string, Option<HttpMethod>>([
+        ['GET', Some(HttpMethod.GET)],
+        ['POST', Some(HttpMethod.POST)],
+        ['PUT', Some(HttpMethod.PUT)],
+        ['DELETE', Some(HttpMethod.DELETE)],
     ]);
 
     return match(
@@ -100,53 +90,63 @@ export function methodFromString(method: string): Option<Method>
     );
 }
 
-export function CreateHttpRouter(groupRoute: GroupRoute): Router
-{
+export function notFoundHandler() {
+  return new HttpResponse({
+        status: 404,
+        statusText: "Not Found",
+    })
+}
+
+export function CreateHttpRouter(groupRoute: GroupRoute, notFound: Action = notFoundHandler): Router {
     const routes = new Map()
 
     const add = (route: Route | GroupRoute, action) => {
         route.path = processPath(contactPaths(groupRoute.path, route.path));
 
-        routes.set(route, (data: MatchedData) => {
-    const context = new SContext({
-        request: data.val,
-        params: data.params.flatByKey('path'),
-    })
-    return action(context);
-})
-};
+        routes.set(route, (data: MatchedData<Option<{path: Record<string, string>}>>) => {
+            const context = {
+                request: data.val,
+                params: data.params.flatByKey('path'),
+            }
+            
+            return action(context);
+        })
+    };
 
     return {
-
         get(path, action) {
-            add({ path, method: Method.GET }, action)
+            add({ path, method: HttpMethod.GET }, action)
         },
         post(path, action) {
-            add({ path, method: Method.POST }, action)
+            add({ path, method: HttpMethod.POST }, action)
         },
         put(path, action) {
-            add({ path, method: Method.PUT }, action)
+            add({ path, method: HttpMethod.PUT }, action)
         },
         delete(path, action) {
-            add({ path, method: Method.DELETE }, action)
+            add({ path, method: HttpMethod.DELETE }, action)
         },
         group(groupRouter: Router) {
             const groupPath = groupRouter.getGroupRoute().path;
             const startWithPattern = toStartWithPattern(groupPath);
 
             const action = (context: Context) => {
-                return match(context.request, groupRouter.getMapRoutes(), "not found");
+                return groupRouter.match(context.request);
             }
 
-            add({path: startWithPattern}, action);
+            add({ path: startWithPattern }, action);
         },
-        getMapRoutes()
-        {
+        getMapRoutes() {
             return routes;
         },
-        getGroupRoute(): GroupRoute
-        {
+        getGroupRoute(): GroupRoute {
             return groupRoute;
+        },
+        getNotFoundHandler() {
+            return notFound;
+        },
+        match(request: InputMessage) {
+            return match(request, this.getMapRoutes(), this.getNotFoundHandler());
         }
     }
 }

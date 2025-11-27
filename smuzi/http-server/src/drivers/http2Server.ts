@@ -1,8 +1,8 @@
 import http2, { Http2SecureServer, Http2Server, IncomingHttpHeaders, ServerHttp2Stream } from 'node:http2';
 import fs from 'node:fs';
 
-import { methodFromString, SInputMessage, } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump } from '@smuzi/std';
+import { methodFromString } from "#lib/router.js";
+import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, ServerConfig } from "#lib/index.js";
 
 type NativeServer = Http2SecureServer | Http2Server;
@@ -51,18 +51,16 @@ export function http2ServerRun(config: ServerConfig): Promise<Result<StdHttp2Ser
 
         server.on('stream', (stream: ServerHttp2Stream, headers: IncomingHttpHeaders) => {
             const methodStr = OptionFromNullable(headers[':method']).unwrap();
-            const path = OptionFromNullable(headers[':path']).unwrap();
-
-            path.replace(/^\//, '').replace(/\/$/, '');;
+            const path = OptionFromNullable(headers[':path']).unwrap().replace(/^\//, '').replace(/\/$/, '');
+            const urlObj = new URL(path, `http://${headers[':authority']}`);
 
             const request = {
                 path: path,
                 method: methodFromString(methodStr).unwrap(`Error: undefined http method '${methodStr}'`),
+                query: urlObj.searchParams,
             };
 
-            console.log(`Incoming request: ${request.method} ${request.path}`);
-
-            const response = match(new SInputMessage(request), config.router.getMapRoutes(), "not found")
+            const response = config.router.match(request)
             const handlers = new Map();
 
 
@@ -73,6 +71,19 @@ export function http2ServerRun(config: ServerConfig): Promise<Result<StdHttp2Ser
                 });
                 stream.end(response)
             });
+
+            handlers.set(resp => resp instanceof HttpResponse, (response: HttpResponse) => {
+                  stream.respond({
+                    'content-type': 'application/json; charset=utf-8',
+                    ':status': response.status,
+                    ''
+                });
+                            nativeResponse.statusCode = response.status;
+                            nativeResponse.setHeaders(response.headers);
+                            nativeResponse.end(response.data.someOr(""));
+            });
+            
+
 
             handlers.set(response => isObject(response) || isArray(response), (response) => {
                 stream.respond({
@@ -110,9 +121,6 @@ export function http2ServerRun(config: ServerConfig): Promise<Result<StdHttp2Ser
         });
 
         server.listen(config.port, () => {
-            const httpUrl = buildHttpUrl(config.protocol, config.host, Some(config.port));
-            console.log('HTTP/2 server running at ' + httpUrl);
-
             resolve(Ok(new StdHttp2Server(server)));
         });
 

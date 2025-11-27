@@ -11,6 +11,13 @@ class JsonFromStringError {
     }
 }
 
+class JsonToStringError {
+    message: string
+    constructor(message: string) {
+        this.message = message;
+    }
+}
+
 function reviver(this, key, value) {
     if (isNull(value)) {
         return None();
@@ -54,7 +61,7 @@ export const json = {
             return Err(new JsonFromStringError(err.message ?? "Unknown JSON parsing error"));
         }
     },
-    toString(value: unknown):Result<string, StdError> {
+    toString(value: unknown):Result<string, JsonToStringError> {
         try {
             return Ok(JSON.stringify(value, replacer));
         } catch (err) {

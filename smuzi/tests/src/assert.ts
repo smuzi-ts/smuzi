@@ -32,6 +32,7 @@ export type Assert = {
     fail: typeof _assert.fail;
 
     isEmpty: (actual: unknown) => asserts actual is TEmpty,
+
     isNumber: (actual: unknown) => asserts actual is number,
 
     isString: (actual: unknown) => asserts actual is string,

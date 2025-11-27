@@ -24,6 +24,6 @@ export function buildHttpServerConfig({host, port, router, cert = None()}: BaseS
         port,
         router,
         cert,
-        protocol: cert.mapOr(HttpProtocol.HTTPS, HttpProtocol.HTTP)
+        protocol: cert.someOrNone(HttpProtocol.HTTPS, HttpProtocol.HTTP)
     };
 };

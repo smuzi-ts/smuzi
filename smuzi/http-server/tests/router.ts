@@ -1,6 +1,6 @@
-import { dump, match, Option } from "@smuzi/std";
+import { dump, match, Option, HttpMethod } from "@smuzi/std";
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import {type Context, CreateHttpRouter, Method, type Router, SInputMessage} from "#lib/router.js";
+import {type Context, CreateHttpRouter} from "#lib/router.js";
 
 type BookContext = Context<Option<{id: Option<string>}>>;
 type UserContext = Context<Option<{id: Option<string>}>>;
@@ -11,7 +11,9 @@ export default describe("Std-Router", [
             return "books find id=" + context.params.unwrapByKey('id')
         }
 
-        const router = CreateHttpRouter({path: ''});
+        const router = CreateHttpRouter({path: ''}, () => {
+            return "not found"
+        });
 
         router.get("users", () => "list"); //<-- request1
         router.post("users", () => "create"); //<-- request2
@@ -32,14 +34,15 @@ export default describe("Std-Router", [
         postsRouter.get("/attachments/{id}", () => "posts list"); //<-- request5
 
         const mapRequestAction = new Map();
-        mapRequestAction.set({ path: "users", method: Method.GET}, "list");
-        mapRequestAction.set({ path: "users", method: Method.POST }, "create");
-        mapRequestAction.set({ path: "users/222", method: Method.GET }, "user find id=222");
-        mapRequestAction.set({ path: "books/any", method: Method.GET }, "books list");
-        mapRequestAction.set({ path: "books/333", method: Method.GET }, "books find id=333");
+        mapRequestAction.set({ path: "users", method: HttpMethod.GET}, "list");
+        mapRequestAction.set({ path: "users", method: HttpMethod.POST }, "create");
+        mapRequestAction.set({ path: "users/222", method: HttpMethod.GET }, "user find id=222");
+        mapRequestAction.set({ path: "books/any", method: HttpMethod.GET }, "books list");
+        mapRequestAction.set({ path: "books/333", method: HttpMethod.GET }, "books find id=333");
+        mapRequestAction.set({ path: "not_found", method: HttpMethod.GET }, "not found");
 
         for (const [request, expectedResponse] of mapRequestAction) {
-            const actualResponse = match(new SInputMessage(request), router.getMapRoutes(), "not found")
+            const actualResponse = router.match(request);
             assert.equal(actualResponse, expectedResponse);
         }
     ;

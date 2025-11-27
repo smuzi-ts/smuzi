@@ -1,4 +1,4 @@
-import {faker} from "./index.ts";
+import {faker} from "./index.js";
 
 export function getProperty(obj: Record<string, unknown>): string {
     return faker.array.getItem(Object.keys(obj));

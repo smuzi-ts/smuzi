@@ -7,7 +7,7 @@
   "compilerOptions": {
     "types": ["node"],
     "tsBuildInfoFile": ".tsbuildinfo/test.tsbuildinfo",
-    "rootDir": "test",
+    "rootDir": "tests",
     "noEmit": true
   }
 }

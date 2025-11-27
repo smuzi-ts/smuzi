@@ -3,8 +3,8 @@ import https from 'node:https';
 import { TLSSocket } from 'node:tls';
 import fs from 'node:fs';
 
-import { methodFromString, SInputMessage, } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump } from '@smuzi/std';
+import { methodFromString } from "#lib/router.js";
+import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, ServerConfig } from "#lib/index.js";
 
 type NativeServer = any
@@ -31,17 +31,15 @@ export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpSe
             const methodStr = OptionFromNullable(nativeRequest.method).unwrap();
             const fullUrl = nativeRequest.url || "/";
             const isHttps = nativeRequest.socket instanceof TLSSocket;
-            const pathname = new URL(fullUrl, (isHttps ? "http" : "https") + `://${nativeRequest.headers.host}`).pathname;
-            const path = OptionFromNullable(pathname).unwrap();
+            const urlObj = new URL(fullUrl, (isHttps ? "http" : "https") + `://${nativeRequest.headers.host}`);
+            const path = OptionFromNullable(urlObj.pathname).unwrap();
             const request = {
                 path:  path.replace(/^\//, '').replace(/\/$/, ''),
                 method: methodFromString(methodStr).unwrap(`Error: undefined http method '${methodStr}'`),
+                query: urlObj.searchParams,
             };
 
-            console.log(`Incoming request: ${request.method} ${request.path}`);
-
-
-            const response = match(new SInputMessage(request), config.router.getMapRoutes(), "not found")
+            const response = config.router.match(request);
             const handlers = new Map();
             
             handlers.set(isString, (response) => {
@@ -49,6 +47,13 @@ export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpSe
                     "Content-Type": "text/html; charset=utf-8",
                 });
                 nativeResponse.end(response);
+            });
+
+            handlers.set(resp => resp instanceof HttpResponse, (response: HttpResponse) => {
+                nativeResponse.statusCode = response.status;
+                nativeResponse.statusMessage = response.statusText;
+                nativeResponse.setHeaders(response.headers);
+                nativeResponse.end(response.data.someOr(""));
             });
 
             handlers.set(
@@ -103,9 +108,6 @@ export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpSe
         });
 
         server.listen(config.port, () => {
-            const httpUrl = buildHttpUrl(config.protocol, config.host, Some(config.port));
-            console.log('HTTP/1.1 server running at ' + httpUrl);
-
             resolve(Ok(new StdHttp1Server(server)));
         });
 

@@ -28,7 +28,7 @@ export class Option<T = unknown> {
         return handlers.None();
     }
 
-    mapOr<R>(some: ((value: T) => R) | R, none: (() => R) | R): R {
+    someOrNone<R>(some: ((value: T) => R) | R, none: (() => R) | R): R {
         if (this instanceof OptionSome) {
             return asFunction(some) ? some(this._val as T) : some;
         }

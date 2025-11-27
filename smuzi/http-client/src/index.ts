@@ -1,12 +1,4 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, Some, StdError } from "@smuzi/std";
-
-export enum HttpMethod {
-    GET = "GET",
-    POST = "POST",
-    PUT = "PUT",
-    DELETE = "DELETE",
-    PATCH = "PATCH",
-}
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, Some, StdError, HttpMethod, HttpResponse } from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
@@ -21,25 +13,6 @@ export type GetRequestConfig = {
     query?: Option<Record<string, string | number | boolean>>;
     rawResponse?: boolean
 };
-
-export class HttpResponse<D> {
-    readonly status: number;
-    readonly statusText: string;
-    readonly data: Option<D>;
-    readonly headers: Record<string, string>;
-
-    constructor({ status, statusText, data = None(), headers = {} }: {
-        status: number;
-        statusText: string;
-        data?: Option<D>;
-        headers?: Record<string, string>;
-    }) {
-        this.status = status;
-        this.statusText = statusText;
-        this.data = data;
-        this.headers = headers;
-    }
-}
 
 function buildUrl(baseUrl: Option<string>, url: string, query: Option<Record<string, string | number | boolean>>) {
     const fullUrl = baseUrl.someOr("") + url;
@@ -94,7 +67,7 @@ export function buildHttpClient({ baseUrl = None(), baseHeaders = None() }: Http
                     return jsonString.mapErr(err => {
                         return new HttpResponse({
                             status: 1000,
-                            statusText: err.message.unwrap(),
+                            statusText: err.message,
                         })
                     })
                 }
@@ -118,43 +91,38 @@ export function buildHttpClient({ baseUrl = None(), baseHeaders = None() }: Http
                             return rawData;
                         }
 
-                        return json.fromString(rawData).errThen(
-                            (err) => {
-                                throw new HttpResponse({
-                                    status: 1200,
-                                    statusText: err.message.unwrap(),
-
-                                },);
-                            })
+                        return json.fromString(rawData).errThen((err) => {
+                            throw new HttpResponse({
+                                status: 1200,
+                                statusText: err.message,
+                            },);
+                        })
                     })
+                    .flat()
 
-                if (!response.ok) {
+                if (! response.ok) {
                     return Err(new HttpResponse({
                         status: response.status,
                         statusText: response.statusText,
                         data: data as Option<E>,
-                        headers: {},
                     }))
                 }
 
-                return Ok({
+                return Ok(new HttpResponse({
                     status: response.status,
                     statusText: response.statusText,
                     data: data as Option<T>,
-                    headers: {},
-                });
+                }));
 
             } catch (e) {
                 return Err(e);
             }
 
         } catch (e) {
-            return Err({
+            return Err(new HttpResponse({
                 status: 500,
                 statusText: e,
-                data: None(),
-                headers: {}
-            });
+            }));
         }
     }
 

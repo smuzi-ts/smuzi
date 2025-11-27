@@ -9,7 +9,7 @@ export const faker = Object.freeze({
     object,
     array,
     repeat<T extends unknown>(count: number, callback: () => T): T[] {
-        const res = [];
+        const res: T[]  = [];
         for (let i = 0; i < count; ++i) {
             res.push(callback());
         }
