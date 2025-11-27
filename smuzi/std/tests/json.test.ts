@@ -1,12 +1,12 @@
-import {assert, assertionError, describe, errMsg, it, okMsg, skip} from "@smuzi/tests";
-import {Pipe} from "#lib/pipeline.js";
+import {assert, assertionError, describe, errMsg, it, okMsg} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
 import {None, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
 
-describe("Std-json", () => {
 
+
+export default describe("Std-json", [
     it(okMsg("fromString - deep"), () => {
         const name = faker.string();
         const inputString = `{"data": [{"id":1,"name": null}, {"id":2,"name": "${name}"}]}`;
@@ -24,7 +24,7 @@ describe("Std-json", () => {
                 assert.deepEqual(obj, expectedObj);
             }
         })
-    })
+    }),
 
     it(okMsg("fromString - string"), () => {
         const value = faker.string();
@@ -37,7 +37,7 @@ describe("Std-json", () => {
                 assert.deepEqual(actual, Some(value));
             },
         })
-    })
+    }),
 
     it(okMsg("fromString - number"), () => {
         const value = faker.number();
@@ -49,7 +49,7 @@ describe("Std-json", () => {
                 assert.deepEqual(actual, Some(value));
             },
         })
-    })
+    }),
 
     it(okMsg("fromString - boolean"), () => {
         const value = 'true';
@@ -61,7 +61,7 @@ describe("Std-json", () => {
                 assert.deepEqual(actual, Some(true));
             },
         })
-    })
+    }),
 
     it(okMsg("fromString - nullable"), () => {
         const value = 'null';
@@ -73,7 +73,7 @@ describe("Std-json", () => {
                 assert.equalNone(actual);
             },
         })
-    })
+    }),
     it(okMsg("fromString - with Result Ok"), () => {
         const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"ok","val":true}}, {"id":2,"name": "user2"}]}`;
 
@@ -91,7 +91,7 @@ describe("Std-json", () => {
 
                 assert.deepEqual(actual, expectedObj);            },
         })
-    })
+    }),
 
     it(okMsg("fromString - with Result Err"), () => {
         const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"err","val":"Some Error"}}, {"id":2,"name": "user2"}]}`;
@@ -110,7 +110,7 @@ describe("Std-json", () => {
 
                 assert.deepEqual(actual, expectedObj);            },
         })
-    })
+    }),
 
     it(okMsg("fromString - object with property '__type', but not Ok/Err"), () => {
         const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"custom","val":"custom val"}}, {"id":2,"name": "user2"}]}`;
@@ -129,7 +129,7 @@ describe("Std-json", () => {
 
                 assert.deepEqual(actual, expectedObj);            },
         })
-    })
+    }),
 
     it(okMsg("fromString - object with property '__type' equals Ok/Err, but property 'val' is not found"), () => {
         const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"ok","custom_val":"custom val"}}, {"id":2,"name": "user2"}]}`;
@@ -148,7 +148,7 @@ describe("Std-json", () => {
 
                 assert.deepEqual(actual, expectedObj);            },
         })
-    })
+    }),
 
 
     it(errMsg("fromString - bad json"), () => {
@@ -163,7 +163,7 @@ describe("Std-json", () => {
                 assert.string.contains(err.message, "Expected ',' or '}' after property value in JSON at position")
             }
         })
-    })
+    }),
 
     it(okMsg("toString - deep"), () => {
         const name = faker.string();
@@ -182,7 +182,7 @@ describe("Std-json", () => {
                 assert.equal(jsonStr, `{"data":[{"id":1,"name":null},{"id":2,"name":"${name}"}],"meta":{"__type":"ok","val":{"more_records":true}}}`);
             },
         })
-    })
+    }),
 
     it(errMsg("toString - string value"), () => {
         const value = faker.string();
@@ -194,7 +194,7 @@ describe("Std-json", () => {
             },
             Err: error => assert.fail(error.message),
         })
-    })
+    }),
 
     it(errMsg("toString - Option value"), () => {
         const strVal = faker.string();
@@ -217,7 +217,7 @@ describe("Std-json", () => {
             },
             Err: error => assert.fail(error.message),
         })
-    })
+    }),
 
     it(errMsg("toString - null value"), () => {
         const result = json.toString(null);
@@ -228,7 +228,7 @@ describe("Std-json", () => {
             },
             Err: error => assert.fail(error.message),
         })
-    })
+    }),
 
     it(errMsg("toString - Result value"), () => {
         const strVal = faker.string();
@@ -253,4 +253,4 @@ describe("Std-json", () => {
             Err: error => assert.fail(error.message),
         })
     })
-})
+])

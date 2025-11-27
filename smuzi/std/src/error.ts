@@ -1,26 +1,29 @@
 import { Option, OptionFromNullable, None, Some } from "#lib/option.js";
-import { asObject, asString } from "#lib/checker.js";
-import { dump } from "./debug.js";
+import { asNumber, asObject, asString, isNull } from "#lib/checker.js";
 
 export type StdError = {
-    code: Option<number|string>,
-    message: Option<string>,
+    code: number | string,
+    message: string,
     trace: Option<string>,
-
+    origin: Option<unknown>,
 }
 
 export function tranformError(err: unknown): StdError {
-    if (! asObject(err)) {
+    if (asObject(err)) {
         return {
-            code: None(),
-            message: asString(err) ? Some(err) : None(),
-            trace: None(),
+            code: isNull(err.code) ? "" : asString(err.code) || asNumber(err.code) ? err.code : "",
+            message: isNull(err.code) ? "" : asString(err.code) ? err.code : "",
+            trace: OptionFromNullable(err?.stack as string),
+            origin: None()
         }
     }
 
     return {
-        code: OptionFromNullable(err?.code as string|number),
-        message: OptionFromNullable(err?.message as string),
-        trace: OptionFromNullable(err?.stack as string),
+        code: "",
+        message: asString(err) ? err : "Unknown error",
+        trace: None(),
+        origin: asString(err) ? None() : OptionFromNullable(err),
     }
+
+
 }

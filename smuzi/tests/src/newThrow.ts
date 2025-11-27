@@ -1,4 +1,4 @@
-import { None, Option, Some } from "@smuzi/std";
+import { dump, Err, None, Ok, Option, Result, Some, tranformError } from "@smuzi/std";
 
 export type AssertionError = {
     message: string,
@@ -8,6 +8,7 @@ export type AssertionError = {
 }
 
 type PipelineOptions<GS extends unknown> = {
+    config?: TestConfig;
     beforeGlobal?: Option<() => Promise<GS | void>>;
     afterGlobal?: Option<(globalSetup: Option<GS>) => Promise<void>>;
     beforeEachCase?: Option<() => Promise<void>>;
@@ -15,52 +16,72 @@ type PipelineOptions<GS extends unknown> = {
     descibes: Describe[];
 };
 
+type TestConfig = {
+    outputFormat: "text" | "json"
+}
+
 type DescribeOptions = {
     beforeEachCase: Option<() => Promise<void>>;
     afterEachCase: Option<() => Promise<void>>;
 };
 
+type TestCaseOk = {
+    msg: string
+}
 
-type TestCase = () => Promise<void>
-type It = (describeMsg: string) => Promise<void>
-type Describe = (options: DescribeOptions ) => Promise<void>
+type TestCaseErr = {
+    msg: string
+    error: AssertionError
+}
+
+type TestCaseResult = Result<TestCaseOk, TestCaseErr>
+
+type TestCase = () => Promise<TestCaseResult> | TestCaseResult
+type It = () => Promise<TestCaseResult> | TestCaseResult
+type Describe = (options: DescribeOptions) => Promise<TestCaseResult[]> | TestCaseResult[]
 
 export function describe(msg: string, cases: It[]): Describe {
     return async (options: DescribeOptions = {
         beforeEachCase: None(),
         afterEachCase: None(),
-     }) => {
+    }) => {
+        const results: TestCaseResult[] = [];
         for (const it of cases) {
             await options.beforeEachCase.asyncMapSome();
-            await it(msg);
+            results.push(await it());
             await options.afterEachCase.asyncMapSome();
         }
+        return results;
     }
 }
 
 export function it(msg: string, testCase: TestCase): It {
-    return async (describeMsg: string): Promise<void> => {
-        console.info(describeMsg + msg);
+    return async () => {
         try {
             await testCase();
+            return Ok({msg});
         } catch (error) {
-            console.error("Error", error);
+            return Err({msg, error});
         }
+
     }
 }
 
 export async function pipelineTest<GS extends unknown>(
-     {
+    {
+        config = {
+            outputFormat: "text",
+        },
         beforeGlobal = None(),
         afterGlobal = None(),
         beforeEachCase = None(),
         afterEachCase = None(),
         descibes = []
     }: PipelineOptions<GS> = { descibes: [] }
-)   {
+) {
     for (const describe of descibes) {
         const globalSetup = await beforeGlobal.asyncMapSome();
-        await describe({
+        const describeResults = await describe({
             beforeEachCase: beforeEachCase,
             afterEachCase: afterEachCase,
         });

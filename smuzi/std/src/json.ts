@@ -1,7 +1,15 @@
 import {isNull, isObject, isString} from "#lib/checker.js";
 import {isNone, isOption, None, Option, Some} from "#lib/option.js";
 import {Err, isResult, Ok, Result} from "#lib/result.js";
+import { dump } from "./debug.js";
 import { StdError } from "./error.js";
+
+class JsonFromStringError {
+    message: string
+    constructor(message: string) {
+        this.message = message;
+    }
+}
 
 function reviver(this, key, value) {
     if (isNull(value)) {
@@ -39,11 +47,11 @@ function replacer(this, key, value) {
 }
 
 export const json = {
-    fromString(value: string): Result<Option, StdError> {
+    fromString(value: string): Result<Option, JsonFromStringError> {
         try {
             return Ok(JSON.parse(value, reviver));
         } catch (err) {
-            return Err(err);
+            return Err(new JsonFromStringError(err.message ?? "Unknown JSON parsing error"));
         }
     },
     toString(value: unknown):Result<string, StdError> {

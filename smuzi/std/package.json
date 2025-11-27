@@ -3,7 +3,7 @@
   "version": "0.1.8",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
-    "test": "tsx --test",
+    "test": "tsx tests/index.ts tsconfig.test.json",
     "build": "tsc --project tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },
