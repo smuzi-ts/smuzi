@@ -1,6 +1,7 @@
 import {isNull, isObject, isString} from "#lib/checker.js";
 import {isNone, isOption, None, Option, Some} from "#lib/option.js";
 import {Err, isResult, Ok, Result} from "#lib/result.js";
+import { StdError } from "./error.js";
 
 function reviver(this, key, value) {
     if (isNull(value)) {
@@ -38,14 +39,14 @@ function replacer(this, key, value) {
 }
 
 export const json = {
-    fromString(value: string): Result<Option, Error> {
+    fromString(value: string): Result<Option, StdError> {
         try {
             return Ok(JSON.parse(value, reviver));
         } catch (err) {
             return Err(err);
         }
     },
-    toString(value: unknown):Result<string, Error> {
+    toString(value: unknown):Result<string, StdError> {
         try {
             return Ok(JSON.stringify(value, replacer));
         } catch (err) {

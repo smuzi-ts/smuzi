@@ -15,7 +15,8 @@ import {
     isBoolean,
     isNumber,
     isEmpty,
-    TEmpty, isArray
+    TEmpty, isArray,
+    isSome
 } from "@smuzi/std";
 import {assertObject, TAssertObject} from "#lib/asserts/object.js";
 import {assertArray, TAssertArray} from "#lib/asserts/array.js";
@@ -42,6 +43,8 @@ export type Assert = {
     isArray: (actual: unknown) => asserts actual is unknown[],
 
     isOption(actual: unknown): asserts actual is Option,
+    isSome(actual: unknown): asserts actual is Option,
+    
     equalSome(actual: unknown, expectedInnerValue: unknown): asserts actual is Option;
     equalNone(actual: unknown): asserts actual is Option;
 
@@ -156,6 +159,18 @@ export const assert: Assert = {
                     actual,
                     expected: "Option",
                     operator: 'isOption'
+                }
+            )
+        }
+    },
+
+    isSome: (actual) => {
+        if (! isSome(actual)) {
+            assertionError({
+                    message: "Expected OptionSome, but get other",
+                    actual,
+                    expected: "OptionSome",
+                    operator: 'isSome'
                 }
             )
         }

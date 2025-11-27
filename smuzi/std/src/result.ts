@@ -1,7 +1,8 @@
-import {asString, isNull} from "./checker.js";
+import {asFunction, asString, isNull} from "./checker.js";
 import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
 import {json} from "#lib/json.js";
+import { None } from "./option.js";
 
 type Val = unknown;
 
@@ -50,31 +51,32 @@ export class Result<T, E> implements IMatched {
         return this;
     }
 
-    okThen<RO extends  Result<unknown, E | unknown>>(handler: (value: T) => RO): RO  {
-        if (this instanceof ResultOk) {
-            return handler(this._val);
-        }
-
-        return this as unknown as RO;
-    }
-
-    errThen<RE extends  Result<unknown, unknown>>(handler: (value: T) => RE): RE | Result<T, never> {
+    errOr<RE = unknown>(err: ((value: E) => RE) | RE): T | RE {
         if (this instanceof ResultErr) {
+            return asFunction(err) ? err(this._val) : err;
+        }
+
+        return this._val as T;
+    }
+
+    okOr<RO = unknown>(ok: ((value: E) => RO) | RO): E | RO {
+        if (this instanceof ResultOk) {
+            return asFunction(ok) ? ok(this._val) : ok;
+        }
+
+        return this._val as E;
+    }
+
+    okThen<R = unknown>(handler: (value: T) => R): E | R {
+        if (this instanceof ResultOk) {
             return handler(this._val);
         }
 
-        return this as unknown as Result<T, never>;
+        return this._val as E;
     }
 
-    mapOk<RO>(handler: (value: T) => RO): Result<RO | never, E> {
-        if (this instanceof ResultOk) {
-            return Ok(handler(this._val));
-        }
 
-        return this as unknown as Result<never, E>;
-    }
-
-    mapErr<RE>(handler: (value: E) => RE): never | T | RE {
+    errThen<R = unknown>(handler: (value: E) => R): T | R {
         if (this instanceof ResultErr) {
             return handler(this._val);
         }
@@ -82,8 +84,32 @@ export class Result<T, E> implements IMatched {
         return this._val as T;
     }
 
-     isErr(): this is ResultErr<E> {
+    mapOk<RO>(handler: (value: T) => RO): Result<RO, E> {
+        if (this instanceof ResultOk) {
+            return Ok(handler(this._val));
+        }
+
+        return this as unknown as Result<never, E>;
+    }
+
+    mapErr<RE>(handler: (value: E) => RE): Result<T, RE> {
+        if (this instanceof ResultErr) {
+            return Err(handler(this._val));
+        }
+
+        return this as unknown as Result<T, never>;
+    }
+
+    isErr(): this is ResultErr<E> {
         return this instanceof ResultErr
+    }
+
+    toOption() {
+        if (this instanceof ResultErr) {
+            return None();
+        }
+
+        return this as unknown as Result<T, never>;
     }
 }
 

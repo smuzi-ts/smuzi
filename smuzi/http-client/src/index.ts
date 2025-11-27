@@ -1,4 +1,4 @@
-import {dump, None, Option} from "@smuzi/std";
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, Some, StdError } from "@smuzi/std";
 
 export enum HttpMethod {
     GET = "GET",
@@ -8,20 +8,38 @@ export enum HttpMethod {
     PATCH = "PATCH",
 }
 
-export type RequestConfig = {
+export type BaseRequestConfig = {
     method: HttpMethod;
     headers: Option<Record<string, string>>;
     query: Option<Record<string, string | number | boolean>>;
-    body: Option<unknown>;
+    body: Option<string>;
+    rawResponse: boolean
 };
 
-export type HttpResponse<T = unknown> = {
-    ok: boolean;
-    status: number;
-    statusText: string;
-    data: T;
-    headers: [];
+export type GetRequestConfig = {
+    headers?: Option<Record<string, string>>;
+    query?: Option<Record<string, string | number | boolean>>;
+    rawResponse?: boolean
 };
+
+export class HttpResponse<D> {
+    readonly status: number;
+    readonly statusText: string;
+    readonly data: Option<D>;
+    readonly headers: Record<string, string>;
+
+    constructor({ status, statusText, data = None(), headers = {} }: {
+        status: number;
+        statusText: string;
+        data?: Option<D>;
+        headers?: Record<string, string>;
+    }) {
+        this.status = status;
+        this.statusText = statusText;
+        this.data = data;
+        this.headers = headers;
+    }
+}
 
 function buildUrl(baseUrl: Option<string>, url: string, query: Option<Record<string, string | number | boolean>>) {
     const fullUrl = baseUrl.someOr("") + url;
@@ -47,9 +65,9 @@ export type HttpClientConfig = {
 }
 
 
-export function buildHttpClient({baseUrl = None(), baseHeaders = None()}: HttpClientConfig = {}){
+export function buildHttpClient({ baseUrl = None(), baseHeaders = None() }: HttpClientConfig = {}) {
 
-    async function request<T = unknown>(url: string, config: RequestConfig): Promise<HttpResponse<T>> {
+    async function request<T = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<T>, HttpResponse<E>>> {
         const {
             method = HttpMethod.GET,
             headers = {},
@@ -61,67 +79,89 @@ export function buildHttpClient({baseUrl = None(), baseHeaders = None()}: HttpCl
         const finalUrl = buildUrl(baseUrl, url, config.query);
 
         const init: RequestInit = {
-        method,
-        headers: {
-            Accept: "application/json",
-            ...headers,
+            method,
+            headers: {
+                Accept: "application/json",
+                ...headers,
+            },
+        };
+
+        if (body !== undefined && method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
+            if (typeof body === "object" && !(body instanceof FormData)) {
+                init.headers = { "Content-Type": "application/json", ...init.headers };
+                const jsonString = json.toString(body);
+                if (jsonString.isErr()) {
+                    return jsonString.mapErr(err => {
+                        return new HttpResponse({
+                            status: 1000,
+                            statusText: err.message.unwrap(),
+                        })
+                    })
+                }
+            } else {
+                init.body = body;
+            }
+        }
+
+        try {
+            const response = await fetch(finalUrl, init);
+            const responseContentType = response.headers.get("Content-Type") ?? "";
+
+            try {
+                const data = OptionFromNullable(await response.text())
+                    .mapSome((rawData) => {
+                        if (rawResponse) {
+                            return rawData;
+                        }
+
+                        if (!responseContentType.includes("application/json")) {
+                            return rawData;
+                        }
+
+                        return json.fromString(rawData).errThen(
+                            (err) => {
+                                throw new HttpResponse({
+                                    status: 1200,
+                                    statusText: err.message.unwrap(),
+
+                                },);
+                            })
+                    })
+
+                if (!response.ok) {
+                    return Err(new HttpResponse({
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data as Option<E>,
+                        headers: {},
+                    }))
+                }
+
+                return Ok({
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data as Option<T>,
+                    headers: {},
+                });
+
+            } catch (e) {
+                return Err(e);
+            }
+
+        } catch (e) {
+            return Err({
+                status: 500,
+                statusText: e,
+                data: None(),
+                headers: {}
+            });
+        }
+    }
+
+    return {
+
+        get<T = unknown>(url, { query = None(), headers = None(), rawResponse = false }: GetRequestConfig = {}) {
+            return request<T>(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
         },
-    };
-
-    if (body !== undefined && method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
-        if (typeof body === "object" && !(body instanceof FormData)) {
-            init.headers = { "Content-Type": "application/json", ...init.headers };
-            init.body = JSON.stringify(body);
-        } else {
-            init.body = body as any;
-        }
     }
-
-    try {
-        const response = await fetch(finalUrl, init);
-    let data: any;
-    if (rawResponse) {
-        data = await response.text();
-    } else {
-        const contentType = response.headers.get("Content-Type") || "";
-        if (contentType.includes("application/json")) {
-            data = await response.json().catch(() => null);
-        } else {
-            data = await response.text();
-        }
-    }
-
-    if (! response.ok) {
-        throw new Error(
-            `HTTP error ${response.status}: ${response.statusText}\n${JSON.stringify(data)}`
-        );
-    }
-
-    return {
-        ok: response.ok,
-        status: response.status,
-        statusText: response.statusText,
-        data: data as T,
-        headers: [],
-    };
-
-} catch(e) {
-        console.log("OPAAA");
-        console.log(e);
-      return {
-        ok: false,
-        status: 500,
-        statusText: e,
-        data: e,
-        headers: []
-    };
-    }
-}
-
-    return {
-
-    get<T = unknown>(url, config: Omit<RequestConfig, "method" | "body"> = { query: None(), headers: None() }) {
-        return request<T>(url, { ...config, method: HttpMethod.GET });
-    },
-}
 }
