@@ -35,20 +35,27 @@ type TestCaseErr = {
 }
 
 type TestCaseResult = Result<TestCaseOk, TestCaseErr>
+type DescribeResult = {
+    msg: string,
+    cases: TestCaseResult[]
+}
 
 type TestCase = () => Promise<TestCaseResult> | TestCaseResult
 type It = () => Promise<TestCaseResult> | TestCaseResult
-type Describe = (options: DescribeOptions) => Promise<TestCaseResult[]> | TestCaseResult[]
+type Describe = (options: DescribeOptions) => Promise<DescribeResult> | DescribeResult
 
 export function describe(msg: string, cases: It[]): Describe {
     return async (options: DescribeOptions = {
         beforeEachCase: None(),
         afterEachCase: None(),
     }) => {
-        const results: TestCaseResult[] = [];
+        const results: DescribeResult = {
+            cases: [],
+            msg
+        };
         for (const it of cases) {
             await options.beforeEachCase.asyncMapSome();
-            results.push(await it());
+            results.cases.push(await it());
             await options.afterEachCase.asyncMapSome();
         }
         return results;
@@ -85,6 +92,9 @@ export async function pipelineTest<GS extends unknown>(
             beforeEachCase: beforeEachCase,
             afterEachCase: afterEachCase,
         });
+        if (config.outputFormat == "text") {
+            for()
+        }
         await afterGlobal.asyncMapSome(globalSetup);
     }
 }
