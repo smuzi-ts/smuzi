@@ -1,7 +1,7 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
 import { Some, None } from "#lib/option.js";
 
-describe("Std-match-Option", () => {
+export default describe("Std-match-Option", [
     it(okMsg("Matched to Some"), () => {
         let resultDoing = Some("Success")
 
@@ -11,7 +11,7 @@ describe("Std-match-Option", () => {
         })
 
         assert.equal(resultMatch, "Success!!!")
-    })
+    }),
 
     it(okMsg("Matched to None"), () => {
         let resultDoing = None()
@@ -23,4 +23,4 @@ describe("Std-match-Option", () => {
 
         assert.equal(resultMatch, "None")
     })
-})
+])

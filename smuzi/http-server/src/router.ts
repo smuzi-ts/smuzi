@@ -9,31 +9,42 @@ import {
     Struct,
     HttpMethod,
     HttpResponse,
+    dump,
 } from "@smuzi/std";
+import { ServerResponse } from "node:http";
+import { ServerHttp2Stream } from "node:http2";
+import Stream from "node:stream";
 
-export type ActionResponse = string | number | Record<string, unknown> | any[] | HttpResponse;
-export type Action = (context: Context) => ActionResponse
+
+export type InputMessage = { path: string, method: HttpMethod, query: URLSearchParams };
+export type ActionResponse = void | string | number | Record<string, unknown> | any[];
+export type Action<Resp extends THttpResponse> = (context: Context<Resp>) => ActionResponse | Promise<ActionResponse>
 export type PathParam = string | RegExp;
 
+type THttpResponse = ServerResponse | ServerHttp2Stream
 type Route = { path: PathParam, method: HttpMethod };
 type GroupRoute = { path: PathParam };
-
-export type Router = {
-    group: (groupRouter: Router) => void
-    getMapRoutes: () => Map<Route, Action>
-    getGroupRoute(): GroupRoute
-    get: (path: PathParam, action: Action) => void
-    post: (path: PathParam, action: Action) => void
-    put: (path: PathParam, action: Action) => void
-    delete: (path: PathParam, action: Action) => void
-    getNotFoundHandler: () => Action
-    match: (request: InputMessage) => ActionResponse
+type RouteMatched = MatchedData<InputMessage, Option<{ path: Record<string, string> }>>
+type RouteMatchResult<Resp extends THttpResponse> = {
+    action: Action<Resp>,
+    pathParams: Option<Record<string, string | number | boolean>>
 }
 
-export type InputMessage = { path: string, method: HttpMethod, query: URLSearchParams};
+export type Router<Resp extends THttpResponse, A = Action<Resp>> = {
+    group: (groupRouter: Router<Resp>) => void
+    getMapRoutes: () => Map<Route, (routeData: RouteMatched) => RouteMatchResult<Resp>>
+    getGroupRoute(): GroupRoute
+    get: (path: PathParam, action: A) => void
+    post: (path: PathParam, action: A) => void
+    put: (path: PathParam, action: A) => void
+    delete: (path: PathParam, action: A) => void
+    match: (request: InputMessage) => RouteMatchResult<Resp>
+}
 
-export type Context<Params = unknown> = {
+
+export type Context<Resp extends THttpResponse, Params = unknown,> = {
     request: InputMessage,
+    response: Resp,
     params: Params,
 }
 
@@ -90,27 +101,31 @@ export function methodFromString(method: string): Option<HttpMethod> {
     );
 }
 
-export function notFoundHandler() {
-  return new HttpResponse({
-        status: 404,
-        statusText: "Not Found",
-    })
+export function notFoundHandler<Resp extends THttpResponse>(context: Context<Resp>) {
+    return "Not Found";
 }
 
-export function CreateHttpRouter(groupRoute: GroupRoute, notFound: Action = notFoundHandler): Router {
+export function CreateHttpRouter<Resp extends THttpResponse = ServerResponse>(
+    groupRoute: GroupRoute,
+    notFound: Action<Resp> = notFoundHandler
+): Router<Resp> {
     const routes = new Map()
 
-    const add = (route: Route | GroupRoute, action) => {
+    const add = (route: Route, action: any) => {
         route.path = processPath(contactPaths(groupRoute.path, route.path));
 
-        routes.set(route, (data: MatchedData<Option<{path: Record<string, string>}>>) => {
-            const context = {
-                request: data.val,
-                params: data.params.flatByKey('path'),
-            }
-            
-            return action(context);
+        routes.set(route, (routeData: RouteMatched) => {
+            return {
+                action,
+                pathParams: routeData.params.flatByKey("path"),
+            };
         })
+    };
+
+    const addGroup = (route: GroupRoute, action: any) => {
+        route.path = processPath(contactPaths(groupRoute.path, route.path));
+
+        routes.set(route, action)
     };
 
     return {
@@ -126,15 +141,13 @@ export function CreateHttpRouter(groupRoute: GroupRoute, notFound: Action = notF
         delete(path, action) {
             add({ path, method: HttpMethod.DELETE }, action)
         },
-        group(groupRouter: Router) {
+        group(groupRouter: Router<Resp>) {
             const groupPath = groupRouter.getGroupRoute().path;
             const startWithPattern = toStartWithPattern(groupPath);
 
-            const action = (context: Context) => {
-                return groupRouter.match(context.request);
-            }
-
-            add({ path: startWithPattern }, action);
+            addGroup({ path: startWithPattern }, (routeData: RouteMatched) => {
+                return groupRouter.match(routeData.val);
+            });
         },
         getMapRoutes() {
             return routes;
@@ -142,11 +155,13 @@ export function CreateHttpRouter(groupRoute: GroupRoute, notFound: Action = notF
         getGroupRoute(): GroupRoute {
             return groupRoute;
         },
-        getNotFoundHandler() {
-            return notFound;
-        },
         match(request: InputMessage) {
-            return match(request, this.getMapRoutes(), this.getNotFoundHandler());
+            return match(request, this.getMapRoutes(), (routeData: RouteMatched) => {
+                return {
+                    action: notFound,
+                    pathParams: routeData.params.flatByKey("path"),
+                } as RouteMatchResult<Resp>;
+            })
         }
     }
 }

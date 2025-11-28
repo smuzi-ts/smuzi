@@ -5,6 +5,7 @@ import { apiConfig } from "./config.js";
 
 
 const router = CreateHttpRouter({ path: '' });
+
 const usersRouter = CreateHttpRouter({ path: 'users/' });
 usersRouter.get("list", () => {
     return faker.repeat(5, () => ({

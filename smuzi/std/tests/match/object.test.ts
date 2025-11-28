@@ -1,7 +1,7 @@
-import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
+import { assert, describe, it, okMsg } from "@smuzi/tests";
 import { match } from "#lib/match.js";
 
-describe("Std-match-Object", () => {
+export default describe("Std-match-Object", [
     it(okMsg("Matched all properties"), () => {
         const user = { name: "F", age: 18 }
         const patterns = new Map();
@@ -13,7 +13,7 @@ describe("Std-match-Object", () => {
         const resultMatch = match(user, patterns, 4)
 
         assert.equal(resultMatch, 3)
-    })
+    }),
 
     it(okMsg("Matched all properties , using also RegExp"), () => {
         const user = { name: "Richard Man", age: 18 }
@@ -26,7 +26,7 @@ describe("Std-match-Object", () => {
         const resultMatch = match(user, patterns, 40)
 
         assert.equal(resultMatch, 30)
-    })
+    }),
 
 
     it(okMsg("Matched some properties , using also RegExp"), () => {
@@ -55,7 +55,7 @@ describe("Std-match-Object", () => {
         const resultMatch4 = match(user4, patterns, "Undefined man")
 
         assert.equal(resultMatch4, "Richard with any Last Name and age != 18 and != 25")
-    })
+    }),
 
     it(okMsg("Matched all properties , using also array of options"), () => {
         const patterns = new Map();
@@ -82,7 +82,7 @@ describe("Std-match-Object", () => {
         const user4 = { name: "Richard", age: 60 }
         const resultMatch4 = match(user4, patterns, "undefined")
         assert.equal(resultMatch3, "old")
-    })
+    }),
 
       it(okMsg("Matched via function checker"), () => {
         const patterns = new Map([
@@ -111,4 +111,4 @@ describe("Std-match-Object", () => {
         const resultMatch4 = match(user4, patterns, "old")
         assert.equal(resultMatch4, "old")
     })
-})
+])

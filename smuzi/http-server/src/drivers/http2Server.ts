@@ -73,14 +73,11 @@ export function http2ServerRun(config: ServerConfig): Promise<Result<StdHttp2Ser
             });
 
             handlers.set(resp => resp instanceof HttpResponse, (response: HttpResponse) => {
-                  stream.respond({
+                stream.respond({
                     'content-type': 'application/json; charset=utf-8',
                     ':status': response.status,
-                    ''
+                    
                 });
-                            nativeResponse.statusCode = response.status;
-                            nativeResponse.setHeaders(response.headers);
-                            nativeResponse.end(response.data.someOr(""));
             });
             
 

@@ -1,7 +1,7 @@
 import {assert, describe, it, okMsg} from "@smuzi/tests";
 import {MapStringPatterns, match} from "#lib/match.js";
 
-describe("Std-match-Strings", () => {
+export default describe("Std-match-Strings", [
     it(okMsg("Matched value String via String patterns"), () => {
         let handlers = new Map([
             ["A", "isA"],
@@ -11,7 +11,7 @@ describe("Std-match-Strings", () => {
 
         let result = match("B", handlers, "isDefault")
         assert.equal(result, "isB")
-    })
+    }),
 
     it(okMsg("Not Matched value String via String patterns"), () => {
         let handlers = new Map([
@@ -22,7 +22,7 @@ describe("Std-match-Strings", () => {
 
         let result = match("Z", handlers, "isDefault")
         assert.equal(result, "isDefault")
-    })
+    }),
 
     it(okMsg("Matched value string via Functions patterns"), () => {
         let handlers = new Map([
@@ -33,7 +33,7 @@ describe("Std-match-Strings", () => {
 
         let result = match("B", handlers, "default")
         assert.equal(result, "isB")
-    })
+    }),
 
      it(okMsg("Not Matched value String via Functions patterns"), () => {
         let handlers = new Map([
@@ -45,7 +45,7 @@ describe("Std-match-Strings", () => {
         let result = match("Z", handlers, "default")
 
         assert.equal(result, "default")
-    })
+    }),
 
       it(okMsg("Matched value to Some via Callbacks"), () => {
         let handlers = new Map([
@@ -57,7 +57,7 @@ describe("Std-match-Strings", () => {
         let result = match("B", handlers, (res) => "_default")
 
         assert.equal(result, "B_isB")
-    })
+    }),
 
         it(okMsg("Matched value to Array pattern via Combinations patterns "), () => {
             let handlers = MapStringPatterns([
@@ -69,7 +69,7 @@ describe("Std-match-Strings", () => {
     
             let result = match("2", handlers, "isDefault")
             assert.equal(result, "is_2_or_3")
-        })
+        }),
     
         it(okMsg("Matched value to Function pattern via Combinations patterns "), () => {
             let handlers = MapStringPatterns([
@@ -81,7 +81,7 @@ describe("Std-match-Strings", () => {
     
             let result = match("4", handlers, "isDefault")
             assert.equal(result, "is_4")
-        })
+        }),
 
     it(okMsg("Matched value to RegExp"), () => {
         let result = "users/3"
@@ -94,7 +94,7 @@ describe("Std-match-Strings", () => {
         let resultMatch = match(result, patterns, "not found")
 
         assert.equal(resultMatch, "find")
-    })
+    }),
 
 
     it(okMsg("Matched value to RegExp and using params as array"), () => {
@@ -110,7 +110,7 @@ describe("Std-match-Strings", () => {
         let resultMatch = match(result, patterns, "not found")
 
         assert.equal(resultMatch, "user id=3 | books id=5")
-    })
+    }),
 
     it(okMsg("Matched value to RegExp and using params as object"), () => {
         let patterns = new Map();
@@ -126,4 +126,4 @@ describe("Std-match-Strings", () => {
 
         assert.equal(resultMatch, "user id=3 | books id=5")
     })
-})
+])

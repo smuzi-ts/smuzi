@@ -11,7 +11,6 @@ import {
     isString,
     match,
     isObject,
-    isImpl,
     isBoolean,
     isNumber,
     isEmpty,
@@ -50,9 +49,6 @@ export type Assert = {
     equalNone(actual: unknown): asserts actual is Option;
 
     isObject(actual: unknown): asserts actual is Record<string, unknown>;
-
-    isImpl<T>(trait: new () => T, actual: unknown): asserts actual is T;
-    isNotImpl<T>(trait: new () => T, actual: unknown): asserts actual is unknown;
 
     result: TAssertResult
     array: TAssertArray
@@ -194,13 +190,5 @@ export const assert: Assert = {
             None: () => {
             }
         })
-    },
-
-    isImpl(trait, actual) {
-        assert.ok(isImpl(trait, actual), "Expected that object is implemented trait");
-    },
-
-    isNotImpl(trait, actual) {
-        assert.ok(!isImpl(trait, actual), "Expected that object is NOT implemented trait");
     },
 }

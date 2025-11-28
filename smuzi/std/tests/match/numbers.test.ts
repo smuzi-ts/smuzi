@@ -1,7 +1,7 @@
-import {assert, describe, it, skip, okMsg} from "@smuzi/tests";
+import {assert, describe, it, okMsg} from "@smuzi/tests";
 import {MapNumberPatterns, match} from "#lib/match.js";
 
-describe("Std-match-Numbers", () => {
+export default describe("Std-match-Numbers", [
     it(okMsg("Matched value via Number patterns"), () => {
         let handlers = new Map([
             [1, "isOne"],
@@ -11,7 +11,7 @@ describe("Std-match-Numbers", () => {
 
         let result = match(2, handlers, "isDefault")
         assert.equal(result, "isTwo")
-    })
+    }),
 
     it(okMsg("Not Matched value via Number patterns"), () => {
         let handlers = new Map([
@@ -22,7 +22,7 @@ describe("Std-match-Numbers", () => {
 
         let result = match(4, handlers, "isDefault")
         assert.equal(result, "isDefault")
-    })
+    }),
 
     it(okMsg("Matched value via Functions patterns"), () => {
         let handlers = new Map([
@@ -33,7 +33,7 @@ describe("Std-match-Numbers", () => {
 
         let result = match(2, handlers, "isDefault")
         assert.equal(result, "isTwo")
-    })
+    }),
 
      it(okMsg("Not Matched value via Functions patterns"), () => {
         let handlers = new Map([
@@ -45,7 +45,7 @@ describe("Std-match-Numbers", () => {
         let result = match(4, handlers, "isDefault")
 
         assert.equal(result, "isDefault")
-    })
+    }),
 
       it(okMsg("Matched value via Number, return using Callbacks"), () => {
         let handlers = new Map([
@@ -54,10 +54,10 @@ describe("Std-match-Numbers", () => {
             [3, (r) => r.val + 30],
         ]);
 
-        let result = match(2, handlers, (v) => v + 40)
+        let result = match(2, handlers, (r) => r.val + 40)
 
         assert.equal(result, 22)
-    })
+    }),
 
     it(okMsg("Matched value via Number, return using Callbacks"), () => {
         let handlers = new Map([
@@ -66,10 +66,10 @@ describe("Std-match-Numbers", () => {
             [3, (r) => r.val + 30],
         ]);
 
-        let result = match(2, handlers, (v) => v + 40)
+        let result = match(2, handlers, (r) => r.val + 40)
 
         assert.equal(result, 22)
-    })
+    }),
 
     it(okMsg("Matched value via  Array of Numbers  patterns"), () => {
         let handlers = new Map([
@@ -80,7 +80,7 @@ describe("Std-match-Numbers", () => {
 
         let result = match(3, handlers, "isDefault")
         assert.equal(result, "is_2_or_3")
-    })
+    }),
 
 
     it(okMsg("Matched value to Array pattern via Combinations patterns "), () => {
@@ -93,7 +93,7 @@ describe("Std-match-Numbers", () => {
 
         let result = match(2, handlers, "isDefault")
         assert.equal(result, "is_2_or_3")
-    })
+    }),
 
     it(okMsg("Matched value to Function pattern via Combinations patterns "), () => {
         let handlers = MapNumberPatterns([
@@ -106,4 +106,4 @@ describe("Std-match-Numbers", () => {
         let result = match(4, handlers, "isDefault")
         assert.equal(result, "is_4")
     })
-})
+])

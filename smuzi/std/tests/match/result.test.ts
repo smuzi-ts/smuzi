@@ -1,7 +1,7 @@
 import {assert, describe, errMsg, it, okMsg} from "@smuzi/tests";
 import {Err, Ok, Result} from "#lib/result.js";
 
-describe("Std-Result", () => {
+export default describe("Std-Result", [
     it(okMsg("Matched Ok"), () => {
         let resultDoing = generateResult(true)
 
@@ -12,7 +12,7 @@ describe("Std-Result", () => {
         });
 
         assert.equal(resultMatch, "Success")
-    })
+    }),
 
     it(errMsg("Matched Err"), () => {
         let resultDoing = generateResult(false)
@@ -24,7 +24,7 @@ describe("Std-Result", () => {
 
         assert.equal(resultMatch, 500)
     })
-})
+])
 
 
 function generateResult(flag: boolean): Result<string, number> {

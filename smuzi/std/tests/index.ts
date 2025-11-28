@@ -1,9 +1,5 @@
-import { pipelineTest } from "@smuzi/tests";
-import jsonCases from "./json.test.js"
-
+import { loadDescribesFromDir, pipelineTest } from "@smuzi/tests";
 
 pipelineTest({
-    descibes: [
-        jsonCases
-    ]
+    descibes: await loadDescribesFromDir('./tests')
 })

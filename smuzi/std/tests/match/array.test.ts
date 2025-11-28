@@ -1,7 +1,7 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
 import { match } from "#lib/match.js";
 
-describe("Std-match-Array", () => {
+export default describe("Std-match-Array", [
     it(okMsg("Matched all values is Strings"), () => {
         let result = ["F", "G", "H"]
         let patterns = new Map();
@@ -12,7 +12,7 @@ describe("Std-match-Array", () => {
         let resultMatch = match(result, patterns, 4)
 
         assert.equal(resultMatch, 2)
-    })
+    }),
 
     it(okMsg("Matched all values is Numbers"), () => {
         let result = [1, 3, 5]
@@ -26,7 +26,7 @@ describe("Std-match-Array", () => {
         let resultMatch = match(result, patterns, 50)
 
         assert.equal(resultMatch, 30)
-    })
+    }),
 
 
     it(okMsg("Matched values is combinations of Strings and Numbers"), () => {
@@ -42,7 +42,7 @@ describe("Std-match-Array", () => {
         let resultMatch = match(result, patterns, 60)
 
         assert.equal(resultMatch, 40)
-    })
+    }),
 
     it(okMsg("Matched values using RegExp"), () => {
       let result = ["GET", "users/3"]
@@ -58,4 +58,5 @@ describe("Std-match-Array", () => {
 
         assert.equal(resultMatch, "find user")
     })
-})
+]
+)

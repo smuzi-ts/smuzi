@@ -2,9 +2,16 @@ import { isRegExp, isArray, isString, isFunction, isNumber, isObject, asFunction
 import { dump } from "./debug.js";
 import { None, Option, Some } from "./option.js";
 
+export type ParamsMatchedData = Option<unknown | Record<string, Option<unknown>>>;
+
+export type MatchedData<T extends unknown = unknown, P extends Option = ParamsMatchedData> = {
+    val: T,
+    pattern: Option<unknown | Record<string, Option<unknown>>>,
+    params: P,
+};
 
 type Checker<T> = (v: T) => boolean;
-type Handler<T, R, A extends unknown[] = unknown[]> = (val: T, ...args: A) => R;
+type Handler<T, R, A extends unknown[] = unknown[]> = (matchedData: MatchedData<T>, ...args: A) => R;
 
 //>>> String
 export type StringValuePatterns = string | string[] | RegExp | Checker<string>;
@@ -22,13 +29,7 @@ type ArrayValuePatterns = any[];
 type ArrayValueMapPatterns<R> = Map<ArrayValuePatterns, Handler<any, R> | R>
 //<<<
 
-export type ParamsMatchedData = Option<unknown | Record<string, Option<unknown>>>;
 
-export type MatchedData<P extends Option = ParamsMatchedData> = {
-    val,
-    pattern: Option<unknown | Record<string, Option<unknown>>>,
-    params: P,
-};
 
 export function matchUnknown<T extends unknown, R = unknown>(
     value: T,
@@ -154,7 +155,7 @@ function matchObj(
 
         for (const patternIndex in patternsList) {
             params[patternIndex] = None();
-            
+         
             if (val[patternIndex] == undefined) {
                 matched = false;
                 break;
@@ -162,7 +163,7 @@ function matchObj(
 
             const checker = matchChecherForPattern(patternsList[patternIndex])
             let res = checker(val[patternIndex], patternsList[patternIndex]);
-         
+
             if (! res.res) {
                 matched = false;
                 break;
