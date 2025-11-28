@@ -1,10 +1,10 @@
 import { env, Some, buildHttpUrl } from "@smuzi/std";
-import { buildHttpServerConfig } from "@smuzi/http-server";
+import { buildHttp1ServerConfig } from "@smuzi/http-server";
 import { buildHttpClient } from "#lib/index.js";
 import  router from "./router.js";
 
 
-export const serverConfig = buildHttpServerConfig({
+export const serverConfig = buildHttp1ServerConfig({
     host: env("APP_HOST", Some("localhost")),
     port: parseInt(env("APP_PORT", Some('81'))),
     router,

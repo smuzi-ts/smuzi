@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 import { methodFromString } from "#lib/router.js";
 import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse } from '@smuzi/std';
-import { HttpServer, HttpServerRunError, ServerConfig } from "#lib/index.js";
+import { HttpServer, HttpServerRunError, Http2ServerConfig } from "#lib/index.js";
 
 type NativeServer = Http2SecureServer | Http2Server;
 
@@ -22,7 +22,7 @@ export class StdHttp2Server implements HttpServer {
     }
 }
 
-export function http2ServerRun(config: ServerConfig): Promise<Result<StdHttp2Server, HttpServerRunError>> {
+export function http2ServerRun(config: Http2ServerConfig): Promise<Result<StdHttp2Server, HttpServerRunError>> {
     return new Promise((resolve) => {
 
         const server = config.cert.match({
@@ -76,7 +76,7 @@ export function http2ServerRun(config: ServerConfig): Promise<Result<StdHttp2Ser
                 stream.respond({
                     'content-type': 'application/json; charset=utf-8',
                     ':status': response.status,
-                    
+
                 });
             });
             

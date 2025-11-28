@@ -4,8 +4,8 @@ import { TLSSocket } from 'node:tls';
 import fs from 'node:fs';
 
 import { methodFromString } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse } from '@smuzi/std';
-import { HttpServer, HttpServerRunError, ServerConfig } from "#lib/index.js";
+import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse, HttpRequest } from '@smuzi/std';
+import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
 
 type NativeServer = any
 
@@ -24,7 +24,7 @@ export class StdHttp1Server implements HttpServer {
     }
 }
 
-export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpServerRunError>> {
+export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, HttpServerRunError>> {
     return new Promise((resolve) => {
 
         function handler(nativeRequest: IncomingMessage, nativeResponse: ServerResponse) {
@@ -36,10 +36,19 @@ export function http1ServerRun(config: ServerConfig): Promise<Result<any, HttpSe
             const request = {
                 path:  path.replace(/^\//, '').replace(/\/$/, ''),
                 method: methodFromString(methodStr).unwrap(`Error: undefined http method '${methodStr}'`),
-                query: urlObj.searchParams,
             };
 
-            const response = config.router.match(request);
+            const routeMatched = config.router.match(request);
+            const response = routeMatched.action({
+                request: new HttpRequest({...request, query: urlObj.searchParams}),
+                response: nativeResponse,
+                pathParams: routeMatched.pathParams,
+            })
+           
+            if (isNull(response)) {
+                return;
+            }
+
             const handlers = new Map();
             
             handlers.set(isString, (response) => {

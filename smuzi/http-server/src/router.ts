@@ -6,17 +6,17 @@ import {
     None,
     Option,
     Some,
-    Struct,
     HttpMethod,
     HttpResponse,
     dump,
+    HttpRequest,
 } from "@smuzi/std";
 import { ServerResponse } from "node:http";
 import { ServerHttp2Stream } from "node:http2";
 import Stream from "node:stream";
 
 
-export type InputMessage = { path: string, method: HttpMethod, query: URLSearchParams };
+export type Request = { path: string, method: HttpMethod };
 export type ActionResponse = void | string | number | Record<string, unknown> | any[];
 export type Action<Resp extends THttpResponse> = (context: Context<Resp>) => ActionResponse | Promise<ActionResponse>
 export type PathParam = string | RegExp;
@@ -24,7 +24,7 @@ export type PathParam = string | RegExp;
 type THttpResponse = ServerResponse | ServerHttp2Stream
 type Route = { path: PathParam, method: HttpMethod };
 type GroupRoute = { path: PathParam };
-type RouteMatched = MatchedData<InputMessage, Option<{ path: Record<string, string> }>>
+type RouteMatched = MatchedData<Request, Option<{ path: Record<string, string> }>>
 type RouteMatchResult<Resp extends THttpResponse> = {
     action: Action<Resp>,
     pathParams: Option<Record<string, string | number | boolean>>
@@ -38,14 +38,16 @@ export type Router<Resp extends THttpResponse, A = Action<Resp>> = {
     post: (path: PathParam, action: A) => void
     put: (path: PathParam, action: A) => void
     delete: (path: PathParam, action: A) => void
-    match: (request: InputMessage) => RouteMatchResult<Resp>
+    match: (request: Request) => RouteMatchResult<Resp>
 }
 
+export type Http1Router = Router<ServerResponse>;
+export type Http2Router = Router<ServerHttp2Stream>;
 
 export type Context<Resp extends THttpResponse, Params = unknown,> = {
-    request: InputMessage,
+    request: HttpRequest,
     response: Resp,
-    params: Params,
+    pathParams: Params,
 }
 
 export function processPath(path: PathParam): PathParam {
@@ -101,13 +103,23 @@ export function methodFromString(method: string): Option<HttpMethod> {
     );
 }
 
-export function notFoundHandler<Resp extends THttpResponse>(context: Context<Resp>) {
-    return "Not Found";
+function http1NotFoundHandler(context: Context<ServerResponse>) {
+    context.response.writeHead(404, "Not Found");
+    context.response.end();
 }
 
-export function CreateHttpRouter<Resp extends THttpResponse = ServerResponse>(
+function http2NotFoundHandler(context: Context<ServerHttp2Stream>) {
+    context.response.respond({
+        'content-type': 'application/json; charset=utf-8',
+        ':status': 404,
+    });
+    context.response.end();
+
+}
+
+function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<Resp>>(
     groupRoute: GroupRoute,
-    notFound: Action<Resp> = notFoundHandler
+    notFound: Action<Resp>
 ): Router<Resp> {
     const routes = new Map()
 
@@ -141,7 +153,7 @@ export function CreateHttpRouter<Resp extends THttpResponse = ServerResponse>(
         delete(path, action) {
             add({ path, method: HttpMethod.DELETE }, action)
         },
-        group(groupRouter: Router<Resp>) {
+        group(groupRouter: GR) {
             const groupPath = groupRouter.getGroupRoute().path;
             const startWithPattern = toStartWithPattern(groupPath);
 
@@ -155,7 +167,7 @@ export function CreateHttpRouter<Resp extends THttpResponse = ServerResponse>(
         getGroupRoute(): GroupRoute {
             return groupRoute;
         },
-        match(request: InputMessage) {
+        match(request: Request) {
             return match(request, this.getMapRoutes(), (routeData: RouteMatched) => {
                 return {
                     action: notFound,
@@ -164,4 +176,19 @@ export function CreateHttpRouter<Resp extends THttpResponse = ServerResponse>(
             })
         }
     }
+}
+
+
+export function CreateHttp1Router(
+    groupRoute: GroupRoute,
+    notFound: Action<ServerResponse> = http1NotFoundHandler
+): Http1Router {
+    return CreateHttpRouter<ServerResponse, Http1Router>(groupRoute, notFound);
+}
+
+export function CreateHttp2Router(
+    groupRoute: GroupRoute,
+    notFound: Action<ServerHttp2Stream> = http2NotFoundHandler
+): Http2Router {
+    return CreateHttpRouter<ServerHttp2Stream, Http2Router>(groupRoute, notFound);
 }

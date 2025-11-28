@@ -173,8 +173,6 @@ export async function loadDescribesFromDir(dir = "./tests", fileSuffix = '.test.
 
     for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
-        dump({ fullPath, entry });
-
         if (entry.isDirectory()) {
             tests.push(...await loadDescribesFromDir(fullPath));
             continue;

@@ -1,6 +1,6 @@
 import { dump, match, Option, HttpMethod, None } from "@smuzi/std";
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { type Context, CreateHttpRouter } from "#lib/router.js";
+import { type Context, CreateHttp1Router } from "#lib/router.js";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
 
@@ -8,27 +8,27 @@ type BookContext = Context<ServerResponse, Option<{ id: Option<string> }>>;
 type UserContext = Context<ServerResponse, Option<{ id: Option<string> }>>;
 
 function actionBooksFind(context: BookContext) {
-    return "books find id=" + context.params.unwrapByKey('id')
+    return "books find id=" + context.pathParams.unwrapByKey('id')
 }
 
-const router = CreateHttpRouter({ path: '' }, () => {
+const router = CreateHttp1Router({ path: '' }, () => {
     return "not found"
 });
 
 router.get("users", () => "list"); //<-- request1
 router.post("users", () => "create"); //<-- request2
 router.get("users/{id}", (context: UserContext) => {
-    return "user find id=" + context.params.unwrapByKey('id')
+    return "user find id=" + context.pathParams.unwrapByKey('id')
 }); //<-- request3
 
-const booksRouter = CreateHttpRouter({ path: 'books' })
+const booksRouter = CreateHttp1Router({ path: 'books' })
 router.group(booksRouter)
 
 booksRouter.get("/any", () => "books list");
 booksRouter.get("/{id}", actionBooksFind)  //<-- request4
 
 
-const postsRouter = CreateHttpRouter({ path: "posts/{post_id}" })
+const postsRouter = CreateHttp1Router({ path: "posts/{post_id}" })
 
 postsRouter.get("/attachments/{id}", () => "posts list");
 postsRouter.get("/attachments/{id}", () => "posts list"); //<-- request5
@@ -42,7 +42,7 @@ export default describe("std-Router", [
         const actualResponse = route.action({
             request,
             response: new ServerResponse(new IncomingMessage(new Socket)),
-            params: route.pathParams
+            pathParams: route.pathParams
         })
 
         assert.equal(actualResponse, "list");
@@ -53,7 +53,7 @@ export default describe("std-Router", [
         const actualResponse = route.action({
             request,
             response: new ServerResponse(new IncomingMessage(new Socket)),
-            params: route.pathParams
+            pathParams: route.pathParams
         })
 
         assert.equal(actualResponse, "create");
@@ -64,7 +64,7 @@ export default describe("std-Router", [
         const actualResponse = route.action({
             request,
             response: new ServerResponse(new IncomingMessage(new Socket)),
-            params: route.pathParams
+            pathParams: route.pathParams
         })
 
         assert.equal(actualResponse, "user find id=222");
@@ -75,7 +75,7 @@ export default describe("std-Router", [
         const actualResponse = route.action({
             request,
             response: new ServerResponse(new IncomingMessage(new Socket)),
-            params: route.pathParams
+            pathParams: route.pathParams
         })
 
         assert.equal(actualResponse, "books list");
@@ -86,7 +86,7 @@ export default describe("std-Router", [
         const actualResponse = route.action({
             request,
             response: new ServerResponse(new IncomingMessage(new Socket)),
-            params: route.pathParams
+            pathParams: route.pathParams
         })
 
         assert.equal(actualResponse, "books find id=333");
@@ -97,7 +97,7 @@ export default describe("std-Router", [
         const actualResponse = route.action({
             request,
             response: new ServerResponse(new IncomingMessage(new Socket)),
-            params: route.pathParams
+            pathParams: route.pathParams
         })
 
         assert.equal(actualResponse, "not found");

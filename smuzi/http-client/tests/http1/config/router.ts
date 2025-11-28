@@ -1,12 +1,12 @@
-import { HttpResponse } from "@smuzi/std";
-import { CreateHttpRouter } from "@smuzi/http-server";
+import { dump, HttpResponse } from "@smuzi/std";
+import { CreateHttp1Router } from "@smuzi/http-server";
 import { faker } from "@smuzi/faker";
 import { apiConfig } from "./config.js";
 
 
-const router = CreateHttpRouter({ path: '' });
+const router = CreateHttp1Router({ path: '' });
 
-const usersRouter = CreateHttpRouter({ path: 'users/' });
+const usersRouter = CreateHttp1Router({ path: 'users/' });
 usersRouter.get("list", () => {
     return faker.repeat(5, () => ({
         id: faker.integer(),
@@ -17,16 +17,14 @@ usersRouter.get("list", () => {
 
 usersRouter.get("auth", (context) => {
     if (context.request.query.get("token") == apiConfig.key) {
-        return new HttpResponse({
-            status: 200,
-            statusText: "Authorized"
-        })
+        context.response.writeHead(200, "Authorized");
+        context.response.end();
+        return;
     }
 
-    return new HttpResponse({
-        status: 401,
-        statusText: "Unauthorized"
-    })
+    context.response.writeHead(401, "Unauthorized");
+    context.response.end();
+    return;
 })
 
 router.get("echoQuery", (context) => {

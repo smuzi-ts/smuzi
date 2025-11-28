@@ -1,14 +1,13 @@
-import { pipelineTest } from "@smuzi/tests";
+import { loadDescribesFromDir, pipelineTest } from "@smuzi/tests";
 import { http1ServerRun, StdHttp1Server } from "@smuzi/http-server";
 import { Some} from "@smuzi/std";
-import { serverConfig } from "../config/config.js";
-import getCases from "./get.js"
+import { serverConfig } from "./config/config.js";
 
 type GlobalSetup = {
     server: StdHttp1Server
 }
 
-export default () => pipelineTest<GlobalSetup>({
+export default async () => pipelineTest<GlobalSetup>({
     beforeGlobal: Some(async () => {
         return {
              server: (await http1ServerRun(serverConfig)).unwrap()
@@ -18,7 +17,5 @@ export default () => pipelineTest<GlobalSetup>({
     afterGlobal: Some(async (globalSetup) => {
         await globalSetup.unwrap().server.close();
     }),
-    descibes: [
-        getCases
-    ]
+    descibes: await loadDescribesFromDir('./tests/http1')
 })

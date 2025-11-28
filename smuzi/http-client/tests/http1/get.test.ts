@@ -1,6 +1,6 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
 import { Option, Some } from "@smuzi/std";
-import {  apiConfig, httpClient } from "../config/config.js";
+import {  apiConfig, httpClient } from "./config/config.js";
 import { faker } from "@smuzi/faker";
 
 

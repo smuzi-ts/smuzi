@@ -1,5 +1,6 @@
 import { Option,None, Some } from "#lib/option.js";
 import { match } from "#lib/match.js";
+import { URLSearchParams } from "node:url";
 
 export enum HttpMethod {
     GET = "GET",
@@ -52,5 +53,21 @@ export class HttpResponse<D = unknown> {
         this.statusText = statusText;
         this.data = data;
         this.headers = headers;
+    }
+}
+
+export class HttpRequest {
+    readonly path: string;
+    readonly method: HttpMethod;
+    readonly query: URLSearchParams
+
+    constructor({ method, path, query = new URLSearchParams}: {
+        path: string;
+        method: HttpMethod;
+        query?: URLSearchParams;
+    }) {
+        this.path = path;
+        this.method = method;
+        this.query = query;
     }
 }
