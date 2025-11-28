@@ -1,4 +1,4 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, Some, StdError, HttpMethod, HttpResponse } from "@smuzi/std";
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse } from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
