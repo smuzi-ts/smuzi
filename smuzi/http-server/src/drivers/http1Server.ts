@@ -4,7 +4,7 @@ import { TLSSocket } from 'node:tls';
 import fs from 'node:fs';
 
 import { methodFromString } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, buildHttpUrl, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse, HttpRequest } from '@smuzi/std';
+import { isArray, isObject, isString, json, match, StdRecord, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse, HttpRequest, StdMap, isSome, isOption, isResult, isIterable } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
 
 type NativeServer = any
@@ -26,7 +26,6 @@ export class StdHttp1Server implements HttpServer {
 
 export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, HttpServerRunError>> {
     return new Promise((resolve) => {
-
         function handler(nativeRequest: IncomingMessage, nativeResponse: ServerResponse) {
             const methodStr = OptionFromNullable(nativeRequest.method).unwrap();
             const fullUrl = nativeRequest.url || "/";
@@ -37,16 +36,32 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                 path:  path.replace(/^\//, '').replace(/\/$/, ''),
                 method: methodFromString(methodStr).unwrap(`Error: undefined http method '${methodStr}'`),
             };
-
+            
             const routeMatched = config.router.match(request);
-            const response = routeMatched.action({
-                request: new HttpRequest({...request, query: urlObj.searchParams}),
+
+            let response = routeMatched.action({
+                request: new HttpRequest({
+                    method: request.method,
+                    path: request.path,
+                    query: new StdMap(urlObj.searchParams),
+                    headers: new StdRecord(nativeRequest.headers as any)
+                }),
                 response: nativeResponse,
                 pathParams: routeMatched.pathParams,
             })
            
+            if (isOption(response)) {
+                response = response.someOr("");
+            } else if(isResult(response)) {
+                response = response.okOr(err => err);
+            }
+
             if (isNull(response)) {
                 return;
+            }
+
+            if (isIterable(response)) {
+                response.toString()
             }
 
             const handlers = new Map();
@@ -61,8 +76,14 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
             handlers.set(resp => resp instanceof HttpResponse, (response: HttpResponse) => {
                 nativeResponse.statusCode = response.status;
                 nativeResponse.statusMessage = response.statusText;
-                nativeResponse.setHeaders(response.headers);
+                nativeResponse.setHeaders(response.headers.toUnsafeMap());
                 nativeResponse.end(response.data.someOr(""));
+            });
+
+            handlers.set(resp => resp instanceof StdError, (error: StdError) => {
+                nativeResponse.statusCode = Number(error.code);
+                nativeResponse.statusMessage = error.message;
+                nativeResponse.end(error.message);
             });
 
             handlers.set(
@@ -73,8 +94,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                     
                     try {
                         const resp = json.toString(response).match({
-                            Ok: (jsonStr) => ({status: 200, data: jsonStr })
-                                ,
+                            Ok: (jsonStr) => ({status: 200, data: jsonStr }),
                             Err: (err) => ({status: 500 , data: '{"error":"Internal Server Error"}' }),
                         });
                         nativeResponse.statusCode = resp.status;
@@ -85,6 +105,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                     }
                 }
             );
+
 
             matchUnknown(response, handlers, () => {
                 nativeResponse.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });

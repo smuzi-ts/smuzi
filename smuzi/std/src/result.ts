@@ -28,7 +28,7 @@ function unwrapErrorPanic(e): never
     }));
 }
 
-export class Result<T, E> implements IMatched {
+export class Result<T = unknown, E = unknown> implements IMatched {
     protected _val: T | E;
 
     match<RO, RE>(handlers: ResultPatterns<T, E, RO, RE>): RO | RE {
@@ -51,17 +51,17 @@ export class Result<T, E> implements IMatched {
         return this;
     }
 
-    errOr<RE = unknown>(err: ((value: E) => RE) | RE): T | RE {
+    errOr<RE = unknown>(ok: ((value: E) => RE) | RE): T | RE {
         if (this instanceof ResultErr) {
-            return asFunction(err) ? err(this._val) : err;
+            return asFunction(ok) ? ok(this._val) : ok;
         }
 
         return this._val as T;
     }
 
-    okOr<RO = unknown>(ok: ((value: E) => RO) | RO): E | RO {
+    okOr<RO = unknown>(err: ((value: E) => RO) | RO): E | RO {
         if (this instanceof ResultOk) {
-            return asFunction(ok) ? ok(this._val) : ok;
+            return asFunction(err) ? err(this._val) : err;
         }
 
         return this._val as E;

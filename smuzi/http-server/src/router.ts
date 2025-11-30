@@ -7,17 +7,22 @@ import {
     Option,
     Some,
     HttpMethod,
-    HttpResponse,
-    dump,
     HttpRequest,
+    Result,
+    HttpResponse,
+    StdError,
+    StdRecord,
+    StdMap,
 } from "@smuzi/std";
 import { ServerResponse } from "node:http";
 import { ServerHttp2Stream } from "node:http2";
-import Stream from "node:stream";
 
 
-export type Request = { path: string, method: HttpMethod };
-export type ActionResponse = void | string | number | Record<string, unknown> | any[];
+type Request = { path: string, method: HttpMethod };
+type P = string | number | StdError | string[] | number[];
+type ActionPrimitiveResponse = P | StdRecord<string, P> | Record<string, P> | Record<string, P>[];
+export type ActionResponse = void | ActionPrimitiveResponse | HttpResponse | Option<ActionPrimitiveResponse> | Result<ActionPrimitiveResponse, ActionPrimitiveResponse>;
+
 export type Action<Resp extends THttpResponse> = (context: Context<Resp>) => ActionResponse | Promise<ActionResponse>
 export type PathParam = string | RegExp;
 

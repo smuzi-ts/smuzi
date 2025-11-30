@@ -1,4 +1,4 @@
-import { env, Some, buildHttpUrl } from "@smuzi/std";
+import { env, Some, http } from "@smuzi/std";
 import { buildHttp1ServerConfig } from "@smuzi/http-server";
 import { buildHttpClient } from "#lib/index.js";
 import  router from "./router.js";
@@ -15,6 +15,6 @@ export const apiConfig = {
 }
 
 export const httpClient = buildHttpClient({
-    baseUrl: Some(buildHttpUrl(serverConfig.protocol, serverConfig.host, Some(serverConfig.port))),
+    baseUrl: http.buildUrl(serverConfig.protocol, serverConfig.host, Some(serverConfig.port)),
 });
 

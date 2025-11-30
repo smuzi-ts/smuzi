@@ -77,3 +77,7 @@ export function isObject(val: unknown): boolean {
 export function isRegExp(val: unknown): boolean {
     return val instanceof RegExp;
 }
+
+export function isIterable(val: unknown): val is Iterator<any> {
+    return val != null && typeof val[Symbol.iterator] === "function";
+}

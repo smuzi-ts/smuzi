@@ -1,44 +1,39 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse } from "@smuzi/std";
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, StdRequestHttpHeaders } from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
-    headers: Option<Record<string, string>>;
-    query: Option<Record<string, string | number | boolean>>;
+    headers: StdRequestHttpHeaders;
+    query: Record<string, string | number | boolean>;
     body: Option<string>;
     rawResponse: boolean
 };
 
 export type GetRequestConfig = {
-    headers?: Option<Record<string, string>>;
-    query?: Option<Record<string, string | number | boolean>>;
+    headers?: StdRequestHttpHeaders;
+    query?: Record<string, string | number | boolean>;
     rawResponse?: boolean
 };
 
-function buildUrl(baseUrl: Option<string>, url: string, query: Option<Record<string, string | number | boolean>>) {
-    const fullUrl = baseUrl.someOr("") + url;
+function buildUrl(baseUrl: string = "", url: string, query: Record<string, string | number | boolean>) {
+    const fullUrl = baseUrl + url;
+    let qs = "";
 
-    return query.match({
-        None: () => fullUrl,
-        Some: (query) => {
-            const params = new URLSearchParams();
-            for (const [key, value] of Object.entries(query)) {
-                params.append(key, String(value));
-            }
-            const qs = params.toString();
-            return qs ? `${fullUrl}?${qs}` : fullUrl;
-        }
-    })
+    for (const [key, value] of Object.entries(query)) {
+        qs += key + "=" + value + "&";
+    }
+
+    return qs ? `${fullUrl}?${qs.slice(0, -1)}` : fullUrl;
 
 
 }
 
 export type HttpClientConfig = {
-    baseUrl?: Option<string>
-    baseHeaders?: Option<Record<string, string>>
+    baseUrl?: string
+    baseHeaders?: Record<string, string>
 }
 
 
-export function buildHttpClient({ baseUrl = None(), baseHeaders = None() }: HttpClientConfig = {}) {
+export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientConfig = {}) {
 
     async function request<T = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<T>, HttpResponse<E>>> {
         const {
@@ -100,7 +95,7 @@ export function buildHttpClient({ baseUrl = None(), baseHeaders = None() }: Http
                     })
                     .flat()
 
-                if (! response.ok) {
+                if (!response.ok) {
                     return Err(new HttpResponse({
                         status: response.status,
                         statusText: response.statusText,
@@ -128,7 +123,7 @@ export function buildHttpClient({ baseUrl = None(), baseHeaders = None() }: Http
 
     return {
 
-        get<T = unknown>(url, { query = None(), headers = None(), rawResponse = false }: GetRequestConfig = {}) {
+        get<T = unknown>(url, { query = {}, headers = new StdRequestHttpHeaders, rawResponse = false}: GetRequestConfig = {}) {
             return request<T>(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
         },
     }

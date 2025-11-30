@@ -83,11 +83,11 @@ export class Option<T = unknown> {
 
     mapSome<R extends NonNullable<unknown>>(handler: (value: T) => R): Option<R | never> {
         if (isSome(this)) {
-                return Some(handler(this._val));
-            }
-    
-            return None();
+            return Some(handler(this._val));
         }
+    
+        return None();
+    }
 
     async asyncMapSome<R extends NonNullable<unknown>>(argumentsForSome: Option = None()): Promise<Option<R | never>> {
         if (isSome(this)) {

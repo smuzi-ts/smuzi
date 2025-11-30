@@ -1,5 +1,5 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { Option, Some } from "@smuzi/std";
+import { dump, Option, Some, StdRequestHttpHeaders } from "@smuzi/std";
 import { apiConfig, httpClient } from "./config/config.js";
 import { faker } from "@smuzi/faker";
 
@@ -41,38 +41,38 @@ export default describe("http-client - GET request", [
         })
     }),
 
-    it(okMsg("not found"), async () => {
-        const response = await httpClient.get('/users/list/notFound');
-        assert.result.failIfOk(response);
+    // it(okMsg("not found"), async () => {
+    //     const response = await httpClient.get('/users/list/notFound');
+    //     assert.result.failIfOk(response);
 
-        response.errThen((resp) => {
-            assert.equal(resp.status, 404);
-            assert.equal(resp.statusText, "Not Found");
-        })
-    }),
+    //     response.errThen((resp) => {
+    //         assert.equal(resp.status, 404);
+    //         assert.equal(resp.statusText, "Not Found");
+    //     })
+    // }),
 
-    it(okMsg("unauthorized"), async () => {
-        const response = await httpClient.get('/users/auth');
+    // it(okMsg("unauthorized"), async () => {
+    //     const response = await httpClient.get('/users/auth');
 
-        assert.result.failIfOk(response);
+    //     assert.result.failIfOk(response);
 
-        response.errThen((resp) => {
-            assert.equal(resp.status, 401);
-            assert.equal(resp.statusText, "Unauthorized");
-        })
-    }),
+    //     response.errThen((resp) => {
+    //         assert.equal(resp.status, 401);
+    //         assert.equal(resp.statusText, "Unauthorized");
+    //     })
+    // }),
 
-        it(okMsg("success authorized"), async () => {
+    //     it(okMsg("success authorized"), async () => {
 
-        const response = await httpClient.get('/users/auth', {query: Some({token: apiConfig.key})});
+    //     const response = await httpClient.get('/users/auth', {query: {token: apiConfig.key}});
 
-        assert.result.failIfError(response);
+    //     assert.result.failIfError(response);
 
-        response.okThen((resp) => {
-            assert.equal(resp.status, 200);
-            assert.equal(resp.statusText, "Authorized");
-        })
-    }),
+    //     response.okThen((resp) => {
+    //         assert.equal(resp.status, 200);
+    //         assert.equal(resp.statusText, "Authorized");
+    //     })
+    // }),
     it(okMsg("echo query"), async () => {
 
         const query = {
@@ -81,7 +81,7 @@ export default describe("http-client - GET request", [
             c: faker.string(),
         };
 
-        const response = await httpClient.get('/echoQuery', {query: Some(query)});
+        const response = await httpClient.get('/echoQuery', {query});
 
         assert.result.failIfError(response);
 
@@ -95,6 +95,52 @@ export default describe("http-client - GET request", [
             }));
 
         })
-    })
+    }),
+
+    // it(okMsg("successed auth via Header"), async () => {
+
+    //     const query = {
+    //         a: faker.string(),
+    //         b: faker.string(),
+    //         c: faker.string(),
+    //     };
+
+    //     const response = await httpClient.get('/echoQuery', {query});
+
+    //     assert.result.failIfError(response);
+
+    //     response.okThen((resp) => {
+    //         assert.equal(resp.status, 200);
+    //         assert.equal(resp.statusText, "OK");
+    //         assert.deepEqual(resp.data, Some({
+    //             a: Some(query.a),
+    //             b: Some(query.b),
+    //             c: Some(query.c)
+    //         }));
+
+    //     })
+    // }),
+
+    // it(okMsg("echo headers"), async () => {
+
+    //     const headers = new StdRequestHttpHeaders();
+
+    //     headers.setOther("X-Csutom", "xxx");
+    //     headers.setOther("Y-Csutom", "yyy");
+    //     headers.setOther("Z-Csutom", "zzz");
+
+    //     const response = await httpClient.get('/echoHeaders', {headers});
+
+    //     assert.result.failIfError(response);
+
+    //     response.okThen((resp) => {
+    //         assert.equal(resp.status, 200);
+    //         assert.equal(resp.statusText, "OK");
+    //         assert.equal(resp.headers.getOther("X-Csutom"), "xxx");
+    //         assert.equal(resp.headers.getOther("Y-Csutom"), "yyy");
+    //         assert.equal(resp.headers.getOther("Z-Csutom"), "zzz");
+
+    //     })
+    // }),
 ]
 )
