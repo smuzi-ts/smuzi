@@ -60,10 +60,6 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                 return;
             }
 
-            if (isIterable(response)) {
-                response.toString()
-            }
-
             const handlers = new Map();
             
             handlers.set(isString, (response) => {

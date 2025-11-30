@@ -40,13 +40,13 @@ export class HttpResponse<D = unknown> {
     readonly status: number;
     readonly statusText: string;
     readonly data: Option<D>;
-    readonly headers: StdResponseHttpHeaders;
+    readonly headers: ResponseHttpHeaders;
 
-    constructor({ status = 200, statusText = "", data = None(), headers = new StdResponseHttpHeaders }: {
+    constructor({ status = 200, statusText = "", data = None(), headers = new ResponseHttpHeaders }: {
         status?: number;
         statusText?: string;
         data?: Option<D>;
-        headers?: StdResponseHttpHeaders;
+        headers?: ResponseHttpHeaders;
     } = {}) {
         this.status = status;
         this.statusText = statusText;
@@ -61,13 +61,13 @@ export class HttpRequest {
     readonly path: string;
     readonly method: HttpMethod;
     readonly query: HttpQuery
-    readonly headers: StdRequestHttpHeaders;
+    readonly headers: RequestHttpHeaders;
 
-    constructor({ method, path, query = new StdMap, headers = new StdRequestHttpHeaders}: {
+    constructor({ method, path, query = new StdMap, headers = new RequestHttpHeaders}: {
         path: string;
         method: HttpMethod;
         query?: HttpQuery;
-        headers?: StdRequestHttpHeaders;
+        headers?: RequestHttpHeaders;
     }) {
         this.path = path;
         this.method = method;
@@ -76,7 +76,7 @@ export class HttpRequest {
     }
 }
 
-export type RequestHeaderKeys =
+type RequestHeaderKeys =
   | "accept"
   | "accept-encoding"
   | "accept-language"
@@ -145,12 +145,12 @@ export type RequestHeaderKeys =
   | "via"
   | "warning"
   | "www-authenticate";
-  
-export class StdRequestHttpHeaders extends StdRecord<RequestHeaderKeys, string | string[]> {
 
-}
 
-export type ResponseHeaderKeys =
+export class RequestHttpHeaders extends StdRecord<RequestHeaderKeys, string> {}
+export class ClientHttpHeaders extends StdRecord<RequestHeaderKeys, string> {}
+
+type ResponseHeaderKeys =
   | "accept"
   | "accept-charset"
   | "accept-encoding"
@@ -232,7 +232,7 @@ export type ResponseHeaderKeys =
   | "x-frame-options"
   | "x-xss-protection";
 
-export class StdResponseHttpHeaders extends StdRecord<ResponseHeaderKeys, string | string[] | number> {
+export class ResponseHttpHeaders extends StdRecord<ResponseHeaderKeys, string | string[] | number> {
 
 }
 

@@ -1,4 +1,4 @@
-import { dump, HttpResponse, Option, StdResponseHttpHeaders } from "@smuzi/std";
+import { dump, HttpResponse, Option, RequestHttpHeaders } from "@smuzi/std";
 import { CreateHttp1Router } from "@smuzi/http-server";
 import { faker } from "@smuzi/faker";
 import { apiConfig } from "./config.js";
@@ -42,16 +42,21 @@ usersRouter.get("authHeader", (context) => {
 })
 
 router.get("echoQuery", (context) => {
-    const resp = [];
+    const resp = {};
     for(const [key, val] of context.request.query) {
         resp[key] = val.someOr("");
     }
-
     return resp;
 })
 
 router.get("echoHeaders", (context) => {
-    return context.request.headers;
+   const resp = new HttpResponse();
+    for(const [key, val] of context.request.headers) {
+        if (key.endsWith("custom")) {
+            resp.headers.setOther(key, val.someOr(""));
+        }
+    }
+    return resp;
 })
 
 router.group(usersRouter);

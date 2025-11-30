@@ -1,5 +1,5 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { dump, Option, Some, StdRequestHttpHeaders } from "@smuzi/std";
+import { dump, Option, Some, RequestHttpHeaders, ClientHttpHeaders } from "@smuzi/std";
 import { apiConfig, httpClient } from "./config/config.js";
 import { faker } from "@smuzi/faker";
 
@@ -80,7 +80,7 @@ export default describe("http-client - GET request", [
             b: faker.string(),
             c: faker.string(),
         };
-        
+
 
         const response = await httpClient.get('/echoQuery', {query});
 
@@ -122,26 +122,27 @@ export default describe("http-client - GET request", [
     //     })
     // }),
 
-    // it(okMsg("echo headers"), async () => {
+    it(okMsg("echo headers"), async () => {
 
-    //     const headers = new StdRequestHttpHeaders();
+        const headers = new RequestHttpHeaders();
 
-    //     headers.setOther("X-Csutom", "xxx");
-    //     headers.setOther("Y-Csutom", "yyy");
-    //     headers.setOther("Z-Csutom", "zzz");
+        headers.setOther("x-custom", "xxx");
+        headers.setOther("y-custom", "yyy");
+        headers.setOther("z-custom", "zzz");
 
-    //     const response = await httpClient.get('/echoHeaders', {headers});
+        const response = await httpClient.get('/echoHeaders', {headers});
 
-    //     assert.result.failIfError(response);
+        assert.result.failIfError(response);
 
-    //     response.okThen((resp) => {
-    //         assert.equal(resp.status, 200);
-    //         assert.equal(resp.statusText, "OK");
-    //         assert.equal(resp.headers.getOther("X-Csutom"), "xxx");
-    //         assert.equal(resp.headers.getOther("Y-Csutom"), "yyy");
-    //         assert.equal(resp.headers.getOther("Z-Csutom"), "zzz");
+        response.okThen((resp) => {
+            assert.equal(resp.status, 200);
+            assert.equal(resp.statusText, "OK");
+            dump({"resp": resp.headers.unsafeSource()})
+            assert.equal(resp.headers.getOther("x-custom"), "xxx");
+            assert.equal(resp.headers.getOther("y-custom"), "yyy");
+            assert.equal(resp.headers.getOther("z-custom"), "zzz");
 
-    //     })
-    // }),
+        })
+    }),
 ]
 )

@@ -1,15 +1,15 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, StdRequestHttpHeaders } from "@smuzi/std";
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, ClientRequestHttpHeaders, ResponseHttpHeaders } from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
-    headers: StdRequestHttpHeaders;
+    headers: ClientRequestHttpHeaders;
     query: Record<string, string | number | boolean>;
     body: Option<string>;
     rawResponse: boolean
 };
 
 export type GetRequestConfig = {
-    headers?: StdRequestHttpHeaders;
+    headers?: ClientRequestHttpHeaders;
     query?: Record<string, string | number | boolean>;
     rawResponse?: boolean
 };
@@ -38,7 +38,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
     async function request<T = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<T>, HttpResponse<E>>> {
         const {
             method = HttpMethod.GET,
-            headers = {},
+            headers,
             query,
             body,
             rawResponse = false,
@@ -46,33 +46,30 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
 
         const finalUrl = buildUrl(baseUrl, url, config.query);
 
-        const init: RequestInit = {
+        const requestInit: RequestInit = {
             method,
-            headers: {
-                Accept: "application/json",
-                ...headers,
-            },
+            headers: headers.unsafeSource(),
         };
 
-        if (body !== undefined && method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
-            if (typeof body === "object" && !(body instanceof FormData)) {
-                init.headers = { "Content-Type": "application/json", ...init.headers };
-                const jsonString = json.toString(body);
-                if (jsonString.isErr()) {
-                    return jsonString.mapErr(err => {
-                        return new HttpResponse({
-                            status: 1000,
-                            statusText: err.message,
-                        })
-                    })
-                }
-            } else {
-                init.body = body;
-            }
-        }
+        // if (body !== undefined && method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
+        //     if (typeof body === "object" && !(body instanceof FormData)) {
+        //         init.headers = { "Content-Type": "application/json", ...init.headers };
+        //         const jsonString = json.toString(body);
+        //         if (jsonString.isErr()) {
+        //             return jsonString.mapErr(err => {
+        //                 return new HttpResponse({
+        //                     status: 1000,
+        //                     statusText: err.message,
+        //                 })
+        //             })
+        //         }
+        //     } else {
+        //         init.body = body;
+        //     }
+        // }
 
         try {
-            const response = await fetch(finalUrl, init);
+            const response = await fetch(finalUrl, requestInit);
             const responseContentType = response.headers.get("Content-Type") ?? "";
 
             try {
@@ -95,11 +92,12 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                     })
                     .flat()
 
-                if (!response.ok) {
+                if (! response.ok) {
                     return Err(new HttpResponse({
                         status: response.status,
                         statusText: response.statusText,
                         data: data as Option<E>,
+                        headers: new ResponseHttpHeaders(response.headers.)
                     }))
                 }
 
@@ -123,7 +121,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
 
     return {
 
-        get<T = unknown>(url, { query = {}, headers = new StdRequestHttpHeaders, rawResponse = false}: GetRequestConfig = {}) {
+        get<T = unknown>(url, { query = {}, headers = new ClientRequestHttpHeaders, rawResponse = false}: GetRequestConfig = {}) {
             return request<T>(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
         },
     }

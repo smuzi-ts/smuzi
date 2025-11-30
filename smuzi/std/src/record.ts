@@ -1,13 +1,13 @@
 import { Option, OptionFromNullable } from "#lib/option.js";
 
 type TKey = string | number | symbol;
-type TEntries<K extends TKey, V> = Partial<Record<K, V>>;
+type TEntries<K extends TKey, V> = Record<K, V>;
 
 export class StdRecord<K extends TKey, V> {
     #entries: TEntries<K, V>;
 
-    constructor(entries:  TEntries<K, V> = {}) {
-        this.#entries = entries
+    constructor(entries?:  TEntries<K, V>) {
+        this.#entries = entries ?? Object();
     }
 
     set(key: K, val: V): void {

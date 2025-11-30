@@ -3,6 +3,7 @@ import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
 import {None, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
+import { dump } from "#lib/debug.js";
 
 
 
@@ -252,5 +253,31 @@ export default describe("Std-json", [
             },
             Err: error => assert.fail(error.message),
         })
-    })
+    }),
+    it("toString - from Array", () => {
+        const result = json.toString(["a", "b", "c"]);
+
+        result.match({
+            Ok: (actual) => {
+                assert.equal(actual, `["a","b","c"]`);
+            },
+            Err: error => assert.fail(error.message),
+        })
+    }),
+    it("toString - from Array with custom object properties", () => {
+        const keys = ["a", "b", "c"];
+        const arr: string[] = [];
+        for(const key of keys) {
+            arr[key] = key;
+        }
+
+        const result = json.toString(arr);
+
+        result.match({
+            Ok: (actual) => {
+                assert.equal(actual, `[]`);
+            },
+            Err: error => assert.fail(error.message),
+        })
+    }),
 ])
