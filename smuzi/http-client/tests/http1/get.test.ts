@@ -80,6 +80,7 @@ export default describe("http-client - GET request", [
             b: faker.string(),
             c: faker.string(),
         };
+        
 
         const response = await httpClient.get('/echoQuery', {query});
 
