@@ -5,7 +5,7 @@
   "description": "",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
-    "console": "tsx --env-file=.env src/console.ts "
+    "console": "tsx --env-file=.env src/console.ts"
   },
   "type": "module",
   "keywords": [],

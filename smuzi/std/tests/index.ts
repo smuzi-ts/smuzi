@@ -1,5 +1,3 @@
-import { loadDescribesFromDir, pipelineTest } from "@smuzi/tests";
+import { testRunner } from "@smuzi/tests";
 
-pipelineTest({
-    descibes: await loadDescribesFromDir('./tests')
-})
+await testRunner()

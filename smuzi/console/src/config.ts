@@ -1,7 +1,6 @@
-import {Struct} from "@smuzi/std";
-import {TInputParser} from "#lib/input-parsers/types.ts";
-import {ConsoleRouter} from "#lib/router.ts";
-import {TOutputConsole} from "#lib/output/types.ts";
+import {TInputParser} from "#lib/input-parsers/types.js";
+import {ConsoleRouter} from "#lib/router.js";
+import {TOutputConsole} from "#lib/output/types.js";
 
 export type TConsoleConfig = {
     inputParser: TInputParser,
@@ -9,4 +8,4 @@ export type TConsoleConfig = {
     output: TOutputConsole,
 };
 
-export const ConsoleConfig = Struct<TConsoleConfig>();
+export const ConsoleConfig = (config: TConsoleConfig): TConsoleConfig => config;

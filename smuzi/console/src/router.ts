@@ -1,14 +1,14 @@
-import {asString, None, Option} from "@smuzi/std";
-import {TOutputConsole} from "#lib/output/types.ts";
+import {asString, None, Option, StdRecord} from "@smuzi/std";
+import {TOutputConsole} from "#lib/output/types.js";
 
-export type TInputParams = Record<string, Option<string|number|boolean>>;
+export type TInputParams<K extends string = string> = StdRecord<K, string>;
 
-export type TInputCommand = {
+export type TInputCommand<ParamsKeys extends string = string> = {
     path: string,
-    params: TInputParams,
+    params: TInputParams<ParamsKeys>,
 };
 
-export type CommandAction<P = TInputParams> = (output: TOutputConsole, params: P) => void;
+export type CommandAction<Params extends TInputParams<string> = TInputParams<string>> = (output: TOutputConsole, params: Params) => void;
 
 export type ConsoleRoute = { path: string, description: Option<string>};
 export type RouteValue = { description: Option<string>, action: CommandAction};

@@ -1,15 +1,16 @@
 export type TOutputConsole = {
-    info: (msg: string) => void,
-    success: (msg: string) => void,
-    warn: (msg: string) => void,
-    error: (msg: string) => void,
-    bold: (msg: string) => void,
+    info: (...vars ) => void,
+    success: (...vars ) => void,
+    warn: (...vars ) => void,
+    error: (...vars ) => void,
+    bold: (...vars ) => void,
 }
 
 export type TThemaOutputConsole = {
-    info: "\x1b[0m",
-    success: "\x1b[32m",
-    warn: "\x1b[33m",
-    error: "\x1b[31m",
-    bold: "\x1b[1m",
+    default: string,
+    info: string,
+    success: string,
+    warn: string,
+    error: string,
+    bold: string,
 };

@@ -10,6 +10,7 @@ export class StdRecord<K extends TKey, V> {
         this.#entries = entries ?? Object();
     }
 
+
     set(key: K, val: V): void {
         this.#entries[key] = val;
     }

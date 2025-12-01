@@ -18,7 +18,8 @@
     "@smuzi/std": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.15.21"
+    "@types/node": "^22.15.21",
+    "@smuzi/console": "workspace:*"
   },
   "imports": {
     "#lib/*": "./src/*"

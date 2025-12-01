@@ -1,20 +1,42 @@
-import {TInputParser} from "#lib/input-parsers/types.js";
-import {TInputCommand} from "#lib/router.js";
+import {TInputCommand, TInputParams} from "#lib/router.js";
+import {dump, StdRecord} from "@smuzi/std";
 
-export const SystemInputParser: TInputParser = (processArgv: string[]): TInputCommand => {
+export function SystemInputParser<ParamsKeys extends string = string>(processArgv: string[]): TInputCommand<ParamsKeys> {
     const [, , path, ...args] = processArgv;
 
-    const params = {};
+    const params = new StdRecord<ParamsKeys, string>();
 
     for (const arg of args) {
         if (arg.startsWith("--")) {
             const [key, value] = arg.slice(2).split("=");
-            params[key] = value ?? true;
+            dump({key, value})
+            params.setOther(key, value ?? "");
         }
     }
 
+
+
     return {
         path,
-        params
+        params,
+    }
+}
+
+export function SystemInputParserWithoutPath<ParamsKeys extends string = string>(processArgv: string[]): {params: TInputParams<ParamsKeys>} {
+    const [, , ...args] = processArgv;
+
+    const params = new StdRecord<ParamsKeys, string>();
+
+    for (const arg of args) {
+        if (arg.startsWith("--")) {
+            const [key, value] = arg.slice(2).split("=");
+            params.setOther(key, value ?? "");
+        }
+    }
+
+
+
+    return {
+        params,
     }
 }

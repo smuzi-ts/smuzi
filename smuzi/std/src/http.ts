@@ -232,8 +232,11 @@ type ResponseHeaderKeys =
   | "x-frame-options"
   | "x-xss-protection";
 
-export class ResponseHttpHeaders extends StdRecord<ResponseHeaderKeys, string | string[] | number> {
 
+export class ResponseHttpHeaders extends StdRecord<ResponseHeaderKeys, string> {
+    static fromHeaders(entries: Headers) {
+        return new ResponseHttpHeaders((Object.fromEntries((entries as any).entries())) as Record<ResponseHeaderKeys, string>);
+    }
 }
 
 export const http = {

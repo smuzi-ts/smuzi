@@ -1,9 +1,16 @@
-import {TOutputConsole, TThemaOutputConsole} from "#lib/output/types.ts";
+import { TOutputConsole, TThemaOutputConsole} from "#lib/output/types.js";
+import { StandardThema } from "#lib/output/themes/StandardThema.js";
 
-export const StandardOutput = (thema: TThemaOutputConsole): TOutputConsole => ({
-    info: console.debug,
-    success: console.log,
+export const StandardOutput = (thema: TThemaOutputConsole = StandardThema): TOutputConsole => ({
+    info(...vars) {
+        console.debug(thema.info, ...vars, thema.default)
+    },
+    success(...vars) {
+        console.debug(thema.success, ...vars, thema.default)
+    },
     warn: console.warn,
-    error: console.error,
+    error(...vars) {
+        console.error(thema.error, ...vars, thema.default)
+    },
     bold: console.log,
 })

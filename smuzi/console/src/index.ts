@@ -1,15 +1,15 @@
-import {isEmpty, match, panic} from "@smuzi/std";
-import {ConsoleRouter, TInputCommand, TInputParams} from "#lib/router.js";
-import {TConsoleConfig} from "#lib/config.ts";
+import {dump, isEmpty, match, panic} from "@smuzi/std";
+import {ConsoleRouter, TInputCommand} from "#lib/router.js";
+import {TConsoleConfig} from "#lib/config.js";
 
-export * from "#lib/output/themes/StandardThema.ts";
-export * from "#lib/input-parsers/SystemInputParser.ts"
-export * from "#lib/input-parsers/types.ts"
-export * from "#lib/router.ts"
-export * from "#lib/output/types.ts"
-export * from "#lib/output/printers/StandardOutput.ts"
-export * from "#lib/config.ts"
-export * from "#lib/command.ts"
+export * from "#lib/output/themes/StandardThema.js";
+export * from "#lib/input-parsers/SystemInputParser.js"
+export * from "#lib/input-parsers/types.js"
+export * from "#lib/router.js"
+export * from "#lib/output/types.js"
+export * from "#lib/output/printers/StandardOutput.js"
+export * from "#lib/config.js"
+export * from "#lib/command.js"
 
 export type TNotFoundHandle = (input: TInputCommand) => never
 
@@ -17,7 +17,7 @@ function defaultNotFoundHandler(input: TInputCommand): never {
     panic('Command with path "' + input.path + '" not found');
 }
 
-export function handle(
+export async function commandHandler(
     inputSource: string[],
     config: TConsoleConfig,
     notFoundHandler: TNotFoundHandle = defaultNotFoundHandler
@@ -34,6 +34,6 @@ export function handle(
 
     const matchedCommand = match(inputParsed.path, config.router.getMapRoutes(), () => notFoundHandler(inputParsed));
 
-    matchedCommand.action(config.output, inputParsed.params)
+    await matchedCommand.action(config.output, inputParsed.params)
 }
 

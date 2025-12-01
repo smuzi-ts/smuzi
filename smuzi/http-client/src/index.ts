@@ -1,15 +1,15 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, ClientRequestHttpHeaders, ResponseHttpHeaders } from "@smuzi/std";
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, RequestHttpHeaders, ResponseHttpHeaders } from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
-    headers: ClientRequestHttpHeaders;
+    headers: RequestHttpHeaders;
     query: Record<string, string | number | boolean>;
     body: Option<string>;
     rawResponse: boolean
 };
 
 export type GetRequestConfig = {
-    headers?: ClientRequestHttpHeaders;
+    headers?: RequestHttpHeaders;
     query?: Record<string, string | number | boolean>;
     rawResponse?: boolean
 };
@@ -97,7 +97,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                         status: response.status,
                         statusText: response.statusText,
                         data: data as Option<E>,
-                        headers: new ResponseHttpHeaders(response.headers.)
+                        headers: ResponseHttpHeaders.fromHeaders(response.headers)
                     }))
                 }
 
@@ -105,6 +105,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                     status: response.status,
                     statusText: response.statusText,
                     data: data as Option<T>,
+                    headers: ResponseHttpHeaders.fromHeaders(response.headers)
                 }));
 
             } catch (e) {
@@ -121,7 +122,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
 
     return {
 
-        get<T = unknown>(url, { query = {}, headers = new ClientRequestHttpHeaders, rawResponse = false}: GetRequestConfig = {}) {
+        get<T = unknown>(url, { query = {}, headers = new RequestHttpHeaders, rawResponse = false}: GetRequestConfig = {}) {
             return request<T>(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
         },
     }

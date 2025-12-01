@@ -170,6 +170,9 @@ importers:
         specifier: workspace:*
         version: link:../std
     devDependencies:
+      '@smuzi/console':
+        specifier: workspace:*
+        version: link:../console
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0

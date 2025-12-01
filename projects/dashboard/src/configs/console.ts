@@ -7,7 +7,7 @@ const router = CreateConsoleRouter();
 router.group(usersConsole);
 router.group(databaseConsole(databaseConfig));
 
-export const consoleConfig = new ConsoleConfig({
+export const consoleConfig = ConsoleConfig({
     inputParser: SystemInputParser,
     router,
     output: StandardOutput(StandardThema),
