@@ -15,7 +15,9 @@ import {
     isNumber,
     isEmpty,
     TEmpty, isArray,
-    isSome
+    isSome,
+    StdError,
+    asString
 } from "@smuzi/std";
 import {assertObject, TAssertObject} from "#lib/asserts/object.js";
 import {assertArray, TAssertArray} from "#lib/asserts/array.js";
@@ -28,7 +30,7 @@ export type Assert = {
     equal: typeof _assert.equal;
     deepEqual: typeof _assert.deepEqual;
     ok: typeof _assert.ok;
-    fail: typeof _assert.fail;
+    fail(err: string | StdError | AssertionError): never;
 
     isEmpty: (actual: unknown) => asserts actual is TEmpty,
 
@@ -67,7 +69,9 @@ export const assert: Assert = {
     equal: _assert.equal,
     deepEqual: _assert.deepEqual,
     ok: _assert.ok,
-    fail: _assert.fail,
+    fail(err) {
+        throw asString(err) ? new StdError("FAIL", err) : err;
+    },
 
     object: assertObject,
     array: assertArray,

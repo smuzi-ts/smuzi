@@ -1,3 +1,5 @@
-export function panic(msg: string): never {
-    throw new Error('!!!PANIC!!!| ' + msg);
+import { StdError } from "./error.js";
+
+export function panic(err: string | StdError): never {
+    throw err instanceof StdError ? err : new StdError("", '!!!PANIC!!!' + err);
 }

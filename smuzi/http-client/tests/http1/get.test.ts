@@ -1,8 +1,7 @@
 import { assert, describe, it, okMsg } from "@smuzi/tests";
-import { dump, Option, Some, RequestHttpHeaders, ClientHttpHeaders } from "@smuzi/std";
+import { dump, Option, Some, RequestHttpHeaders, ClientHttpHeaders, StdError } from "@smuzi/std";
 import { apiConfig, httpClient } from "./config/config.js";
 import { faker } from "@smuzi/faker";
-
 
 export default describe("http-client - GET request", [
     it(okMsg(" without options"), async () => {
@@ -12,10 +11,12 @@ export default describe("http-client - GET request", [
         const response = await httpClient.get<UsersList>('/users/list');
 
         response.match({
-            Err: (error) => assert.fail(error.statusText),
+            Err: (error) => {
+                assert.fail(error instanceof StdError ? error : error.statusText)
+            },
             Ok: (response) => {
-                assert.isSome(response.data);
-                const data = response.data;
+                assert.isSome(response.body);
+                const data = response.body;
                 data.match({
                     None() {
                         assert.fail("Expected Some data")
@@ -45,9 +46,12 @@ export default describe("http-client - GET request", [
         const response = await httpClient.get('/users/list/notFound');
         assert.result.failIfOk(response);
 
-        response.errThen((resp) => {
-            assert.equal(resp.status, 404);
-            assert.equal(resp.statusText, "Not Found");
+        response.errThen((err) => {
+            if (err instanceof StdError) {
+                assert.fail(err);
+            }
+            assert.equal(err.status, 404);
+            assert.equal(err.statusText, "Not Found");
         })
     }),
 
@@ -56,9 +60,12 @@ export default describe("http-client - GET request", [
 
         assert.result.failIfOk(response);
 
-        response.errThen((resp) => {
-            assert.equal(resp.status, 401);
-            assert.equal(resp.statusText, "Unauthorized");
+        response.errThen((err) => {
+                        if (err instanceof StdError) {
+                assert.fail(err);
+            }
+            assert.equal(err.status, 401);
+            assert.equal(err.statusText, "Unauthorized");
         })
     }),
 
@@ -89,7 +96,7 @@ export default describe("http-client - GET request", [
         response.okThen((resp) => {
             assert.equal(resp.status, 200);
             assert.equal(resp.statusText, "OK");
-            assert.deepEqual(resp.data, Some({
+            assert.deepEqual(resp.body, Some({
                 a: Some(query.a),
                 b: Some(query.b),
                 c: Some(query.c)
@@ -113,7 +120,7 @@ export default describe("http-client - GET request", [
         response.okThen((resp) => {
             assert.equal(resp.status, 200);
             assert.equal(resp.statusText, "OK");
-            assert.deepEqual(resp.data, Some({
+            assert.deepEqual(resp.body, Some({
                 a: Some(query.a),
                 b: Some(query.b),
                 c: Some(query.c)

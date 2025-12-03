@@ -1,6 +1,9 @@
 
 export type Simplify<T> = {[K in keyof T]: T[K]} & {};
 
+export type Primitive = string | number | boolean;
+
+
 export type RecordFromKeys<
     T extends readonly string[],
     P extends Record<string, unknown>

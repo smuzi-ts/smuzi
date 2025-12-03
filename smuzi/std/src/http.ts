@@ -36,21 +36,28 @@ function methodFromString(method: string): Option<HttpMethod> {
     );
 }
 
-export class HttpResponse<D = unknown> {
+type Body = Option<ReadableStream<Uint8Array<ArrayBuffer>> | string>;
+
+export class HttpResponse {
     readonly status: number;
     readonly statusText: string;
-    readonly data: Option<D>;
+    readonly body: Body;
     readonly headers: ResponseHttpHeaders;
 
-    constructor({ status = 200, statusText = "", data = None(), headers = new ResponseHttpHeaders }: {
+    constructor({
+         status = 200,
+         statusText = "",
+         body = None(),
+         headers = new ResponseHttpHeaders
+    }: {
         status?: number;
         statusText?: string;
-        data?: Option<D>;
+        body?: Body;
         headers?: ResponseHttpHeaders;
     } = {}) {
         this.status = status;
         this.statusText = statusText;
-        this.data = data;
+        this.body = body;
         this.headers = headers;
     }
 }

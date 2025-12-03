@@ -73,7 +73,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                 nativeResponse.statusCode = response.status;
                 nativeResponse.statusMessage = response.statusText;
                 nativeResponse.setHeaders(response.headers.toUnsafeMap());
-                nativeResponse.end(response.data.someOr(""));
+                nativeResponse.end(response.body.someOr(""));
             });
 
             handlers.set(resp => resp instanceof StdError, (error: StdError) => {
@@ -90,11 +90,11 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                     
                     try {
                         const resp = json.toString(response).match({
-                            Ok: (jsonStr) => ({status: 200, data: jsonStr }),
-                            Err: (err) => ({status: 500 , data: '{"error":"Internal Server Error"}' }),
+                            Ok: (jsonStr) => ({status: 200, body: jsonStr }),
+                            Err: (err) => ({status: 500 , body: '{"error":"Internal Server Error"}' }),
                         });
                         nativeResponse.statusCode = resp.status;
-                        nativeResponse.end(resp.data);
+                        nativeResponse.end(resp.body);
                     } catch (err) {
                         nativeResponse.statusCode = 500;
                         nativeResponse.end('{"error":"Internal Server Error"}');

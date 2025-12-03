@@ -59,6 +59,10 @@ router.get("echoHeaders", (context) => {
     return resp;
 })
 
+router.post("echoBodyString", (context) => {
+    return context.;
+})
+
 router.group(usersRouter);
 
 export default router;

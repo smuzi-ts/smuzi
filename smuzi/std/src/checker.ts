@@ -21,7 +21,7 @@ export function asArray<T = unknown>(val: unknown): val is T[] {
 }
 
 export function asObject(val: unknown): val is Record<string, unknown> {
-    return typeof val === "object"
+    return typeof val === "object" && val !== null && !Array.isArray(val);
 }
 
 export function asRegExp(val: unknown): val is RegExp {
@@ -71,7 +71,7 @@ export function isArray(val: unknown): boolean {
 }
 
 export function isObject(val: unknown): boolean {
-    return typeof val === "object";
+    return asObject(val);
 }
 
 export function isRegExp(val: unknown): boolean {

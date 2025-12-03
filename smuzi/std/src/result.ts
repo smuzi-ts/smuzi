@@ -3,6 +3,7 @@ import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
 import {json} from "#lib/json.js";
 import { None } from "./option.js";
+import { StdError } from "./error.js";
 
 type Val = unknown;
 
@@ -20,12 +21,16 @@ export function OkOrNullableAsError<T extends unknown, E = string>(value: T, err
     return value === null || value === undefined ? Err((errIfNullable ?? "Nullable value") as E) : Ok(value);
 }
 
-function unwrapErrorPanic(e): never
+function unwrapErrorPanic(err): never
 {
-    panic(asString(e) ? e : json.toString(e).match({
-        Ok: (v) => v,
-        Err: (e) => e.message
-    }));
+    panic(
+        err instanceof StdError ? err :
+         (asString(err) ? err : json.toString(err).match({
+            Ok: (v) => v,
+            Err: (e) => e.message
+            })
+         )
+    );
 }
 
 export class Result<T = unknown, E = unknown> implements IMatched {

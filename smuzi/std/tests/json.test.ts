@@ -1,13 +1,30 @@
 import {assert, assertionError, describe, errMsg, it, okMsg} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
-import {None, Some} from "#lib/option.js";
+import {None, Option, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
 import { dump } from "#lib/debug.js";
+import { StdRecord, StdRecordFromObj } from "#lib/record.js";
 
 
 
 export default describe("Std-json", [
+    it("test", () => {
+        type User = StdRecordFromObj<{"id": number, "name": string, "text": StdRecordFromObj<{"title": string}>}>
+        type OutputData = StdRecordFromObj<{data: Option<User>[] }>
+
+        const inputString = `{"data": [{"id":1,"name": "333", "text":{"title":"Subject"}}, {"id":2,"name": "2222"}]}`;
+        const result = json.fromString<OutputData>(inputString);
+        const first = result
+            .unwrap() //Possible JSON parsing error
+            .unwrap() //Possible JSON as null
+            .get("data") 
+            .unwrap()[0] //Possible element is null
+            .unwrap()
+            .get("id")
+
+        dump(first);
+    }),
     it(okMsg("fromString - deep"), () => {
         const name = faker.string();
         const inputString = `{"data": [{"id":1,"name": null}, {"id":2,"name": "${name}"}]}`;

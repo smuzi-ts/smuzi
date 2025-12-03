@@ -1,4 +1,4 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, RequestHttpHeaders, ResponseHttpHeaders } from "@smuzi/std";
+import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, RequestHttpHeaders, ResponseHttpHeaders, isObject, isNull, asNull, StdError, isNone, asString } from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
@@ -39,10 +39,9 @@ export type HttpClientConfig = {
     baseHeaders?: Record<string, string>
 }
 
-
 export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientConfig = {}) {
 
-    async function request<T = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<T>, HttpResponse<E>>> {
+    async function request<T = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<T>, HttpResponse<E> | StdError>> {
         const {
             method = HttpMethod.GET,
             headers,
@@ -55,54 +54,60 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
 
         const requestInit: RequestInit = {
             method,
-            headers: headers.unsafeSource(),
-        };
+        }; 
 
         if (method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
-            const bodyParsed = body.mapSome((body) => {
-                if (typeof body === "object" && !(body instanceof FormData)) {
-                    const jsonString = json.toString(body);
-                    if (jsonString.isErr()) {
-                        return jsonString.mapErr(err => {
-                            return new HttpResponse({
-                                status: 1000,
-                                statusText: err.message,
-                            })
-                        })
+            const bodyParsed: Option<{
+                body: string,
+                contentType: string
+            }> = body.mapSome((body) => {
+
+                if (isObject(body) && !(body instanceof FormData)) {
+                    return {
+                        body: json.toString(body).unwrap(),
+                        contentType: "application/json; charset=utf-8"
                     }
                 }
-            })
+
+                //TODO SAFE: "body as string", need to added any chekers
+                return {
+                        body: asNull(body) ? "" : body as string,
+                        contentType: "text/plain; charset=utf-8"
+                }
+            });
+
+            if (! bodyParsed.isNone()) {
+                requestInit.body = bodyParsed.unwrapByKey("body");
+                headers.set("content-type", bodyParsed.unwrapByKey("contentType"));
+            }
+
         }
+
+        requestInit.headers = headers.unsafeSource();
 
         try {
             const response = await fetch(finalUrl, requestInit);
-            const responseContentType = response.headers.get("Content-Type") ?? "";
+            const responseContentType = response.headers.get("content-type") ?? "";
 
             try {
-                const data = OptionFromNullable(await response.text())
+                const body = OptionFromNullable(await response.text())
                     .mapSome((rawData) => {
                         if (rawResponse) {
                             return rawData;
                         }
 
-                        if (!responseContentType.includes("application/json")) {
+                        if (! responseContentType.includes("application/json")) {
                             return rawData;
                         }
 
-                        return json.fromString(rawData).errThen((err) => {
-                            throw new HttpResponse({
-                                status: 1200,
-                                statusText: err.message,
-                            },);
-                        })
-                    })
-                    .flat()
+                        return json.fromString(rawData).unwrap();
+                    }).flat();
 
                 if (!response.ok) {
                     return Err(new HttpResponse({
                         status: response.status,
                         statusText: response.statusText,
-                        data: data as Option<E>,
+                        body: body as Option<E>,
                         headers: ResponseHttpHeaders.fromHeaders(response.headers)
                     }))
                 }
@@ -110,7 +115,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                 return Ok(new HttpResponse({
                     status: response.status,
                     statusText: response.statusText,
-                    data: data as Option<T>,
+                    body: body as Option<T>,
                     headers: ResponseHttpHeaders.fromHeaders(response.headers)
                 }));
 
@@ -118,11 +123,8 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                 return Err(e);
             }
 
-        } catch (e) {
-            return Err(new HttpResponse({
-                status: 500,
-                statusText: e,
-            }));
+        } catch (err) {
+            return Err(err);
         }
     }
 
