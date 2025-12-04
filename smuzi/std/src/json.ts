@@ -1,9 +1,10 @@
-import {asObject, isNull, isObject, isString} from "#lib/checker.js";
+import {asObject, isArray, isNull, isObject, isString} from "#lib/checker.js";
 import {isNone, isOption, None, Option, Some} from "#lib/option.js";
 import {Err, isResult, Ok, Result} from "#lib/result.js";
 import { dump } from "./debug.js";
 import { StdRecord } from "./record.js";
 import { Primitive } from "./utilTypes.js";
+import {StdMap} from "#lib/map.js";
 
 
 // type OutputJsonFromString = Option<Primitive | Primitive[] | StdRecord<string | number , unknown>> 
@@ -24,6 +25,10 @@ class JsonToStringError {
 }
 
 function eachFromString(this, key, value) {
+    if (isArray(value)) {
+        return Some(new StdMap(value));
+    }
+
     if (isObject(value)) {
         return Some(new StdRecord(value));
     }

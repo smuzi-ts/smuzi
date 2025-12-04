@@ -4,26 +4,33 @@ import {json} from "#lib/json.js";
 import {None, Option, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
 import { dump } from "#lib/debug.js";
-import { StdRecord, StdRecordFromObj } from "#lib/record.js";
+import { StdRecord } from "#lib/record.js";
+import {StdMap} from "#lib/map.js";
 
 
 
 export default describe("Std-json", [
-    it("test", () => {
-        type User = StdRecordFromObj<{"id": number, "name": string, "text": StdRecordFromObj<{"title": string}>}>
-        type OutputData = StdRecordFromObj<{data: Option<User>[] }>
+    it("test json", () => {
+        type User = StdRecord<{
+            "id": number,
+            "name": string,
+            "text": StdRecord<{"title": string}>
+        }>
+        type OutputData = StdRecord<{data: StdMap<number, User> }>
 
         const inputString = `{"data": [{"id":1,"name": "333", "text":{"title":"Subject"}}, {"id":2,"name": "2222"}]}`;
         const result = json.fromString<OutputData>(inputString);
         const first = result
             .unwrap() //Possible JSON parsing error
-            .unwrap() //Possible JSON as null
-            .get("data") 
-            .unwrap()[0] //Possible element is null
-            .unwrap()
-            .get("id")
+            .unwrap() //Possible JSON is empty
+            .get("data")
+            .unwrap() //Possible key "data" is empty
+            .get(0)
+            .unwrap() //Possible first element is empty
 
-        dump(first);
+        const firstId = first.get("id").unwrap() // Possible id is empty;
+
+        assert.equal(firstId, 1);
     }),
     it(okMsg("fromString - deep"), () => {
         const name = faker.string();
