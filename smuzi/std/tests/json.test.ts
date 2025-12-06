@@ -3,9 +3,9 @@ import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
 import {None, Option, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
-import { dump } from "#lib/debug.js";
 import { StdRecord } from "#lib/record.js";
-import {StdMap} from "#lib/map.js";
+import {StdList} from "#lib/list.js";
+import {dump} from "#lib/debug.js";
 
 
 
@@ -16,22 +16,28 @@ export default describe("Std-json", [
             "name": string,
             "text": StdRecord<{"title": string}>
         }>
-        type OutputData = StdRecord<{data: StdMap<number, User> }>
+        type OutputData = StdRecord<{data: StdList<User> }>
 
         const inputString = `{"data": [{"id":1,"name": "333", "text":{"title":"Subject"}}, {"id":2,"name": "2222"}]}`;
         const result = json.fromString<OutputData>(inputString);
-        const first = result
+        const data = result
             .unwrap() //Possible JSON parsing error
             .unwrap() //Possible JSON is empty
             .get("data")
-            .unwrap() //Possible key "data" is empty
-            .get(0)
-            .unwrap() //Possible first element is empty
+            .unwrap();
 
-        const firstId = first.get("id").unwrap() // Possible id is empty;
+        const first = data.get(0).unwrap() //Possible first element is empty
+        const firstId = first.get("id").unwrap();
+        const firstTitle= first.get("text")
+            .unwrap()
+            .get("title")
+            .unwrap();
 
         assert.equal(firstId, 1);
+        assert.equal(firstTitle, "Subject");
+
     }),
+
     it(okMsg("fromString - deep"), () => {
         const name = faker.string();
         const inputString = `{"data": [{"id":1,"name": null}, {"id":2,"name": "${name}"}]}`;
@@ -39,15 +45,27 @@ export default describe("Std-json", [
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (obj) => {
-                const expectedObj = Some({
-                    "data": Some([
-                        Some({"id": Some(1), "name": None()}),
-                        Some({"id": Some(2), "name": Some(name)}),
+                const expectedObj = Some(new StdRecord({
+                    "data": new StdList([
+                        Some(new StdRecord({"id": Some(1), "name": None()})),
+                        Some(new StdRecord({"id": Some(2), "name": Some(name)})),
                     ])
-                });
+                }));
 
                 assert.deepEqual(obj, expectedObj);
             }
+        })
+    }),
+
+    it(okMsg("fromString - obj with key as ''"), () => {
+        const value =`{"":1}`
+        const result = json.fromString(value);
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (actual) => {
+                assert.deepEqual(actual, Some(new StdRecord({"": 1})));
+            },
         })
     }),
 
@@ -107,12 +125,13 @@ export default describe("Std-json", [
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (actual) => {
-                const expectedObj = Some({
-                    "data": Some([
-                        Some({"id": Some(1), "name": None(), "login": Ok(Some(true))}),
-                        Some({"id": Some(2), "name": Some("user2")}),
-                    ])
-                });
+                dump({actual: actual.unwrap().get("data").unwrap().get(0).unwrap().get("login")})
+                const expectedObj = Some(new StdRecord({
+                    "data": Some(new StdList([
+                        Some(new StdRecord({"id": Some(1), "name": None(), "login": Ok(Some(true))})),
+                        Some(new StdRecord({"id": Some(2), "name": Some("user2")})),
+                    ]))
+                }));
 
                 assert.deepEqual(actual, expectedObj);            },
         })

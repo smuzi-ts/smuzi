@@ -1,5 +1,6 @@
 import { asFunction, asNull, asObject } from "./checker.js";
 import { panic } from "./panic.js";
+import {dump} from "#lib/debug.js";
 
 type Val<T = unknown> = NonNullable<T>;
 
@@ -95,6 +96,11 @@ export class Option<T = unknown> {
         }
     
         return None();
+    }
+
+    dump() {
+        dump({innerVal: this._val});
+        return this;
     }
 }
 

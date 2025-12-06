@@ -30,8 +30,6 @@ function buildUrl(baseUrl: string = "", url: string, query: Record<string, strin
     }
 
     return qs ? `${fullUrl}?${qs.slice(0, -1)}` : fullUrl;
-
-
 }
 
 export type HttpClientConfig = {

@@ -1,4 +1,5 @@
 import { Option, OptionFromNullable } from "#lib/option.js";
+import {dump} from "#lib/debug.js";
 
 export class StdMap<K, V> {
     #map: Map<K, V>;
@@ -49,5 +50,9 @@ export class StdMap<K, V> {
 
     [Symbol.iterator](): IterableIterator<[K, Option<V>]> {
         return this.entries();
+    }
+
+    unsafeSource(): Map<K, V> {
+        return this.#map;
     }
 }
