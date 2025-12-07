@@ -1,7 +1,7 @@
-import { isArray, isNull, isObject} from "#lib/checker.js";
-import {isOption, None, Option, OptionFromNullable, Some} from "#lib/option.js";
-import { Err, isResult, Ok, Result} from "#lib/result.js";
-import { dump } from "./debug.js";
+import {isArray, isNull, isObject} from "#lib/checker.js";
+import {isOption, isSome, None, Option, OptionFromNullable, Some} from "#lib/option.js";
+import {Err, isResult, Ok, Result} from "#lib/result.js";
+import {dump} from "./debug.js";
 import {StdList} from "#lib/list.js";
 import {StdRecord} from "#lib/record.js";
 
@@ -11,6 +11,7 @@ type OutputJsonFromString<T> = Option<T>;
 
 class JsonFromStringError {
     message: string
+
     constructor(message: string) {
         this.message = message;
     }
@@ -18,55 +19,46 @@ class JsonFromStringError {
 
 class JsonToStringError {
     message: string
+
     constructor(message: string) {
         this.message = message;
     }
 }
 
 function eachFromString(this, key, value) {
-        if (isArray(value)) {
-            return Some(new StdList(value));
-        }
+    if (isArray(value)) {
+        return Some(new StdList(value));
+    }
 
-        if (isObject(value)) {
-            return Some(new StdRecord(value));
-        }
+    if (isObject(value)) {
+        return Some(new StdRecord(value));
+    }
 
-        let newValue = value;
+    let newValue = value;
 
-        if (isNull(value)) {
-            return None();
-        }
+    if (isNull(value)) {
+        return None();
+    }
 
+    if (isObject(this)) {
+        return newValue;
+    }
 
-        if (value?.__type && value.val) {
-            newValue =  value.__type.match({
-                Some: type => {
-                    return type === 'ok' ? Ok(value.val) : (type === 'err' ? Err(value.val) : Some(value))
-                },
-                None: () => value
-            })
-        }
-
-        if (isObject(this)) {
-            return newValue;
-        }
-
-        return Some(newValue);
+    return Some(newValue);
 }
 
 function eachToString(this, key, value) {
     if (isOption(value)) {
         return value.match({
-            None:() => null,
+            None: () => null,
             Some: (v) => v
         });
     }
 
     if (isResult(value)) {
         return value.match({
-            Ok:(val) => ({__type:'ok', val}),
-            Err: (val) => ({__type:'err', val}),
+            Ok: (val) => ({__type: 'ok', val}),
+            Err: (val) => ({__type: 'err', val}),
         });
     }
 
@@ -82,7 +74,7 @@ export const json = {
             return Err(new JsonFromStringError(err.message ?? "Unknown JSON parsing error"));
         }
     },
-    toString(value: unknown):Result<string, JsonToStringError> {
+    toString(value: unknown): Result<string, JsonToStringError> {
         try {
             return Ok(JSON.stringify(value, eachToString));
         } catch (err) {

@@ -6,7 +6,6 @@ export * from "./pipeline.js";
 export * from "./panic.js";
 export * from "./debug.js";
 export * from "./common.js";
-export * from "./traits/url.js";
 export * from "./dotEnv.js";
 export * from "./object.js";
 export * from "./promise.js";

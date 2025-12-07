@@ -2,15 +2,14 @@ import {assert, assertionError, describe, errMsg, it, okMsg} from "@smuzi/tests"
 import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
 import {None, Option, Some} from "#lib/option.js";
-import {Err, Ok} from "#lib/result.js";
+import {Err, Ok, Result} from "#lib/result.js";
 import { StdRecord } from "#lib/record.js";
 import {StdList} from "#lib/list.js";
 import {dump} from "#lib/debug.js";
 
 
-
 export default describe("Std-json", [
-    it("test json", () => {
+    it("fromString - deep", () => {
         type User = StdRecord<{
             "id": number,
             "name": string,
@@ -38,33 +37,17 @@ export default describe("Std-json", [
 
     }),
 
-    it(okMsg("fromString - deep"), () => {
-        const name = faker.string();
-        const inputString = `{"data": [{"id":1,"name": null}, {"id":2,"name": "${name}"}]}`;
-        const result = json.fromString(inputString);
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (obj) => {
-                const expectedObj = Some(new StdRecord({
-                    "data": new StdList([
-                        Some(new StdRecord({"id": Some(1), "name": None()})),
-                        Some(new StdRecord({"id": Some(2), "name": Some(name)})),
-                    ])
-                }));
-
-                assert.deepEqual(obj, expectedObj);
-            }
-        })
-    }),
-
-    it(okMsg("fromString - obj with key as ''"), () => {
+    it("fromString - obj with key as ''", () => {
+        type Obj = StdRecord<{
+            "": number,
+        }>
         const value =`{"":1}`
-        const result = json.fromString(value);
+        const result = json.fromString<Obj>(value);
 
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (actual) => {
-                assert.deepEqual(actual, Some(new StdRecord({"": 1})));
+                assert.deepEqual(actual.unwrap().get("").unwrap(), 1);
             },
         })
     }),
@@ -72,43 +55,43 @@ export default describe("Std-json", [
     it(okMsg("fromString - string"), () => {
         const value = faker.string();
         const inputString = `"${value}"`;
-        const result = json.fromString(inputString);
+        const result = json.fromString<string>(inputString);
 
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (actual) => {
-                assert.deepEqual(actual, Some(value));
+                assert.deepEqual(actual.unwrap(), value);
             },
         })
     }),
 
     it(okMsg("fromString - number"), () => {
         const value = faker.number();
-        const result = json.fromString(String(value));
+        const result = json.fromString<number>(String(value));
 
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (actual) => {
-                assert.deepEqual(actual, Some(value));
+                assert.deepEqual(actual.unwrap(), value);
             },
         })
     }),
 
     it(okMsg("fromString - boolean"), () => {
         const value = 'true';
-        const result = json.fromString(value);
+        const result = json.fromString<boolean>(value);
 
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (actual) => {
-                assert.deepEqual(actual, Some(true));
+                assert.deepEqual(actual.unwrap(), true);
             },
         })
     }),
 
-    it(okMsg("fromString - nullable"), () => {
+    it(okMsg("fromString - null"), () => {
         const value = 'null';
-        const result = json.fromString(value);
+        const result = json.fromString<never>(value);
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -117,83 +100,6 @@ export default describe("Std-json", [
             },
         })
     }),
-    it(okMsg("fromString - with Result Ok"), () => {
-        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"ok","val":true}}, {"id":2,"name": "user2"}]}`;
-
-        const result = json.fromString(inputString);
-
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (actual) => {
-                dump({actual: actual.unwrap().get("data").unwrap().get(0).unwrap().get("login")})
-                const expectedObj = Some(new StdRecord({
-                    "data": Some(new StdList([
-                        Some(new StdRecord({"id": Some(1), "name": None(), "login": Ok(Some(true))})),
-                        Some(new StdRecord({"id": Some(2), "name": Some("user2")})),
-                    ]))
-                }));
-
-                assert.deepEqual(actual, expectedObj);            },
-        })
-    }),
-
-    it(okMsg("fromString - with Result Err"), () => {
-        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"err","val":"Some Error"}}, {"id":2,"name": "user2"}]}`;
-
-        const result = json.fromString(inputString);
-
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (actual) => {
-                const expectedObj = Some({
-                    "data": Some([
-                        Some({"id": Some(1), "name": None(), "login": Err(Some("Some Error"))}),
-                        Some({"id": Some(2), "name": Some("user2")}),
-                    ])
-                });
-
-                assert.deepEqual(actual, expectedObj);            },
-        })
-    }),
-
-    it(okMsg("fromString - object with property '__type', but not Ok/Err"), () => {
-        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"custom","val":"custom val"}}, {"id":2,"name": "user2"}]}`;
-
-        const result = json.fromString(inputString);
-
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (actual) => {
-                const expectedObj = Some({
-                    "data": Some([
-                        Some({"id": Some(1), "name": None(), "login": Some({"__type": Some("custom"), "val": Some("custom val")})}),
-                        Some({"id": Some(2), "name": Some("user2")}),
-                    ])
-                });
-
-                assert.deepEqual(actual, expectedObj);            },
-        })
-    }),
-
-    it(okMsg("fromString - object with property '__type' equals Ok/Err, but property 'val' is not found"), () => {
-        const inputString = `{"data": [{"id":1,"name": null, "login": {"__type":"ok","custom_val":"custom val"}}, {"id":2,"name": "user2"}]}`;
-
-        const result = json.fromString(inputString);
-
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (actual) => {
-                const expectedObj = Some({
-                    "data": Some([
-                        Some({"id": Some(1), "name": None(), "login": Some({"__type": Some("ok"), "custom_val": Some("custom val")})}),
-                        Some({"id": Some(2), "name": Some("user2")}),
-                    ])
-                });
-
-                assert.deepEqual(actual, expectedObj);            },
-        })
-    }),
-
 
     it(errMsg("fromString - bad json"), () => {
         const inputString = '{"name":"' + faker.string() + '", "email": "' + faker.string() + '"/}';
@@ -207,6 +113,34 @@ export default describe("Std-json", [
                 assert.string.contains(err.message, "Expected ',' or '}' after property value in JSON at position")
             }
         })
+    }),
+
+    it("fromString - exp", () => {
+        type User = StdRecord<{
+            "id": number,
+            "name": string,
+            "text": StdRecord<{"title": string}>
+        }>
+        type OutputData = StdRecord<{data: StdList<User> }>
+
+        const inputString = `{"data": [{"id":1,"name": "333", "text": 2}]}`;
+        const result = json.fromString<OutputData>(inputString);
+        const data = result
+            .unwrap() //Possible JSON parsing error
+            .unwrap() //Possible JSON is empty
+            .get("data")
+            .unwrap();
+
+        const first = data.get(0).unwrap() //Possible first element is empty
+        const firstId = first.get("id").unwrap();
+        const firstTitle= first.get("text")
+            .unwrap()
+            .get("title")
+            .unwrap();
+
+        assert.equal(firstId, 1);
+        assert.equal(firstTitle, "Subject");
+
     }),
 
     it(okMsg("toString - deep"), () => {

@@ -1,20 +1,37 @@
-import {asString, json, Result} from "@smuzi/std";
+import {asString, isSome, json, None, Option, Result} from "@smuzi/std";
 import {assert} from "#lib/assert.js";
 
 export type TAssertResult = {
-    failIfError(result: Result<unknown, unknown>),
-    failIfOk(result: Result<unknown, unknown>),
+    equalOk(result: Result, expectedOk?: Option),
+    equalErr(result: Result, expectedErr?: Option),
 }
 
 export const assertResult: TAssertResult = {
-    failIfError(result) {
-        result.mapErr((e) => {
-            assert.fail(asString(e) ? e : json.toString(e).errThen((err) => err.message))
-        });
+    equalOk(result, expectedOk = None()) {
+        result.match({
+            Ok(ok) {
+                expectedOk.mapSome(expected => {
+                    assert.deepEqual(ok, expected);
+                    return true;
+                })
+            },
+            Err(err) {
+                assert.fail(asString(err) ? err : json.toString(err).errThen((e) => e.message))
+            }
+        })
+
     },
-    failIfOk(result) {
-        result.mapOk((ok) => {
-            assert.fail("Expected result as Err, but get Ok")
-        });
+    equalErr(result, expectedErr = None()) {
+        result.match({
+            Ok(ok) {
+                assert.fail("Expected result as Err, but get Ok")
+            },
+            Err(err) {
+                expectedErr.mapSome(expected => {
+                    assert.deepEqual(err, expected);
+                    return true;
+                })
+            }
+        })
     },
 }

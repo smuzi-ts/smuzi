@@ -89,7 +89,7 @@ export function describe(msg: string, cases: ItResult[]): Describe {
         }
         for (const it of cases) {
             await options.beforeEachCase.asyncMapSome();
-            const generalMsg = msg + " -> " + it.msg;
+            const generalMsg = msg + "-" + it.msg;
             const filteredByMsg = options.filters.byMsg.someOr(() => false);
 
             if (filteredByMsg(generalMsg)) {
