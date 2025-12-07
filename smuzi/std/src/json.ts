@@ -1,7 +1,6 @@
 import {isArray, isNull, isObject} from "#lib/checker.js";
 import {isOption, isSome, None, Option, OptionFromNullable, Some} from "#lib/option.js";
 import {Err, isResult, Ok, Result} from "#lib/result.js";
-import {dump} from "./debug.js";
 import {StdList} from "#lib/list.js";
 import {StdRecord} from "#lib/record.js";
 
@@ -68,8 +67,8 @@ function eachToString(this, key, value) {
 export const json = {
     fromString<T = unknown>(value: string): Result<OutputJsonFromString<T>, JsonFromStringError> {
         try {
-            const result = JSON.parse(value, eachFromString);
-            return Ok(isOption(result) ? result : OptionFromNullable(result));
+            let result = JSON.parse(value, eachFromString);
+            return  Ok(isOption(result) ? result : OptionFromNullable(result));
         } catch (err) {
             return Err(new JsonFromStringError(err.message ?? "Unknown JSON parsing error"));
         }

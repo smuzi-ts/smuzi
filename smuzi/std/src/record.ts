@@ -26,6 +26,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
     unsafeSource(): T {
         return this.#entity;
     }
+
 }
 
 type TKey = string | number | symbol;

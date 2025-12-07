@@ -1,21 +1,34 @@
-import {assert, assertionError, describe, errMsg, it, okMsg} from "@smuzi/tests";
+import {assert, describe, errMsg, it, okMsg} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
-import {None, Option, Some} from "#lib/option.js";
-import {Err, Ok, Result} from "#lib/result.js";
+import {None, Some} from "#lib/option.js";
+import {Err, Ok} from "#lib/result.js";
 import { StdRecord } from "#lib/record.js";
 import {StdList} from "#lib/list.js";
-import {dump} from "#lib/debug.js";
+import {schema} from "#lib/schema.js";
 
 
 export default describe("Std-json", [
     it("fromString - deep", () => {
-        type User = StdRecord<{
-            "id": number,
-            "name": string,
-            "text": StdRecord<{"title": string}>
-        }>
-        type OutputData = StdRecord<{data: StdList<User> }>
+        const UserSchema = schema.record({
+            id: schema.number(),
+            name: schema.string(),
+            text: schema.record({
+                title: schema.string()
+            }),
+        })
+
+        type User = typeof UserSchema.__infer;
+
+        const u : User = new StdRecord({
+            id: 2,
+            name: "test",
+            text: new StdRecord({title: "test"})
+        });
+
+        // const UsersListSchema = schema.record({
+        //     data: schema.list(UserSchema)
+        // });
 
         const inputString = `{"data": [{"id":1,"name": "333", "text":{"title":"Subject"}}, {"id":2,"name": "2222"}]}`;
         const result = json.fromString<OutputData>(inputString);
@@ -45,7 +58,7 @@ export default describe("Std-json", [
         const result = json.fromString<Obj>(value);
 
         result.match({
-            Err: (error) => assert.fail(error.message),
+            Err: (error) => assert.fail(error.msg),
             Ok: (actual) => {
                 assert.deepEqual(actual.unwrap().get("").unwrap(), 1);
             },

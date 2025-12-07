@@ -70,7 +70,7 @@ export const assert: Assert = {
     deepEqual: _assert.deepEqual,
     ok: _assert.ok,
     fail(err) {
-        throw asString(err) ? new StdError("FAIL", err) : err;
+        throw err;
     },
 
     object: assertObject,

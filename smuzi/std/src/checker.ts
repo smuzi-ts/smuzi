@@ -1,3 +1,5 @@
+import {StdRecord} from "#lib/record.js";
+
 export type TEmpty = null | undefined | '' | never[];
 
 export function asString(val: unknown): val is string {
@@ -20,8 +22,12 @@ export function asArray<T = unknown>(val: unknown): val is T[] {
     return Array.isArray(val);
 }
 
-export function asObject(val: unknown): val is Record<string, unknown> {
+export function asObject(val: unknown): val is Record<PropertyKey, unknown> {
     return typeof val === "object" && val !== null && !Array.isArray(val);
+}
+
+export function asRecord(val: unknown): val is StdRecord<Record<PropertyKey, unknown>> {
+    return val instanceof StdRecord;
 }
 
 export function asRegExp(val: unknown): val is RegExp {
