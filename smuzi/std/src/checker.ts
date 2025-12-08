@@ -1,4 +1,5 @@
 import {StdRecord} from "#lib/record.js";
+import {StdMap} from "#lib/map.js";
 
 export type TEmpty = null | undefined | '' | never[];
 
@@ -28,6 +29,10 @@ export function asObject(val: unknown): val is Record<PropertyKey, unknown> {
 
 export function asRecord(val: unknown): val is StdRecord<Record<PropertyKey, unknown>> {
     return val instanceof StdRecord;
+}
+
+export function asMap(val: unknown): val is StdMap {
+    return val instanceof StdMap;
 }
 
 export function asRegExp(val: unknown): val is RegExp {

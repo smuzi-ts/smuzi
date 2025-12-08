@@ -20,18 +20,12 @@ export default describe("Std-json", [
 
         type User = typeof UserSchema.__infer;
 
-        const u : User = new StdRecord({
-            id: 2,
-            name: "test",
-            text: new StdRecord({title: "test"})
-        });
-
         // const UsersListSchema = schema.record({
         //     data: schema.list(UserSchema)
         // });
 
         const inputString = `{"data": [{"id":1,"name": "333", "text":{"title":"Subject"}}, {"id":2,"name": "2222"}]}`;
-        const result = json.fromString<OutputData>(inputString);
+        const result = json.fromString(inputString);
         const data = result
             .unwrap() //Possible JSON parsing error
             .unwrap() //Possible JSON is empty

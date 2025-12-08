@@ -139,6 +139,22 @@ export default describe("Std-Schema", [
                 assert.deepEqual(err.data.get("id"), None());
                 assert.deepEqual(err.data.get("name").unwrap().msg, "required");
             }
-        })    }),
+        })
+    }),
+    it("Map-Ok", () => {
+        const schemaVal = schema.map({
+            id: schema.number(),
+            name: schema.string()
+        });
+
+        const input = new StdRecord({
+            id: faker.number(),
+            name: faker.string()
+        })
+
+        const validate = schemaVal.validate(input);
+
+        assert.result.equalOk(validate)
+    }),
     ]
 )
