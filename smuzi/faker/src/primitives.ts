@@ -1,4 +1,5 @@
 import {isEmpty, panic} from "@smuzi/std";
+import {faker} from "#lib/index.js";
 
 export function string({min = 5, max = 10, prefix = '', suffix = ''} = {}): string {
     if (min > max) panic('min must be less than or equal to max');
@@ -27,4 +28,12 @@ export function float(min = 0, max = 100, decimals = 2): number {
 
 export function number(min = 0, max = 100, decimals = 2): number {
     return float(min, max, decimals);
+}
+
+export function notNumber(): unknown {
+    return faker.array.getItem([string, boolean])();
+}
+
+export function notString(): unknown {
+    return faker.array.getItem([number, boolean])();
 }

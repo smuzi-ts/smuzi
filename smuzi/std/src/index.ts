@@ -16,6 +16,5 @@ export * from "./http.js";
 export * from "./error.js";
 export * from "./record.js";
 export * from "./map.js";
-export * from "./list.js";
 export * from "./common.js";
 export * from "./schema.js";

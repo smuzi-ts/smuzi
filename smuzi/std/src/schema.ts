@@ -3,31 +3,38 @@ import {asMap, asObject, asRecord, isNull} from "#lib/checker.js";
 import {StdRecord} from "#lib/record.js";
 import {Simplify} from "#lib/utilTypes.js";
 import {StdMap} from "#lib/map.js";
+import { dump } from "./debug.js";
 
-type ValidationResult = Result<true, SchemaValidationError>;
 
 export interface SchemaRule {
     __infer: unknown;
-    validate(input: unknown): ValidationResult
+    validate(input: unknown): Result<true, SchemaValidationError>
 }
 
 type SchemaConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
+type SchemaConfigMap = SchemaRule | SchemaObject | SchemaRecord<any>;
 
 type InferSchema<C extends SchemaConfig> = {
     [K in keyof C]: C[K]['__infer'];
 };
 
-type InferValidationSchema<C extends SchemaConfig> = {
-    [K in keyof C]: SchemaValidationError;
-};
+type InferValidationSchema<C extends SchemaConfig> = Record<keyof C, SchemaValidationError>
 
-type InferMapSchema<C extends SchemaConfig> = (C['__infer'])[];
-type InferValidationSchemaMap<C extends SchemaConfig> = InferValidationSchema<C>[];
+type InferMapSchema<C extends SchemaConfigMap> = (C['__infer'])[];
 
 
-export type SchemaValidationError<T = unknown> = {
+type InferValidationSchemaMap<C extends SchemaConfigMap, T = C['__infer']> = T;
+
+type SchemaValidationErrorData = Record<PropertyKey, unknown>;
+
+export type SchemaValidationError<T extends SchemaValidationErrorData = SchemaValidationErrorData> = {
     msg: string;
-    data: T;
+    data: StdRecord<T>;
+}
+
+export type SchemaMapValidationError<K = unknown, V = unknown> = {
+    msg: string;
+    data: StdMap<K, V>;
 }
 
 class SchemaObject<C extends SchemaConfig = SchemaConfig> {
@@ -38,7 +45,7 @@ class SchemaObject<C extends SchemaConfig = SchemaConfig> {
         this.#config = config;
     }
 
-    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
+    validate(input: unknown): Result<true, SchemaValidationError<InferValidationSchema<C>>> {
         if (!asObject(input)) {
             return Err({msg:"Expected input as object", data: new StdRecord});
         }
@@ -71,7 +78,7 @@ export class SchemaRecord<C extends SchemaConfig> {
         this.#config = config;
     }
 
-    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
+    validate(input: unknown): Result<true, SchemaValidationError<InferValidationSchema<C>>> {
         if (! asRecord(input)) {
             return Err({msg:"Expected input as StdRecord", data: new StdRecord()});
         }
@@ -99,7 +106,7 @@ export class SchemaRecord<C extends SchemaConfig> {
 }
 
 
-export class SchemaMap<K extends unknown, C extends SchemaConfig> {
+export class SchemaMap<K extends unknown, C extends SchemaConfigMap> {
     #config: C;
     __infer: InferMapSchema<C>
 
@@ -107,18 +114,28 @@ export class SchemaMap<K extends unknown, C extends SchemaConfig> {
         this.#config = config;
     }
 
-    validate(input: unknown, breakOnFirst = true): Result<true, SchemaValidationError<StdMap<K, InferValidationSchemaMap<C>>>> {
+    validate<I = unknown>(input: I): Result<true, SchemaMapValidationError<unknown, SchemaValidationError<Simplify<InferValidationSchemaMap<C>>>>> {
         if (! asMap(input)) {
             return Err({msg:"Expected input as StdMap", data: new StdMap()});
         }
 
-        const errors = new StdMap<K, InferValidationSchemaMap<C>>();
+        const errors = new StdMap();
         let hasErrors = false;
 
         const self = this;
 
         for (const [key, val] of input) {
-            const res = this.#config.validate()
+            val.match({
+                Some(value) {
+                    self.#config.validate(value).errThen(err => {
+                        hasErrors = true;
+                        errors.set(key, err);
+                    })
+                },
+                None() {
+                    hasErrors = true;
+                    errors.set(key, {msg: "required", data: new StdRecord()});
+                }})
         }
 
         return hasErrors ? Err({msg:"invalid", data: errors}) : Ok(true);
@@ -155,5 +172,5 @@ export const schema = {
     string: (msg = "Expected string") => (new SchemaString(msg)),
     obj: <C extends SchemaConfig>(config: C) => new SchemaObject<C>(config),
     record: <C extends SchemaConfig>(config: C) => new SchemaRecord<C>(config),
-    map: <K, C extends SchemaConfig>(config: C) => (new SchemaMap<K, C>(config)),
+    map: <K, C extends SchemaConfigMap>(config: C) => (new SchemaMap<K, C>(config)),
 }

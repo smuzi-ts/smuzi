@@ -3,6 +3,8 @@ import {schema} from "#lib/schema.js";
 import {faker} from "@smuzi/faker";
 import {None, Some} from "#lib/option.js";
 import {StdRecord} from "#lib/record.js";
+import { StdMap } from "#lib/map.js";
+import { dump } from "#lib/debug.js";
 
 
 export default describe("Std-Schema", [
@@ -142,19 +144,42 @@ export default describe("Std-Schema", [
         })
     }),
     it("Map-Ok", () => {
-        const schemaVal = schema.map({
+        const schemaVal = schema.map(schema.record({
             id: schema.number(),
             name: schema.string()
-        });
+        }));
 
-        const input = new StdRecord({
+        const oneRecordInput = new StdRecord({
             id: faker.number(),
             name: faker.string()
+        });
+
+        const input = new StdMap([[0, oneRecordInput]])
+
+        assert.result.equalOk(schemaVal.validate(input))
+    }),
+    it("Map-Err", () => {
+        const schemaVal = schema.map(schema.record({
+            id: schema.number(),
+            name: schema.string()
+        }));
+
+        const oneRecordInput = new StdRecord({
+            id: faker.notNumber(),
+            name: faker.notString(),
+        });
+
+        const input = new StdMap([[0, oneRecordInput]])
+
+        schemaVal.validate(input).match({
+            Ok(ok) {
+                assert.fail("Expected Err but get Ok")
+            },
+            Err(err) {
+                const firstElementData = err.data.get(0).unwrapByKey("data").unsafeSource();
+
+            }
         })
-
-        const validate = schemaVal.validate(input);
-
-        assert.result.equalOk(validate)
     }),
     ]
 )

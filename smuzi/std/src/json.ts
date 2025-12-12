@@ -1,7 +1,6 @@
 import {isArray, isNull, isObject} from "#lib/checker.js";
 import {isOption, isSome, None, Option, OptionFromNullable, Some} from "#lib/option.js";
 import {Err, isResult, Ok, Result} from "#lib/result.js";
-import {StdList} from "#lib/list.js";
 import {StdRecord} from "#lib/record.js";
 
 

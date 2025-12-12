@@ -1,5 +1,6 @@
-export function dump<T extends unknown>(v: T): T
+
+export function dump<T extends unknown>( values: T): T
 {
-    console.log("ECHO", v);
-    return v;
+    console.log("ECHO", values);
+    return values;
 }
