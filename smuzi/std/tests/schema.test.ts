@@ -176,8 +176,57 @@ export default describe("Std-Schema", [
                 assert.fail("Expected Err but get Ok")
             },
             Err(err) {
-                const firstElementData = err.data.get(0).unwrapByKey("data").unsafeSource();
+                const firstElementValidation = err.data.get(0).unwrap().data;
 
+                const firstIdValidation = firstElementValidation.get("id").unwrap();
+                assert.equal(firstIdValidation.msg,"Expected number")
+                assert.isTrue(firstIdValidation.data instanceof StdRecord)
+
+                const firstNameValidation = firstElementValidation.get("name").unwrap();
+                assert.equal(firstNameValidation.msg,"Expected string")
+                assert.isTrue(firstIdValidation.data instanceof StdRecord)
+            }
+        })
+    }),
+     it("Record with Map-Ok", () => {
+        const postSchema = schema.record({
+            id: schema.number(),
+        });
+
+        const userSchema = schema.record({
+            userName: schema.string(),
+            posts: schema.map(postSchema),
+        });
+
+        type Post = typeof postSchema.__infer;
+        type User = typeof userSchema.__infer;
+
+        const postInput = new StdRecord({
+            id: faker.number(),
+        }) satisfies Post;
+
+        faker.repeat()
+        const userInput = new StdRecord({
+            userName: faker.string(),
+            posts: new StdMap([
+                [0, postInput],
+                [1, postInput],
+            ])})
+
+        schemaVal.validate(input).match({
+            Ok(ok) {
+                assert.fail("Expected Err but get Ok")
+            },
+            Err(err) {
+                const firstElementValidation = err.data.get(0).unwrap().data;
+
+                const firstIdValidation = firstElementValidation.get("id").unwrap();
+                assert.equal(firstIdValidation.msg,"Expected number")
+                assert.isTrue(firstIdValidation.data instanceof StdRecord)
+
+                const firstNameValidation = firstElementValidation.get("name").unwrap();
+                assert.equal(firstNameValidation.msg,"Expected string")
+                assert.isTrue(firstIdValidation.data instanceof StdRecord)
             }
         })
     }),

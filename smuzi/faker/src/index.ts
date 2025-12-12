@@ -15,5 +15,5 @@ export const faker = Object.freeze({
         }
 
         return res;
-    }
+    },
 })

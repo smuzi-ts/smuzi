@@ -1,4 +1,4 @@
-import { assert, describe, it, okMsg, skip } from "@smuzi/tests";
+import { assert, describe, it, okMsg,  } from "@smuzi/tests";
 import { Pipe } from "#lib/pipeline.js";
 
 describe("Std-Pipeline", () => {

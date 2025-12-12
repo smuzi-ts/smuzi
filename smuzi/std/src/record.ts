@@ -27,6 +27,10 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
         return this.#entity;
     }
 
+    isEmpty(): boolean {
+        return Object.keys(this.#entity).length === 0
+
+    }
 }
 
 type TKey = string | number | symbol;
