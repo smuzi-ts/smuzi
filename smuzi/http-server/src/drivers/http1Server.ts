@@ -4,7 +4,33 @@ import { TLSSocket } from 'node:tls';
 import fs from 'node:fs';
 
 import { methodFromString } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, StdRecord, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse, HttpRequest, StdMap, isSome, isOption, isResult, isIterable } from '@smuzi/std';
+import {
+    isArray,
+    isObject,
+    isString,
+    json,
+    match,
+    StdRecord,
+    matchUnknown,
+    OptionFromNullable,
+    Some,
+    Result,
+    Option,
+    Err,
+    Ok,
+    isNull,
+    tranformError,
+    StdError,
+    dump,
+    HttpResponse,
+    HttpRequest,
+    StdMap,
+    isSome,
+    isOption,
+    isResult,
+    isIterable,
+    ResponseHttpHeaders, RequestHttpHeaders, JsonFromStringError, asList, asRecord, asMap
+} from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
 
 type NativeServer = any
@@ -23,6 +49,45 @@ export class StdHttp1Server implements HttpServer {
         })
     }
 }
+
+function readRequestBody(req: IncomingMessage): () => Promise<Result<Buffer, Error>> {
+    return async () => {
+        return new Promise((resolve, reject) => {
+            const chunks: Buffer[] = [];
+
+            req.on("data", (chunk) => {
+                chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+            });
+
+            req.on("end", () => {
+                resolve(Ok(Buffer.concat(chunks)));
+            });
+
+            req.on("error", (err) => reject(Err(err)));
+        });
+    }
+}
+
+function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T>, JsonFromStringError | Error>> {
+    return async(encoding: BufferEncoding = "utf-8") => {
+        return new Promise((resolve) => {
+        let body = "";
+
+        req.setEncoding(encoding);
+
+        req.on("data", (chunk: string) => {
+            body += chunk;
+        });
+
+        req.on("end", () => {
+            resolve(json.fromString(body));
+        });
+
+        req.on("error", (err) => resolve(Err(err)));
+    });
+    }
+}
+
 
 export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, HttpServerRunError>> {
     return new Promise((resolve) => {
@@ -44,7 +109,9 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                     method: request.method,
                     path: request.path,
                     query: new StdMap(urlObj.searchParams),
-                    headers: new StdRecord(nativeRequest.headers as any)
+                    headers: new RequestHttpHeaders(nativeRequest.headers as any),
+                    body: readRequestBody(nativeRequest),
+                    json: readRequestJson(nativeRequest),
                 }),
                 response: nativeResponse,
                 pathParams: routeMatched.pathParams,
@@ -72,7 +139,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
             handlers.set(resp => resp instanceof HttpResponse, (response: HttpResponse) => {
                 nativeResponse.statusCode = response.status;
                 nativeResponse.statusMessage = response.statusText;
-                nativeResponse.setHeaders(response.headers.toUnsafeMap());
+                nativeResponse.setHeaders(response.headers.unsafeSource());
                 nativeResponse.end(response.body.someOr(""));
             });
 
@@ -83,7 +150,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
             });
 
             handlers.set(
-                (response) => isObject(response) || isArray(response),
+                (response) => isObject(response) || isArray(response) || asList(response) || asRecord(response) || asMap(response),
                 (response) => {
                     //TODO: return respons on top instead of changed nativeResponse inner
                     nativeResponse.setHeader("Content-Type", "application/json; charset=utf-8" );

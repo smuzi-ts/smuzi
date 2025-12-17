@@ -2,6 +2,9 @@ import { Option, None, Some, OptionFromNullable } from "#lib/option.js";
 import { match } from "#lib/match.js";
 import { StdRecord } from "./record.js";
 import { StdMap } from "./map.js";
+import {dump} from "#lib/debug.js";
+import {Result} from "#lib/result.js";
+import {JsonFromStringError} from "#lib/json.js";
 
 export enum HttpMethod {
     GET = "GET",
@@ -36,12 +39,12 @@ function methodFromString(method: string): Option<HttpMethod> {
     );
 }
 
-type Body = Option<ReadableStream<Uint8Array<ArrayBuffer>> | string>;
+type Body = ReadableStream<Uint8Array<ArrayBuffer>> | string;
 
-export class HttpResponse {
+export class HttpResponse<B = unknown> {
     readonly status: number;
     readonly statusText: string;
-    readonly body: Body;
+    readonly body: Option<B>;
     readonly headers: ResponseHttpHeaders;
 
     constructor({
@@ -52,7 +55,7 @@ export class HttpResponse {
     }: {
         status?: number;
         statusText?: string;
-        body?: Body;
+        body?: Option<B>;
         headers?: ResponseHttpHeaders;
     } = {}) {
         this.status = status;
@@ -63,23 +66,32 @@ export class HttpResponse {
 }
 
 export type HttpQuery = StdMap<string, string | string[]>
+export type HttpInputBody = () => Promise<Result<Buffer, Error>>;
+export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, JsonFromStringError | Error>>;
 
-export class HttpRequest {
+export class HttpRequest{
     readonly path: string;
     readonly method: HttpMethod;
     readonly query: HttpQuery
     readonly headers: RequestHttpHeaders;
+    readonly body: HttpInputBody;
+    readonly json: HttpInputJson;
 
-    constructor({ method, path, query = new StdMap, headers = new RequestHttpHeaders}: {
+    constructor({ method, path, body, json,  query = new StdMap, headers = new RequestHttpHeaders}: {
         path: string;
         method: HttpMethod;
         query?: HttpQuery;
         headers?: RequestHttpHeaders;
+        body: HttpInputBody;
+        json: HttpInputJson;
+
     }) {
         this.path = path;
         this.method = method;
         this.query = query;
         this.headers = headers;
+        this.body = body;
+        this.json = json;
     }
 }
 
@@ -154,8 +166,8 @@ type RequestHeaderKeys =
   | "www-authenticate";
 
 
-export class RequestHttpHeaders extends StdRecord<RequestHeaderKeys, string> {}
-export class ClientHttpHeaders extends StdRecord<RequestHeaderKeys, string> {}
+export class RequestHttpHeaders extends StdRecord<Record<RequestHeaderKeys, string | string[]>> {}
+export class ClientHttpHeaders extends StdMap<RequestHeaderKeys, string> {}
 
 type ResponseHeaderKeys =
   | "accept"
@@ -240,9 +252,9 @@ type ResponseHeaderKeys =
   | "x-xss-protection";
 
 
-export class ResponseHttpHeaders extends StdRecord<ResponseHeaderKeys, string> {
+export class ResponseHttpHeaders extends StdMap<ResponseHeaderKeys, string> {
     static fromHeaders(entries: Headers) {
-        return new ResponseHttpHeaders((Object.fromEntries((entries as any).entries())) as Record<ResponseHeaderKeys, string>);
+        return new ResponseHttpHeaders((entries as any).entries() as any);
     }
 }
 

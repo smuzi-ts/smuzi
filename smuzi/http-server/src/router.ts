@@ -11,8 +11,7 @@ import {
     Result,
     HttpResponse,
     StdError,
-    StdRecord,
-    StdMap,
+    StdMap, StdRecord, StdList,
 } from "@smuzi/std";
 import { ServerResponse } from "node:http";
 import { ServerHttp2Stream } from "node:http2";
@@ -20,7 +19,7 @@ import { ServerHttp2Stream } from "node:http2";
 
 type Request = { path: string, method: HttpMethod };
 type P = string | number | StdError | string[] | number[];
-type ActionPrimitiveResponse = P | StdRecord<string, P> | Record<string, P> | Record<string, P>[];
+type ActionPrimitiveResponse = P | StdMap<string> | StdRecord<any> | StdList | Record<string, P> | Record<string, P>[];
 export type ActionResponse = void | ActionPrimitiveResponse | HttpResponse | Option<ActionPrimitiveResponse> | Result<ActionPrimitiveResponse, ActionPrimitiveResponse>;
 
 export type Action<Resp extends THttpResponse> = (context: Context<Resp>) => ActionResponse | Promise<ActionResponse>

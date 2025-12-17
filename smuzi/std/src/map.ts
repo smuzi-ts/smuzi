@@ -20,6 +20,16 @@ export class StdMap<K = unknown, V = unknown> {
         return this;
     }
 
+    setOther(key: unknown, value: V) {
+        this.#map.set(key as K, value);
+        return this;
+    }
+
+    getOther(key: unknown): Option<V> {
+        return OptionFromNullable(this.#map.get(key as K));
+
+    }
+
     delete(key: K): boolean {
         return this.#map.delete(key);
     }

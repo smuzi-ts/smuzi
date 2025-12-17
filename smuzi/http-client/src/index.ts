@@ -39,7 +39,7 @@ export type HttpClientConfig = {
 
 export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientConfig = {}) {
 
-    async function request<T = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<T>, HttpResponse<E> | StdError>> {
+    async function request<B = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<B>, HttpResponse<E> | StdError>> {
         const {
             method = HttpMethod.GET,
             headers,
@@ -113,7 +113,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                 return Ok(new HttpResponse({
                     status: response.status,
                     statusText: response.statusText,
-                    body: body as Option<T>,
+                    body: body as Option<B>,
                     headers: ResponseHttpHeaders.fromHeaders(response.headers)
                 }));
 

@@ -8,7 +8,7 @@ const router = CreateHttp1Router({ path: '' });
 
 const usersRouter = CreateHttp1Router({ path: 'users/' });
 usersRouter.get("list", () => {
-    return faker.repeat(5, () => ({
+    return faker.repeat.asArray(5, () => ({
         id: faker.integer(),
         name: faker.string(),
         email: faker.string(),
@@ -59,8 +59,16 @@ router.get("echoHeaders", (context) => {
     return resp;
 })
 
-router.post("echoBodyString", (context) => {
-    return context.;
+router.post("echoBodyString", async (context) => {
+    const body = (await context.request.json());
+    return body.match({
+        Err(err) {
+            return new HttpResponse({status: 400, statusText: err.message});
+            },
+        Ok(json) {
+            return json as any;
+        }
+    })
 })
 
 router.group(usersRouter);

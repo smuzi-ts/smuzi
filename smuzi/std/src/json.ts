@@ -2,13 +2,9 @@ import {asList, asRecord, isArray, isNull, isObject} from "#lib/checker.js";
 import {isOption, isSome, None, Option, OptionFromNullable, Some} from "#lib/option.js";
 import {Err, isResult, Ok, Result} from "#lib/result.js";
 import {StdRecord} from "#lib/record.js";
-import {dump} from "#lib/debug.js";
 import {StdList} from "#lib/list.js";
 
-
-// type OutputJsonFromString = Option<Primitive | Primitive[] | StdRecord<string | number , unknown>> 
-
-class JsonFromStringError {
+export class JsonFromStringError {
     message: string
 
     constructor(message: string) {

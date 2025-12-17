@@ -1,8 +1,3 @@
-import { pipelineTest } from "@smuzi/tests"
-import routerCase from "./router.js"
+import { testRunner } from "@smuzi/tests";
 
-pipelineTest({
-    descibes: [
-        routerCase
-    ]
-})
+await testRunner()

@@ -15,6 +15,15 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
         return OptionFromNullable(this.#entity[key]);
     }
 
+    setOther<K extends keyof T>(key: unknown, value: T[K]) {
+        this.#entity[key as K] = value;
+        return this;
+    }
+
+    getOther<K extends keyof T>(key: unknown): Option<T[K]> {
+        return OptionFromNullable(this.#entity[key as K]);
+    }
+
     *[Symbol.iterator](): IterableIterator<[keyof T, Option<T[keyof T]>]> {
         for (const key in this.#entity) {
             if (Object.prototype.hasOwnProperty.call(this.#entity, key)) {
