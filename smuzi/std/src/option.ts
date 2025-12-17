@@ -19,8 +19,12 @@ export function OptionFromNullable<T>(value: Option<T> | T): Option<T extends nu
 }
 
 export class Option<T = unknown> {
+    unsafeSource() {
+        return this._val ?? null;
+    }
+
     protected _val: T;
-    
+
     match<R>(handlers: OptionPatterns<T, R>): R {
         if (this instanceof OptionSome) {
             return handlers.Some(this._val as T);
@@ -33,14 +37,14 @@ export class Option<T = unknown> {
         if (this instanceof OptionSome) {
             return asFunction(some) ? some(this._val as T) : some;
         }
-        
+
         return asFunction(none) ? none() : none;
     }
 
     isNone(): this is OptionNone {
         return this instanceof OptionNone;
     }
-    
+
     unwrap(msg: string = "Unwrapped None variant"): T | never {
         return this.match({
             Some: (v) => v,
@@ -48,8 +52,7 @@ export class Option<T = unknown> {
         });
     }
 
-    flat(): this | T
-    {
+    flat(): this | T {
         if (isOption(this._val)) {
             return this._val;
         }
@@ -86,7 +89,7 @@ export class Option<T = unknown> {
         if (isSome(this)) {
             return Some(handler(this._val));
         }
-    
+
         return None();
     }
 
@@ -100,7 +103,7 @@ export class Option<T = unknown> {
         if (isSome(this)) {
             return asFunction(this._val) ? OptionFromNullable(await this._val(argumentsForSome)) : this as unknown as Option<R>;
         }
-    
+
         return None();
     }
 

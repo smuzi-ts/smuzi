@@ -1,5 +1,6 @@
 import {StdRecord} from "#lib/record.js";
 import {StdMap} from "#lib/map.js";
+import {StdList} from "#lib/list.js";
 
 export type TEmpty = null | undefined | '' | never[];
 
@@ -91,4 +92,8 @@ export function isRegExp(val: unknown): boolean {
 
 export function isIterable(val: unknown): val is Iterator<any> {
     return val != null && typeof val[Symbol.iterator] === "function";
+}
+
+export function asList(val: unknown): val is StdList {
+    return val instanceof StdList;
 }

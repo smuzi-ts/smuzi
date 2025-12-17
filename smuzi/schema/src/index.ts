@@ -1,10 +1,17 @@
-import {Err, Ok, Result} from "#lib/result.js";
-import {asMap, asObject, asRecord, isNull} from "#lib/checker.js";
-import {StdRecord} from "#lib/record.js";
-import {Simplify} from "#lib/utilTypes.js";
-import {StdMap} from "#lib/map.js";
-import { dump } from "./debug.js";
-
+import {
+    Err,
+    Ok,
+    Result,
+    asMap,
+    asObject,
+    asRecord,
+    isNull,
+    StdRecord,
+    Simplify,
+    StdMap,
+    StdList,
+    asList
+} from "@smuzi/std";
 
 export interface SchemaRule {
     __infer: unknown;
@@ -142,6 +149,45 @@ export class SchemaMap<C extends SchemaConfigMap> {
     }
 }
 
+export class SchemaList<C extends SchemaConfigMap> {
+    #config: C;
+    __infer: Simplify<InferMapSchema<C>>
+    __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
+
+    constructor(config: C) {
+        this.#config = config;
+    }
+
+    validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<number, Simplify<InferValidationSchemaMap<C>>>>>> {
+        const errors = new StdMap<number, InferValidationSchemaMap<C>>();
+
+        if (! asList(input)) {
+            return Err({msg:"Expected input as StdList", data: errors});
+        }
+
+        let hasErrors = false;
+
+        const self = this;
+
+        for (const [key, val] of input) {
+            val.match({
+                Some(value) {
+                    self.#config.validate(value).errThen(err => {
+                        hasErrors = true;
+                        errors.set(key, err);
+                    })
+                },
+                None() {
+                    hasErrors = true;
+                    errors.set(key, {msg: "required", data: new StdRecord()});
+                }})
+        }
+
+        return hasErrors ? Err({msg:"invalid", data: errors}) : Ok(true);
+    }
+}
+
+
 class SchemaNumber implements SchemaRule {
     #msg: string;
     __infer: number;
@@ -177,4 +223,5 @@ export const schema = {
     obj: <C extends SchemaConfig>(config: C) => new SchemaObject<C>(config),
     record: <C extends SchemaConfig>(config: C) => new SchemaRecord<C>(config),
     map: <C extends SchemaConfigMap>(config: C) => (new SchemaMap<C>(config)),
+    list: <C extends SchemaConfigMap>(config: C) => (new SchemaList<C>(config)),
 }

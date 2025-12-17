@@ -3,38 +3,35 @@ import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
 import {None, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
-import { StdRecord } from "#lib/record.js";
+import {StdRecord} from "#lib/record.js";
+import {schema} from "@smuzi/schema";
+import {StdMap} from "#lib/map.js";
+import {dump} from "#lib/debug.js";
 import {StdList} from "#lib/list.js";
-import {schema} from "#lib/schema.js";
-
 
 export default describe("Std-json", [
-    it("fromString - deep", () => {
-        const UserSchema = schema.record({
-            id: schema.number(),
-            name: schema.string(),
-            text: schema.record({
-                title: schema.string()
-            }),
-        })
+    it("fromString-deep", () => {
+        type User = StdRecord<{
+            id: number,
+            name: string,
+            post: StdRecord<{title: string}>
+        }>;
 
-        type User = typeof UserSchema.__infer;
+        type UserData = StdRecord<{
+            data: StdList<User>,
+        }>
+        const inputString = `{"data": [{"id":1,"name": "333", "post":{"title":"Subject"}}, {"id":2,"name": "2222", "post":{"title":"Subject2"}}]}`;
+        const resultJSON = json.fromString<UserData>(inputString)
+            .unwrap() //Possible JSON parse error
+            .unwrap() //Possible empty JSON;
 
-        // const UsersListSchema = schema.record({
-        //     data: schema.list(UserSchema)
-        // });
-
-        const inputString = `{"data": [{"id":1,"name": "333", "text":{"title":"Subject"}}, {"id":2,"name": "2222"}]}`;
-        const result = json.fromString(inputString);
-        const data = result
-            .unwrap() //Possible JSON parsing error
-            .unwrap() //Possible JSON is empty
+        const data = resultJSON
             .get("data")
-            .unwrap();
+            .unwrap(); //Possible empty data
 
         const first = data.get(0).unwrap() //Possible first element is empty
         const firstId = first.get("id").unwrap();
-        const firstTitle= first.get("text")
+        const firstTitle= first.get("post")
             .unwrap()
             .get("title")
             .unwrap();
@@ -52,7 +49,7 @@ export default describe("Std-json", [
         const result = json.fromString<Obj>(value);
 
         result.match({
-            Err: (error) => assert.fail(error.msg),
+            Err: (error) => assert.fail(error.message),
             Ok: (actual) => {
                 assert.deepEqual(actual.unwrap().get("").unwrap(), 1);
             },
@@ -120,34 +117,6 @@ export default describe("Std-json", [
                 assert.string.contains(err.message, "Expected ',' or '}' after property value in JSON at position")
             }
         })
-    }),
-
-    it("fromString - exp", () => {
-        type User = StdRecord<{
-            "id": number,
-            "name": string,
-            "text": StdRecord<{"title": string}>
-        }>
-        type OutputData = StdRecord<{data: StdList<User> }>
-
-        const inputString = `{"data": [{"id":1,"name": "333", "text": 2}]}`;
-        const result = json.fromString<OutputData>(inputString);
-        const data = result
-            .unwrap() //Possible JSON parsing error
-            .unwrap() //Possible JSON is empty
-            .get("data")
-            .unwrap();
-
-        const first = data.get(0).unwrap() //Possible first element is empty
-        const firstId = first.get("id").unwrap();
-        const firstTitle= first.get("text")
-            .unwrap()
-            .get("title")
-            .unwrap();
-
-        assert.equal(firstId, 1);
-        assert.equal(firstTitle, "Subject");
-
     }),
 
     it(okMsg("toString - deep"), () => {
@@ -263,5 +232,23 @@ export default describe("Std-json", [
             },
             Err: error => assert.fail(error.message),
         })
+    }),
+    it("fromString-toString-flow", () => {
+        type User = StdRecord<{
+            id: number,
+            name: string,
+            post: StdRecord<{title: string}>
+        }>;
+
+        type UserData = StdRecord<{
+            data: StdList<User>,
+        }>
+        const inputString = `{"data":[{"id":1,"name":"333","post":{"title":"Subject"}},{"id":2,"name":"2222","post":{"title":"Subject2"}}]}`;
+        const resultJSON = json.fromString<UserData>(inputString)
+            .unwrap() //Possible JSON parse error
+            .unwrap();
+
+        const outputString = json.toString(resultJSON);
+        assert.equal(outputString.unwrap(), inputString);
     }),
 ])

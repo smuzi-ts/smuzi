@@ -3,6 +3,7 @@
   "include": [],
   "references": [
     { "path": "smuzi/std" },
+    { "path": "smuzi/schema" },
     { "path": "smuzi/server" },
     { "path": "smuzi/console" },
     { "path": "smuzi/database" },

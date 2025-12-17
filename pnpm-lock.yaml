@@ -149,11 +149,32 @@ importers:
         specifier: ^22.15.21
         version: 22.19.0
 
+  smuzi/schema:
+    devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+
   smuzi/std:
     devDependencies:
       '@smuzi/faker':
         specifier: workspace:*
         version: link:../faker
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../tests
