@@ -5,26 +5,30 @@ import { faker } from "@smuzi/faker";
 import {schema} from "@smuzi/schema";
 
 export default describe("http-client-http1-POST-", [
-    it("body simple string", async () => {
-        const userShema = schema.record({
+    it("echo json", async () => {
+        const userSchema = schema.record({
             name: schema.string(),
             age: schema.number(),
+            posts: schema.list(schema.record({
+                id: schema.number(),
+                subject: schema.string(),
+            }))
         })
 
-        const createUser = new StdRecord({
-            name: faker.string(),
-            age: faker.number(),
-        })
-        const response = await httpClient.post('/echoBodyString', {
+        const createUser = faker.schema.make(userSchema);
+
+        const response = await httpClient.post<typeof createUser>('/echoBodyString', {
             body: Some(createUser)
         });
+
 
         const responseBody = response
             .unwrap()
             .body
             .unwrap();
 
-        assert.equal(responseBody.get());
+
+        assert.result.equalOk(userSchema.validate(responseBody))
     }),
 ]
 )

@@ -170,11 +170,11 @@ export type TestRunnerConfig<GS = unknown> = {
     afterGlobal?: Option<(globalSetup: Option<GS>) => Promise<void>>;
     beforeEachCase?: Option<() => Promise<void>>;
     afterEachCase?: Option<() => Promise<void>>;
-    descibes?: Describe[];
+    describes?: Describe[];
 }
 
 type KeysTestRunnerInputParams = 'contains';
-export type TestRunnerInputParams = StdRecord<KeysTestRunnerInputParams, string>;
+export type TestRunnerInputParams = StdRecord<Record<KeysTestRunnerInputParams, string>>;
 
 export async function testRunner<GS = unknown>({
     argv = process.argv,
@@ -189,10 +189,10 @@ export async function testRunner<GS = unknown>({
     afterGlobal = None(),
     beforeEachCase = None(),
     afterEachCase = None(),
-    descibes = []
+    describes = []
 }: TestRunnerConfig<GS> = {}) {
-    if (isEmpty(descibes) && isEmpty(folder)) {
-        panic("Argument descibes or folder is required!")
+    if (isEmpty(describes) && isEmpty(folder)) {
+        panic("Argument describes or folder is required!")
     }
 
     const params = SystemInputParserWithoutPath<KeysTestRunnerInputParams>(argv).params;
@@ -202,16 +202,16 @@ export async function testRunner<GS = unknown>({
             return (msg: string) =>  ! msg.includes(strSearch)
         })
 
-    descibes = !isEmpty(descibes) ? descibes : await loadDescribesFromDir(folder);
+    describes = !isEmpty(describes) ? describes : await loadDescribesFromDir(folder);
 
     const generalResult = {
         ok: 0,
         err: 0,
         skip: 0,
     }
+    const globalSetup = await beforeGlobal.asyncMapSome();
 
-    for (const describe of descibes) {
-        const globalSetup = await beforeGlobal.asyncMapSome();
+    for (const describe of describes) {
 
         const describeResult = await describe({
             params,
@@ -227,8 +227,9 @@ export async function testRunner<GS = unknown>({
         generalResult.err += describeResult.err;
         generalResult.skip += describeResult.skip;
 
-        await afterGlobal.asyncMapSome(globalSetup);
     }
+
+    await afterGlobal.asyncMapSome(globalSetup);
 
     if (config.output.format == "json") {
         config.output.printer.info(json.toString(generalResult).unwrap());

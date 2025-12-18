@@ -10,14 +10,16 @@ import {
     Simplify,
     StdMap,
     StdList,
-    asList
+    asList, dump
 } from "@smuzi/std";
 
 export interface SchemaRule {
     __infer: unknown;
     __inferError: unknown;
+
     validate(input: unknown): Result<true, SchemaValidationError<unknown>>
-    config(): unknown;
+
+    getConfig(): unknown;
 }
 
 type SchemaConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
@@ -27,9 +29,10 @@ type InferSchema<C extends SchemaConfig> = {
     [K in keyof C]: C[K]['__infer'];
 };
 
-type InferValidationSchema<C extends SchemaConfig> = {[K in keyof C]: C[K]['__inferError']}
+type InferValidationSchema<C extends SchemaConfig> = { [K in keyof C]: C[K]['__inferError'] }
 
-type InferMapSchema<C extends SchemaConfigMap> = (C['__infer'])[];
+type InferMapSchema<K extends SchemaRule, C extends SchemaConfigMap> = StdMap<K['__infer'], C['__infer']>;
+type InferListSchema<C extends SchemaConfigMap> = StdList<C['__infer']>;
 
 type InferValidationSchemaMap<C extends SchemaConfigMap> = C['__inferError'];
 
@@ -42,17 +45,18 @@ export class SchemaObject<C extends SchemaConfig = SchemaConfig> implements Sche
     #config: C;
     __infer: Simplify<InferSchema<C>>
     __inferError: SchemaValidationError<StdRecord<InferValidationSchema<C>>>
+
     constructor(config: C) {
         this.#config = config;
     }
 
-    config(): C {
+    getConfig(): C {
         return this.#config;
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
         if (!asObject(input)) {
-            return Err({msg:"Expected input as object", data: new StdRecord});
+            return Err({msg: "Expected input as object", data: new StdRecord});
         }
 
         const errors = new StdRecord<InferValidationSchema<C>>();
@@ -71,12 +75,12 @@ export class SchemaObject<C extends SchemaConfig = SchemaConfig> implements Sche
             })
         }
 
-        return hasErrors ? Err({msg:"invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
 }
 
 
-type SchemaRecordValidationError<C extends  SchemaConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
+type SchemaRecordValidationError<C extends SchemaConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
 
 export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
     #config: C;
@@ -87,15 +91,15 @@ export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
         this.#config = config;
     }
 
-    config(): C {
+    getConfig(): C {
         return this.#config;
     }
 
     validate(input: unknown): Result<true, SchemaRecordValidationError<C>> {
         const errors = new StdRecord<InferValidationSchema<C>>();
 
-        if (! asRecord(input)) {
-            return Err({msg:"Expected input as StdRecord", data: errors});
+        if (!asRecord(input)) {
+            return Err({msg: "Expected input as StdRecord", data: errors});
         }
 
         let hasErrors = false;
@@ -112,32 +116,39 @@ export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
                 None() {
                     hasErrors = true;
                     errors.set(key, {msg: "required", data: errors});
-                }})
+                }
+            })
         }
 
-        return hasErrors ? Err({msg:"invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
 }
 
 
-export class SchemaMap<C extends SchemaConfigMap> implements SchemaRule {
+export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer = K["__infer"]> implements SchemaRule {
     #config: C;
-    __infer: Simplify<InferMapSchema<C>>
+    #key: K;
+    __infer: Simplify<InferMapSchema<K, C>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
-    constructor(config: C) {
+    constructor(key: K, config: C) {
+        this.#key = key;
         this.#config = config;
     }
 
-    config(): C {
+    getConfig(): C {
         return this.#config;
+    }
+
+    getKey(): K {
+        return this.#key;
     }
 
     validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>> {
         const errors = new StdMap<unknown, InferValidationSchemaMap<C>>();
 
-        if (! asMap(input)) {
-            return Err({msg:"Expected input as StdMap", data: errors});
+        if (!asMap(input)) {
+            return Err({msg: "Expected input as StdMap", data: errors});
         }
 
         let hasErrors = false;
@@ -145,41 +156,51 @@ export class SchemaMap<C extends SchemaConfigMap> implements SchemaRule {
         const self = this;
 
         for (const [key, val] of input) {
-            val.match({
-                Some(value) {
-                    self.#config.validate(value).errThen(err => {
-                        hasErrors = true;
-                        errors.set(key, err);
-                    })
-                },
-                None() {
+            self.#key.validate(key).match({
+                Err(errKey) {
                     hasErrors = true;
-                    errors.set(key, {msg: "required", data: new StdRecord()});
-                }})
+                    errors.set(key, {msg: "Invalid key: " + errKey.msg, data: errKey.data });
+                }, Ok() {
+                    val.match({
+                        Some(value) {
+                            self.#config.validate(value).errThen(err => {
+                                hasErrors = true;
+                                errors.set(key, err);
+                            })
+                        },
+                        None() {
+                            hasErrors = true;
+                            errors.set(key, {msg: "required", data: new StdRecord()});
+                        }
+                    })
+                }
+            })
+
+
         }
 
-        return hasErrors ? Err({msg:"invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
 }
 
 export class SchemaList<C extends SchemaConfigMap> implements SchemaRule {
     #config: C;
-    __infer: Simplify<InferMapSchema<C>>
+    __infer: Simplify<InferListSchema<C>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
     constructor(config: C) {
         this.#config = config;
     }
 
-    config(): C {
+    getConfig(): C {
         return this.#config;
     }
 
     validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<number, Simplify<InferValidationSchemaMap<C>>>>>> {
         const errors = new StdMap<number, InferValidationSchemaMap<C>>();
 
-        if (! asList(input)) {
-            return Err({msg:"Expected input as StdList", data: errors});
+        if (!asList(input)) {
+            return Err({msg: "Expected input as StdList", data: errors});
         }
 
         let hasErrors = false;
@@ -197,14 +218,15 @@ export class SchemaList<C extends SchemaConfigMap> implements SchemaRule {
                 None() {
                     hasErrors = true;
                     errors.set(key, {msg: "required", data: new StdRecord()});
-                }})
+                }
+            })
         }
 
-        return hasErrors ? Err({msg:"invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
 }
 
-type SchemaNumberConfig = {msg: string};
+type SchemaNumberConfig = { msg: string };
 
 export class SchemaNumber implements SchemaRule {
     #config: SchemaNumberConfig;
@@ -215,17 +237,17 @@ export class SchemaNumber implements SchemaRule {
         this.#config = {msg};
     }
 
-    config(): SchemaNumberConfig {
+    getConfig(): SchemaNumberConfig {
         return this.#config;
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return typeof input === "number" ? Ok(true) : Err({msg:  this.#config.msg, data: new StdRecord()});
+        return typeof input === "number" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
     }
 }
 
 
-type SchemaStringConfig = {msg: string};
+type SchemaStringConfig = { msg: string };
 
 export class SchemaString implements SchemaRule {
     #config: SchemaStringConfig;
@@ -235,11 +257,12 @@ export class SchemaString implements SchemaRule {
     constructor(msg: string) {
         this.#config = {msg};
     }
+
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
         return typeof input === "string" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
     }
 
-    config(): SchemaStringConfig {
+    getConfig(): SchemaStringConfig {
         return this.#config;
     }
 }
@@ -249,6 +272,6 @@ export const schema = {
     string: (msg = "Expected string") => (new SchemaString(msg)),
     obj: <C extends SchemaConfig>(config: C) => new SchemaObject<C>(config),
     record: <C extends SchemaConfig>(config: C) => new SchemaRecord<C>(config),
-    map: <C extends SchemaConfigMap>(config: C) => (new SchemaMap<C>(config)),
+    map: <K extends SchemaRule, C extends SchemaConfigMap>(key: K, config: C) => (new SchemaMap<K, C>(key, config)),
     list: <C extends SchemaConfigMap>(config: C) => (new SchemaList<C>(config)),
 }

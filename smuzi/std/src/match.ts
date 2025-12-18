@@ -114,6 +114,12 @@ export function match<T extends Record<string, unknown>, R = unknown>(
     deflt: Handler<T, R> | R, 
     returnAsFn?: false): R;
 
+export function match<T extends object, R = unknown>(
+    value: T,
+    handlers: Map<Checker<T> | unknown, Handler<T, R> | R>,
+    deflt: Handler<T, R> | R,
+    returnAsFn?: false): R;
+
 export function match<R, T>(
     val,
     handlers,
@@ -153,9 +159,16 @@ function matchObj(
 
         const params = {};
 
+        if (isFunction(patternsList)) {
+            if (patternsList(val)) {
+                return matchFn(handler, {val, patterns: None(), params: None()}, returnAsFn);
+            }
+            continue;
+        }
+
         for (const patternIndex in patternsList) {
             params[patternIndex] = None();
-         
+
             if (val[patternIndex] == undefined) {
                 matched = false;
                 break;

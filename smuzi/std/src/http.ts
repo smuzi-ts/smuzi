@@ -166,7 +166,7 @@ type RequestHeaderKeys =
   | "www-authenticate";
 
 
-export class RequestHttpHeaders extends StdRecord<Record<RequestHeaderKeys, string | string[]>> {}
+export class RequestHttpHeaders extends StdRecord<Record<RequestHeaderKeys, string>> {}
 export class ClientHttpHeaders extends StdMap<RequestHeaderKeys, string> {}
 
 type ResponseHeaderKeys =

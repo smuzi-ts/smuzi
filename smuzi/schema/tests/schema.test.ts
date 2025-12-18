@@ -142,7 +142,8 @@ export default describe("Std-Schema", [
             })
     }),
     it("Map-Ok", () => {
-        const schemaVal = schema.map(schema.record({
+        const schemaVal = schema.map(schema.number(),
+            schema.record({
             id: schema.number(),
             name: schema.string()
         }));
@@ -157,10 +158,11 @@ export default describe("Std-Schema", [
         assert.result.equalOk(schemaVal.validate(input))
     }),
     it("Map-Err", () => {
-        const schemaVal = schema.map(schema.record({
-            id: schema.number(),
-            name: schema.string()
-        }));
+        const schemaVal = schema.map(schema.number(),
+            schema.record({
+                id: schema.number(),
+                name: schema.string()
+            }));
 
         const oneRecordInput = new StdRecord({
             id: faker.notNumber(),
@@ -186,6 +188,31 @@ export default describe("Std-Schema", [
             }
         })
     }),
+        it("Map-invalid keys", () => {
+            const schemaVal = schema.map(schema.string(),
+                schema.record({
+                    id: schema.number(),
+                    name: schema.string()
+                }));
+
+            const oneRecordInput = new StdRecord({
+                id: faker.number(),
+                name: faker.string(),
+            });
+
+            const input = new StdMap([[0, oneRecordInput], [1, oneRecordInput]])
+
+            schemaVal.validate(input).match({
+                Ok(ok) {
+                    assert.fail("Expected Err but get Ok")
+                },
+                Err(err) {
+                    assert.equal(err.data.get(0).unwrap().msg, "Invalid key: Expected string");
+                    assert.equal(err.data.get(1).unwrap().msg, "Invalid key: Expected string");
+
+                }
+            })
+        }),
     it("Record with Map-Ok", () => {
         const postSchema = schema.record({
             id: schema.number(),
@@ -193,7 +220,7 @@ export default describe("Std-Schema", [
 
         const userSchema = schema.record({
             userName: schema.string(),
-            posts: schema.map(postSchema),
+            posts: schema.map(schema.number(), postSchema),
         });
 
         type Post = typeof postSchema.__infer;
@@ -221,7 +248,7 @@ export default describe("Std-Schema", [
 
         const userSchema = schema.record({
             userName: schema.string(),
-            posts: schema.map(postSchema),
+            posts: schema.map(schema.number(), postSchema),
         });
 
         type Post = typeof postSchema.__infer;
@@ -250,7 +277,7 @@ export default describe("Std-Schema", [
 
         const userSchema = schema.record({
             userName: schema.string(),
-            posts: schema.map(postSchema),
+            posts: schema.map(schema.number(), postSchema),
         });
 
         type Post = typeof postSchema.__infer;
