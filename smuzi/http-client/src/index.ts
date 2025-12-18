@@ -39,27 +39,29 @@ export type HttpClientConfig = {
 
 export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientConfig = {}) {
 
-    async function request<B = unknown, E = unknown>(url: string, config: BaseRequestConfig): Promise<Result<HttpResponse<B>, HttpResponse<E> | StdError>> {
-        const {
-            method = HttpMethod.GET,
-            headers,
-            query,
-            body,
-            rawResponse = false,
-        } = config;
+    async function request<B = unknown, E = unknown>(
+        url: string, {
+        method = HttpMethod.GET,
+        headers,
+        query,
+        body,
+        rawResponse = false,
+    }: BaseRequestConfig
+    ): Promise<Result<HttpResponse<B>, HttpResponse<E> | StdError>> {
 
-        const finalUrl = buildUrl(baseUrl, url, config.query);
+        const finalUrl = buildUrl(baseUrl, url, query);
 
         const requestInit: RequestInit = {
             method,
         }; 
 
         if (method !== HttpMethod.GET && method !== HttpMethod.DELETE) {
-            const bodyParsed: Option<{
+            let bodyParsed: Option<{
                 body: string,
                 contentType: string
-            }> = body.mapSome((body) => {
+            }>;
 
+            bodyParsed = body.mapSome((body) => {
                 if (isObject(body) && !(body instanceof FormData)) {
                     return {
                         body: json.toString(body).unwrap(),
@@ -81,14 +83,16 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
 
         }
 
-        requestInit.headers = headers.unsafeSource();
+        //TODO SAFE: researching problem with types and make this more type safe without "as any"
+        requestInit.headers = headers.unsafeSource() as any;
 
         try {
             const response = await fetch(finalUrl, requestInit);
             const responseContentType = response.headers.get("content-type") ?? "";
 
             try {
-                const body = OptionFromNullable(await response.text())
+                const text  = await response.text();
+                const body = OptionFromNullable(text)
                     .mapSome((rawData) => {
                         if (rawResponse) {
                             return rawData;

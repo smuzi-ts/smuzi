@@ -4,6 +4,7 @@ import { panic } from "./panic.js";
 import {json} from "#lib/json.js";
 import { None } from "./option.js";
 import { StdError } from "./error.js";
+import {dump} from "#lib/debug.js";
 
 type Val = unknown;
 

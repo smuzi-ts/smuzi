@@ -61,12 +61,13 @@ router.get("echoHeaders", (context) => {
 
 router.post("echoBodyString", async (context) => {
     const body = (await context.request.json());
+
     return body.match({
         Err(err) {
             return new HttpResponse({status: 400, statusText: err.message});
             },
         Ok(json) {
-            return json as any;
+            return json.unwrap() as any;
         }
     })
 })

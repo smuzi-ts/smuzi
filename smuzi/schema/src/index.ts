@@ -17,6 +17,7 @@ export interface SchemaRule {
     __infer: unknown;
     __inferError: unknown;
     validate(input: unknown): Result<true, SchemaValidationError<unknown>>
+    config(): unknown;
 }
 
 type SchemaConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
@@ -37,12 +38,16 @@ export type SchemaValidationError<D> = {
     data: D;
 }
 
-class SchemaObject<C extends SchemaConfig = SchemaConfig> {
+export class SchemaObject<C extends SchemaConfig = SchemaConfig> implements SchemaRule {
     #config: C;
     __infer: Simplify<InferSchema<C>>
     __inferError: SchemaValidationError<StdRecord<InferValidationSchema<C>>>
     constructor(config: C) {
         this.#config = config;
+    }
+
+    config(): C {
+        return this.#config;
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
@@ -73,13 +78,17 @@ class SchemaObject<C extends SchemaConfig = SchemaConfig> {
 
 type SchemaRecordValidationError<C extends  SchemaConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
 
-export class SchemaRecord<C extends SchemaConfig> {
+export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
     #config: C;
     __infer: StdRecord<Simplify<InferSchema<C>>>
     __inferError: Simplify<SchemaRecordValidationError<C>>
 
     constructor(config: C) {
         this.#config = config;
+    }
+
+    config(): C {
+        return this.#config;
     }
 
     validate(input: unknown): Result<true, SchemaRecordValidationError<C>> {
@@ -111,13 +120,17 @@ export class SchemaRecord<C extends SchemaConfig> {
 }
 
 
-export class SchemaMap<C extends SchemaConfigMap> {
+export class SchemaMap<C extends SchemaConfigMap> implements SchemaRule {
     #config: C;
     __infer: Simplify<InferMapSchema<C>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
     constructor(config: C) {
         this.#config = config;
+    }
+
+    config(): C {
+        return this.#config;
     }
 
     validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>> {
@@ -149,13 +162,17 @@ export class SchemaMap<C extends SchemaConfigMap> {
     }
 }
 
-export class SchemaList<C extends SchemaConfigMap> {
+export class SchemaList<C extends SchemaConfigMap> implements SchemaRule {
     #config: C;
     __infer: Simplify<InferMapSchema<C>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
     constructor(config: C) {
         this.#config = config;
+    }
+
+    config(): C {
+        return this.#config;
     }
 
     validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<number, Simplify<InferValidationSchemaMap<C>>>>>> {
@@ -187,33 +204,43 @@ export class SchemaList<C extends SchemaConfigMap> {
     }
 }
 
+type SchemaNumberConfig = {msg: string};
 
-class SchemaNumber implements SchemaRule {
-    #msg: string;
-    __infer: number;
-    __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
+export class SchemaNumber implements SchemaRule {
+    #config: SchemaNumberConfig;
+    readonly __infer: number;
+    readonly __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
-        this.#msg = msg;
+        this.#config = {msg};
     }
 
+    config(): SchemaNumberConfig {
+        return this.#config;
+    }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return typeof input === "number" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
+        return typeof input === "number" ? Ok(true) : Err({msg:  this.#config.msg, data: new StdRecord()});
     }
 }
 
 
-class SchemaString implements SchemaRule {
-    #msg: string;
+type SchemaStringConfig = {msg: string};
+
+export class SchemaString implements SchemaRule {
+    #config: SchemaStringConfig;
     __infer: string;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
-        this.#msg = msg;
+        this.#config = {msg};
     }
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return typeof input === "string" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
+        return typeof input === "string" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
+    }
+
+    config(): SchemaStringConfig {
+        return this.#config;
     }
 }
 

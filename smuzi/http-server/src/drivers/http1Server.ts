@@ -91,7 +91,7 @@ function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T
 
 export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, HttpServerRunError>> {
     return new Promise((resolve) => {
-        function handler(nativeRequest: IncomingMessage, nativeResponse: ServerResponse) {
+        async function handler(nativeRequest: IncomingMessage, nativeResponse: ServerResponse) {
             const methodStr = OptionFromNullable(nativeRequest.method).unwrap();
             const fullUrl = nativeRequest.url || "/";
             const isHttps = nativeRequest.socket instanceof TLSSocket;
@@ -104,7 +104,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
             
             const routeMatched = config.router.match(request);
 
-            let response = routeMatched.action({
+            let response = await routeMatched.action({
                 request: new HttpRequest({
                     method: request.method,
                     path: request.path,
@@ -116,7 +116,8 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                 response: nativeResponse,
                 pathParams: routeMatched.pathParams,
             })
-           
+
+
             if (isOption(response)) {
                 response = response.someOr("");
             } else if(isResult(response)) {
@@ -154,7 +155,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
                 (response) => {
                     //TODO: return respons on top instead of changed nativeResponse inner
                     nativeResponse.setHeader("Content-Type", "application/json; charset=utf-8" );
-                    
+
                     try {
                         const resp = json.toString(response).match({
                             Ok: (jsonStr) => ({status: 200, body: jsonStr }),

@@ -90,6 +90,9 @@ importers:
 
   smuzi/faker:
     dependencies:
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
@@ -126,6 +129,9 @@ importers:
       '@smuzi/http-server':
         specifier: workspace:*
         version: link:../http-server
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../tests
