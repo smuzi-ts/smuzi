@@ -1,28 +1,18 @@
-import {assert, describe, it, okMsg, before, after} from "@smuzi/tests";
-import {buildClient, globalSetup, globalTeardown} from "./setup.js";
+import {assert, it, okMsg} from "@smuzi/tests";
+import {buildClient} from "./setup.js";
 import {TUserRow} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
-import {RecordFromKeys, Simplify} from "@smuzi/std";
+import {RecordFromKeys} from "@smuzi/std";
+import {testRunner} from "./index.js";
 
-describe("db-postgres - query", () => {
-
-    it(okMsg("INSERT ROW"), async () => {
-        const dbClient = buildClient();
-
-        function test<const C extends readonly string[]>(
-            columns: C
-        ): RecordFromKeys<C, TUserRow> {
-            return {} as any;
-        }
-
-        const res1 = test(['name', 'email']);
-
-        const result = (await dbClient.insertRow<TUserRow>('users', {
+testRunner.describe("db-postgres - query", [
+    it("insert row", async (globalSetup) => {
+        const result = (await globalSetup.unwrap().dbClient.insertRow<TUserRow>('users', {
             name: faker.string(),
             email: faker.string(),
             password: faker.string(),
             created_at: faker.date(),
-        }, ['name']));
+        }, ["name"]));
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -51,4 +41,4 @@ describe("db-postgres - query", () => {
     //         },
     //     })
     // })
-})
+])

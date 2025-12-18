@@ -1,4 +1,4 @@
-import {testRunner} from "@smuzi/tests";
+import {TestRunner} from "@smuzi/tests";
 import {env, Option, promiseAll, Some} from "@smuzi/std";
 import usersTable from "./migrations/usersTable.js";
 import {postgresClient} from "#lib/index.js";
@@ -19,7 +19,7 @@ export type GlobalSetup = Option<{
     dbClient: TDatabaseClient
 }>
 
-export default async () => testRunner<GlobalSetup>({
+export const testRunner = new TestRunner<GlobalSetup>({
     beforeGlobal: Some(async () => {
         const dbClient = buildClient();
 

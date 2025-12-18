@@ -1,12 +1,10 @@
-import {assert, describe, it, okMsg} from "@smuzi/tests";
+import {assert, it} from "@smuzi/tests";
 import {TUserRow} from "./entities/User.js";
-import {faker} from "@smuzi/faker";
-import {GlobalSetup} from "./index.js";
+import {testRunner} from "./index.js";
 
-export default describe("db-postgres - query", [
-    it(okMsg("SELECT"), async (globalSetup: GlobalSetup) => {
-
-        const result = (await dbClient.query<TUserRow[]>('SELECT id, name, email FROM users'));
+testRunner.describe("db-postgres - query", [
+    it("SELECT", async (globalSetup) => {
+        const result = (await globalSetup.unwrap().dbClient.query<TUserRow[]>('SELECT id, name, email FROM users'));
 
         result.match({
             Err: (error) => assert.fail(error.message),
