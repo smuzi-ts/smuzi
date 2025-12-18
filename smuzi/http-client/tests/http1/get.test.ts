@@ -1,9 +1,10 @@
-import {assert, describe, it, okMsg} from "@smuzi/tests";
+import {assert, it, okMsg} from "@smuzi/tests";
 import {Some, RequestHttpHeaders, StdError, StdList, StdRecord} from "@smuzi/std";
 import {apiConfig, httpClient} from "./config/config.js";
 import {faker} from "@smuzi/faker";
+import {http1TestRunner} from "./index.js";
 
-export default describe("http-client-http1-GET-", [
+http1TestRunner.describe("http-client-http1-GET-", [
         it("without options", async () => {
             type User = StdRecord<{ email: string, name: string }>;
             type UsersList = StdList<User>

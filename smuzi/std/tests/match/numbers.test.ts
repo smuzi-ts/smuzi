@@ -1,7 +1,8 @@
-import {assert, describe, it, okMsg} from "@smuzi/tests";
+import {assert, it, okMsg} from "@smuzi/tests";
 import {MapNumberPatterns, match} from "#lib/match.js";
+import {testRunner} from "../index.js";
 
-export default describe("Std-match-Numbers", [
+testRunner.describe("Std-match-Numbers", [
     it(okMsg("Matched value via Number patterns"), () => {
         let handlers = new Map([
             [1, "isOne"],

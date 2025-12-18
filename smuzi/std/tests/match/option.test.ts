@@ -1,7 +1,8 @@
-import { assert, describe, it, okMsg } from "@smuzi/tests";
+import { assert, it, okMsg } from "@smuzi/tests";
 import { Some, None } from "#lib/option.js";
+import {testRunner} from "../index.js";
 
-export default describe("Std-match-Option", [
+testRunner.describe("Std-match-Option", [
     it(okMsg("Matched to Some"), () => {
         let resultDoing = Some("Success")
 

@@ -1,7 +1,8 @@
-import { assert, describe, it, okMsg } from "@smuzi/tests";
+import { assert, it, okMsg } from "@smuzi/tests";
 import { match } from "#lib/match.js";
+import {testRunner} from "../index.js";
 
-export default describe("Std-match-Array", [
+testRunner.describe("Std-match-Array", [
     it(okMsg("Matched all values is Strings"), () => {
         let result = ["F", "G", "H"]
         let patterns = new Map();

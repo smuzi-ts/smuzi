@@ -1,8 +1,9 @@
 import { dump, match, Option, HttpMethod, None, HttpRequest } from "@smuzi/std";
-import { assert, describe, it, okMsg } from "@smuzi/tests";
+import { assert, it, okMsg } from "@smuzi/tests";
 import { type Context, CreateHttp1Router } from "#lib/router.js";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
+import {testRunner} from "./index.js";
 
 type BookContext = Context<ServerResponse, Option<{ id: Option<string> }>>;
 type UserContext = Context<ServerResponse, Option<{ id: Option<string> }>>;
@@ -33,11 +34,18 @@ const postsRouter = CreateHttp1Router({ path: "posts/{post_id}" })
 postsRouter.get("/attachments/{id}", () => "posts list");
 postsRouter.get("/attachments/{id}", () => "posts list"); //<-- request5
 
+function makeRequest(path: string, method: HttpMethod = HttpMethod.GET) {
+   return  new HttpRequest({
+        path: path,
+        method: method,
+        json: {} as any,
+        body: {} as any
+    });
+}
 
-
-export default describe("std-Router", [
+testRunner.describe("std-Router", [
     it(okMsg("get users"), async () => {
-        const request = new HttpRequest({ path: "users", method: HttpMethod.GET});
+        const request = makeRequest("users");
         const route = routerTest.match(request);
         const actualResponse = route.action({
             request,
@@ -48,7 +56,7 @@ export default describe("std-Router", [
         assert.equal(actualResponse, "list");
     }),
     it(okMsg("create user"), async () => {
-        const request = new HttpRequest({ path: "users", method: HttpMethod.POST });
+        const request = makeRequest("users", HttpMethod.POST);
         const route = routerTest.match(request);
         const actualResponse = route.action({
             request,
@@ -59,7 +67,7 @@ export default describe("std-Router", [
         assert.equal(actualResponse, "create");
     }),
     it(okMsg("find user by id"), async () => {
-        const request = new HttpRequest({ path: "users/222", method: HttpMethod.GET });
+        const request = makeRequest( "users/222");
         const route = routerTest.match(request);
         const actualResponse = route.action({
             request,
@@ -70,7 +78,7 @@ export default describe("std-Router", [
         assert.equal(actualResponse, "user find id=222");
     }),
     it(okMsg("books list"), async () => {
-        const request = new HttpRequest({ path: "books/any", method: HttpMethod.GET });
+        const request = makeRequest( "books/any");
         const route = routerTest.match(request);
         const actualResponse = route.action({
             request,
@@ -81,7 +89,7 @@ export default describe("std-Router", [
         assert.equal(actualResponse, "books list");
     }),
     it("books find by id", async () => {
-        const request = new HttpRequest({ path: "books/333", method: HttpMethod.GET });
+        const request = makeRequest( "books/333");
         const route = routerTest.match(request);
         const actualResponse = route.action({
             request,
@@ -92,7 +100,7 @@ export default describe("std-Router", [
         assert.equal(actualResponse, "books find id=333");
     }),
     it("not found", async () => {
-        const request = new HttpRequest({ path: "not_found", method: HttpMethod.GET });
+        const request = makeRequest( "not_found");
         const route = routerTest.match(request);
         const actualResponse = route.action({
             request,

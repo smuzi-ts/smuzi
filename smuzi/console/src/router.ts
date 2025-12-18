@@ -1,7 +1,7 @@
-import {asString, None, Option, StdRecord} from "@smuzi/std";
+import {asString, None, Option, StdMap} from "@smuzi/std";
 import {TOutputConsole} from "#lib/output/types.js";
 
-export type TInputParams<K extends string = string> = StdRecord<K, string>;
+export type TInputParams<K extends string = string> = StdMap<K, string>;
 
 export type TInputCommand<ParamsKeys extends string = string> = {
     path: string,

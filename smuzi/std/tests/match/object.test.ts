@@ -1,7 +1,8 @@
-import { assert, describe, it, okMsg } from "@smuzi/tests";
+import { assert, it, okMsg } from "@smuzi/tests";
 import { match } from "#lib/match.js";
+import {testRunner} from "../index.js";
 
-export default describe("Std-match-Object", [
+testRunner.describe("Std-match-Object", [
     it(okMsg("Matched all properties"), () => {
         const user = { name: "F", age: 18 }
         const patterns = new Map();

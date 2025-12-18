@@ -1,26 +1,22 @@
-import {assert, describe, it, okMsg, before, after} from "@smuzi/tests";
-import {buildClient, globalSetup, globalTeardown} from "./setup.js";
+import {assert, describe, it, okMsg} from "@smuzi/tests";
 import {TUserRow} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
+import {GlobalSetup} from "./index.js";
 
-describe("db-postgres - query", () => {
-    before(globalSetup);
-    // after(globalTeardown);
+export default describe("db-postgres - query", [
+    it(okMsg("SELECT"), async (globalSetup: GlobalSetup) => {
 
-    // it(okMsg("SELECT"), async () => {
-    //     const dbClient = buildClient();
-    //
-    //     const result = (await dbClient.query<TUserRow[]>('SELECT id, name, email FROM users'));
-    //
-    //     result.match({
-    //         Err: (error) => assert.fail(error.message),
-    //         Ok: (rows) => {
-    //             assert.isArray(rows);
-    //             assert.isObject(rows[0]);
-    //             assert.object.hasProperty(rows[0], 'id');
-    //             assert.object.hasProperty(rows[0], 'name');
-    //             assert.object.hasProperty(rows[0], 'email');
-    //         },
-    //     })
-    // })
-})
+        const result = (await dbClient.query<TUserRow[]>('SELECT id, name, email FROM users'));
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (rows) => {
+                assert.isArray(rows);
+                assert.isObject(rows[0]);
+                assert.object.hasProperty(rows[0], 'id');
+                assert.object.hasProperty(rows[0], 'name');
+                assert.object.hasProperty(rows[0], 'email');
+            },
+        })
+    })
+])

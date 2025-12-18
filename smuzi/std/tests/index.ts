@@ -1,3 +1,5 @@
-import { testRunner } from "@smuzi/tests";
+import { TestRunner } from "@smuzi/tests";
 
-await testRunner()
+export const testRunner = new TestRunner();
+
+await testRunner.run();

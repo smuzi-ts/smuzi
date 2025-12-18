@@ -1,12 +1,39 @@
-
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { argv } from 'node:process';
+import {pathToFileURL} from 'node:url';
+import {argv} from 'node:process';
 
-export { assert } from "#lib/assert.js"
-import { dump, Err, isEmpty, isNone, json, None, Ok, Option, panic, Result, Some, StdError, StdRecord, tranformError } from "@smuzi/std";
-import { CommandAction, commandHandler, ConsoleCommand, CreateConsoleRouter, StandardOutput, StandardThema, SystemInputParser, SystemInputParserWithoutPath, TConsoleConfig, TInputParams, TOutputConsole, TThemaOutputConsole } from "@smuzi/console";
+export {assert} from "#lib/assert.js"
+import {
+    dump,
+    Err,
+    isEmpty,
+    isNone,
+    json,
+    None,
+    Ok,
+    Option,
+    panic,
+    Result,
+    Some,
+    StdError, StdMap,
+    StdRecord,
+    tranformError
+} from "@smuzi/std";
+import {
+    CommandAction,
+    commandHandler,
+    ConsoleCommand,
+    CreateConsoleRouter,
+    StandardOutput,
+    StandardThema,
+    SystemInputParser,
+    SystemInputParserWithoutPath,
+    TConsoleConfig,
+    TInputParams,
+    TOutputConsole,
+    TThemaOutputConsole
+} from "@smuzi/console";
 
 
 export const okMsg = (msg = ""): string => `${msg} - exp ok`;
@@ -49,9 +76,10 @@ type TestConfig = {
     }
 }
 
-type DescribeOptions = {
-    params: TestRunnerInputParams,
+type DescribeOptions<GS extends unknown> = {
+    inputParams: TestRunnerInputParams,
     config: TestConfig,
+    globalSetup: GS,
     beforeEachCase: Option<() => Promise<void>>,
     afterEachCase: Option<() => Promise<void>>,
     filters: {
@@ -70,65 +98,22 @@ type DescribeResult = {
     skip: number,
 }
 
-type TestCase = () => Promise<void> | void
-type ItResult = {
+type TestCase<GS extends Option> =  (globalSetup: GS) => Promise<void> | void
+
+type ItResult<GS extends Option> = {
     msg: string,
-    testCase: () => Promise<TestCaseResult> | TestCaseResult
+    testCase: (globalSetup: GS) => Promise<TestCaseResult> | TestCaseResult
 };
 
-type It = (params: TestRunnerInputParams) => ItResult;
 
-type Describe = (options: DescribeOptions) => Promise<DescribeResult> | DescribeResult
+type Describe<GS extends Option> = (options: DescribeOptions<GS>) => Promise<DescribeResult> | DescribeResult
 
-export function describe(msg: string, cases: ItResult[]): Describe {
-    return async (options: DescribeOptions) => {
-        const result = {
-            ok: 0,
-            err: 0,
-            skip: 0,
-        }
-        for (const it of cases) {
-            await options.beforeEachCase.asyncMapSome();
-            const generalMsg = msg + "-" + it.msg;
-            const filteredByMsg = options.filters.byMsg.someOr(() => false);
-
-            if (filteredByMsg(generalMsg)) {
-                ++result.skip;
-                continue;
-            }
-
-            (await it.testCase()).match({
-                Ok(_) {
-                    ++result.ok;
-                    if (options.config.output.format == "json") {
-                        options.config.output.printer.info(`{"describe":"${msg}","it":"${it.msg}","ok":true}`)
-                    } else {
-                        options.config.output.printer.success(generalMsg);
-                    }
-                },
-                Err(error) {
-                    ++result.err;
-                    if (options.config.output.format == "json") {
-                        options.config.output.printer.info(`{"describe":"${msg}","it":"${it.msg}","ok":false,"error":${json.toString(error)}}`)
-                    } else {
-                        options.config.output.printer.error(generalMsg);
-                        options.config.output.printer.error(error);
-                    }
-                }
-            });
-
-            await options.afterEachCase.asyncMapSome();
-        }
-        return result;
-    }
-}
-
-export function it(msg: string, testCase: TestCase): ItResult {
+export function it<GS extends Option>(msg: string, testCase: TestCase<GS>): ItResult<GS> {
     return {
         msg,
-        testCase: async () => {
+        testCase: async (globalSetup) => {
             try {
-                await testCase();
+                await testCase(globalSetup);
                 return Ok(true);
             } catch (error) {
                 return Err(error);
@@ -139,103 +124,177 @@ export function it(msg: string, testCase: TestCase): ItResult {
 
 export type PipelineResult = { ok: number, err: number };
 
-export type PipelineTest = (output: TOutputConsole, params) => Promise<PipelineResult>;
+export type PipelineTest = (output: TOutputConsole, inputParams) => Promise<PipelineResult>;
 
 
 export async function loadDescribesFromDir(dir = "./tests", fileSuffix = '.test.ts') {
-    const entries = await fs.promises.readdir(dir, { withFileTypes: true });
-    const tests: Describe[] = [];
+    const entries = await fs.promises.readdir(dir, {withFileTypes: true});
 
     for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
-            tests.push(...await loadDescribesFromDir(fullPath));
+            await loadDescribesFromDir(fullPath);
             continue;
         }
 
         if (entry.isFile() && entry.name.endsWith(fileSuffix)) {
-            const module = await import(pathToFileURL(fullPath).href);
-            if (module.default) tests.push(module.default);
+            await import(pathToFileURL(fullPath).href);
         }
     }
-
-    return tests;
 }
 
-export type TestRunnerConfig<GS = unknown> = {
+export type CTestRunnerConfig<GS extends Option> = {
+    argv: string[],
+    folder: string,
+    config: TestConfig;
+    beforeGlobal: Option<() => Promise<GS | void>>;
+    afterGlobal: Option<(globalSetup: GS) => Promise<void>>;
+    beforeEachCase: Option<() => Promise<void>>;
+    afterEachCase: Option<() => Promise<void>>;
+    describes: Describe<GS>[];
+}
+
+export type TestRunnerConfig<GS extends Option> = {
     argv?: string[],
     folder?: string,
     config?: TestConfig;
     beforeGlobal?: Option<() => Promise<GS | void>>;
-    afterGlobal?: Option<(globalSetup: Option<GS>) => Promise<void>>;
+    afterGlobal?: Option<(globalSetup: GS) => Promise<void>>;
     beforeEachCase?: Option<() => Promise<void>>;
     afterEachCase?: Option<() => Promise<void>>;
-    describes?: Describe[];
+    describes?: Describe<GS>[];
 }
 
 type KeysTestRunnerInputParams = 'contains';
-export type TestRunnerInputParams = StdRecord<Record<KeysTestRunnerInputParams, string>>;
+export type TestRunnerInputParams = StdMap<KeysTestRunnerInputParams, string>;
 
-export async function testRunner<GS = unknown>({
-    argv = process.argv,
-    folder = "./tests",
-    config = {
-        output: {
-            format: "text",
-            printer: StandardOutput(StandardThema)
+export class TestRunner<GS extends Option> {
+    #inputParams: StdMap<KeysTestRunnerInputParams, string>
+    #folder: string
+    #config: TestConfig;
+    #beforeGlobal: Option<() => Promise<GS | void>>;
+    #afterGlobal: Option<(globalSetup: GS) => Promise<void>>;
+    #beforeEachCase: Option<() => Promise<void>>;
+    #afterEachCase: Option<() => Promise<void>>;
+    #describes: Describe<GS>[];
+    
+    constructor({
+                    argv = process.argv,
+                    folder = "./tests",
+                    config = {
+                        output: {
+                            format: "text",
+                            printer: StandardOutput(StandardThema)
+                        }
+                    },
+                    beforeGlobal = None(),
+                    afterGlobal = None(),
+                    beforeEachCase = None(),
+                    afterEachCase = None(),
+                    describes = []
+                }: TestRunnerConfig<GS> = {})
+    {
+        this.#inputParams = SystemInputParserWithoutPath<KeysTestRunnerInputParams>(argv).params;
+        this.#folder = folder;
+        this.#config = config;
+        this.#beforeGlobal = beforeGlobal;
+        this.#afterGlobal = afterGlobal;
+        this.#beforeEachCase = beforeEachCase;
+        this.#afterEachCase = afterEachCase;
+        this.#describes = describes;
+    }
+
+    async run() {
+        if (isEmpty(this.#describes) && isEmpty(this.#folder)) {
+            return;
         }
-    },
-    beforeGlobal = None(),
-    afterGlobal = None(),
-    beforeEachCase = None(),
-    afterEachCase = None(),
-    describes = []
-}: TestRunnerConfig<GS> = {}) {
-    if (isEmpty(describes) && isEmpty(folder)) {
-        panic("Argument describes or folder is required!")
+        if (isEmpty(this.#describes))
+        {
+            await loadDescribesFromDir(this.#folder);
+        }
+
+        const filterByMsg = this.#inputParams.get("contains")
+            .mapSome(strSearch => {
+                return (msg: string) => !msg.includes(strSearch)
+            })
+
+        const generalResult = {
+            ok: 0,
+            err: 0,
+            skip: 0,
+        }
+        const globalSetup = await this.#beforeGlobal.asyncMapSome() as GS;
+
+        for (const describe of this.#describes) {
+            const describeResult = await describe({
+                inputParams: this.#inputParams,
+                config: this.#config,
+                globalSetup,
+                beforeEachCase: this.#beforeEachCase,
+                afterEachCase: this.#afterEachCase,
+                filters: {
+                    byMsg: filterByMsg
+                }
+            });
+
+            generalResult.ok += describeResult.ok;
+            generalResult.err += describeResult.err;
+            generalResult.skip += describeResult.skip;
+
+        }
+
+        await this.#afterGlobal.asyncMapSome(globalSetup);
+
+        if (this.#config.output.format == "json") {
+            this.#config.output.printer.info(json.toString(generalResult).unwrap());
+        } else {
+            this.#config.output.printer.info("ℹ️  ok: " + generalResult.ok);
+            this.#config.output.printer.info("ℹ️  err: " + generalResult.err);
+            this.#config.output.printer.info("ℹ️  skip: " + generalResult.skip);
+        }
     }
 
-    const params = SystemInputParserWithoutPath<KeysTestRunnerInputParams>(argv).params;
-
-    const filterByMsg = params.get("contains")
-        .mapSome(strSearch => {
-            return (msg: string) =>  ! msg.includes(strSearch)
-        })
-
-    describes = !isEmpty(describes) ? describes : await loadDescribesFromDir(folder);
-
-    const generalResult = {
-        ok: 0,
-        err: 0,
-        skip: 0,
-    }
-    const globalSetup = await beforeGlobal.asyncMapSome();
-
-    for (const describe of describes) {
-
-        const describeResult = await describe({
-            params,
-            config,
-            beforeEachCase: beforeEachCase,
-            afterEachCase: afterEachCase,
-            filters: {
-                byMsg: filterByMsg
+    describe(msg: string, cases: ItResult<GS>[]) {
+        this.#describes.push(async (options) => {
+            const result = {
+                ok: 0,
+                err: 0,
+                skip: 0,
             }
-        });
+            for (const it of cases) {
+                await options.beforeEachCase.asyncMapSome();
+                const generalMsg = msg + "-" + it.msg;
+                const filteredByMsg = options.filters.byMsg.someOr(() => false);
 
-        generalResult.ok += describeResult.ok;
-        generalResult.err += describeResult.err;
-        generalResult.skip += describeResult.skip;
+                if (filteredByMsg(generalMsg)) {
+                    ++result.skip;
+                    continue;
+                }
 
-    }
+                (await it.testCase(options.globalSetup)).match({
+                    Ok(_) {
+                        ++result.ok;
+                        if (options.config.output.format == "json") {
+                            options.config.output.printer.info(`{"describe":"${msg}","it":"${it.msg}","ok":true}`)
+                        } else {
+                            options.config.output.printer.success(generalMsg);
+                        }
+                    },
+                    Err(error) {
+                        ++result.err;
+                        if (options.config.output.format == "json") {
+                            options.config.output.printer.info(`{"describe":"${msg}","it":"${it.msg}","ok":false,"error":${json.toString(error)}}`)
+                        } else {
+                            options.config.output.printer.error(generalMsg);
+                            options.config.output.printer.error(error);
+                        }
+                    }
+                });
 
-    await afterGlobal.asyncMapSome(globalSetup);
-
-    if (config.output.format == "json") {
-        config.output.printer.info(json.toString(generalResult).unwrap());
-    } else {
-        config.output.printer.info("ℹ️  ok: " + generalResult.ok);
-        config.output.printer.info("ℹ️  err: " + generalResult.err);
-        config.output.printer.info("ℹ️  skip: " + generalResult.skip);
+                await options.afterEachCase.asyncMapSome();
+            }
+            return result;
+        }
+        )
     }
 }

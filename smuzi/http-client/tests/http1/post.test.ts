@@ -1,10 +1,11 @@
-import { describe, it, assert } from "@smuzi/tests";
+import { it, assert } from "@smuzi/tests";
 import { httpClient } from "./config/config.js";
 import {dump, Some, StdRecord} from "@smuzi/std";
 import { faker } from "@smuzi/faker";
 import {schema} from "@smuzi/schema";
+import {http1TestRunner} from "./index.js";
 
-export default describe("http-client-http1-POST-", [
+http1TestRunner.describe("http-client-http1-POST-", [
     it("echo json", async () => {
         const userSchema = schema.record({
             name: schema.string(),
@@ -29,6 +30,7 @@ export default describe("http-client-http1-POST-", [
 
 
         assert.result.equalOk(userSchema.validate(responseBody))
+
     }),
 ]
 )

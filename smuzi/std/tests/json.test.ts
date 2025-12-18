@@ -1,15 +1,13 @@
-import {assert, describe, errMsg, it, okMsg} from "@smuzi/tests";
+import {assert, errMsg, it, okMsg} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
 import {json} from "#lib/json.js";
 import {None, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
 import {StdRecord} from "#lib/record.js";
-import {schema} from "@smuzi/schema";
-import {StdMap} from "#lib/map.js";
-import {dump} from "#lib/debug.js";
 import {StdList} from "#lib/list.js";
+import {testRunner} from "./index.js";
 
-export default describe("Std-json", [
+testRunner.describe("Std-json", [
     it("fromString-deep", () => {
         type User = StdRecord<{
             id: number,

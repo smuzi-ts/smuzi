@@ -1,10 +1,11 @@
-import { assert, describe, it } from "@smuzi/tests";
+import { assert, it } from "@smuzi/tests";
 import { schema } from "#lib/index.js";
 import { faker } from "@smuzi/faker";
 import { None, Some, StdRecord, StdMap, dump } from "@smuzi/std";
+import {testRunner} from "./index.js";
 
 
-export default describe("Std-Schema", [
+testRunner.describe("Std-Schema", [
     it("Number-Ok", () => {
         const schemaVal = schema.number();
         assert.result.equalOk(schemaVal.validate(faker.number()))

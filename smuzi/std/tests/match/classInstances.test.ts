@@ -1,11 +1,12 @@
-import { assert, describe, it, okMsg } from "@smuzi/tests";
+import { assert, it } from "@smuzi/tests";
 import { match } from "#lib/match.js";
+import {testRunner} from "../index.js";
 
 class TestClassOne {}
 class TestClassTwo {}
 class TestClassThree {}
 
-export default describe("Std-match-Class", [
+testRunner.describe("Std-match-Class", [
     it("Instanceof", () => {
         const obj = new TestClassTwo;
         const patterns = new Map();

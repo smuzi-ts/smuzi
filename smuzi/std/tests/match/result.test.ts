@@ -1,7 +1,8 @@
-import {assert, describe, errMsg, it, okMsg} from "@smuzi/tests";
+import {assert, errMsg, it, okMsg} from "@smuzi/tests";
 import {Err, Ok, Result} from "#lib/result.js";
+import {testRunner} from "../index.js";
 
-export default describe("Std-Result", [
+testRunner.describe("Std-Result", [
     it(okMsg("Matched Ok"), () => {
         let resultDoing = generateResult(true)
 

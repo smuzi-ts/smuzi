@@ -68,6 +68,14 @@ export class HttpResponse<B = unknown> {
 export type HttpQuery = StdMap<string, string | string[]>
 export type HttpInputBody = () => Promise<Result<Buffer, Error>>;
 export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, JsonFromStringError | Error>>;
+export type HttpRequestOptions = {
+    path: string;
+    method: HttpMethod;
+    query?: HttpQuery;
+    headers?: RequestHttpHeaders;
+    body: HttpInputBody;
+    json: HttpInputJson;
+}
 
 export class HttpRequest{
     readonly path: string;
@@ -77,15 +85,7 @@ export class HttpRequest{
     readonly body: HttpInputBody;
     readonly json: HttpInputJson;
 
-    constructor({ method, path, body, json,  query = new StdMap, headers = new RequestHttpHeaders}: {
-        path: string;
-        method: HttpMethod;
-        query?: HttpQuery;
-        headers?: RequestHttpHeaders;
-        body: HttpInputBody;
-        json: HttpInputJson;
-
-    }) {
+    constructor({ method, path, body, json,  query = new StdMap, headers = new RequestHttpHeaders}: HttpRequestOptions) {
         this.path = path;
         this.method = method;
         this.query = query;
@@ -94,6 +94,7 @@ export class HttpRequest{
         this.json = json;
     }
 }
+
 
 type RequestHeaderKeys =
   | "accept"
@@ -167,7 +168,6 @@ type RequestHeaderKeys =
 
 
 export class RequestHttpHeaders extends StdRecord<Record<RequestHeaderKeys, string>> {}
-export class ClientHttpHeaders extends StdMap<RequestHeaderKeys, string> {}
 
 type ResponseHeaderKeys =
   | "accept"

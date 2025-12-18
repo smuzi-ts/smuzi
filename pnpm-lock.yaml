@@ -68,19 +68,22 @@ importers:
       '@smuzi/database':
         specifier: workspace:*
         version: link:../database
-      '@smuzi/faker':
+      '@smuzi/schema':
         specifier: workspace:*
-        version: link:../faker
+        version: link:../schema
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
       pg:
         specifier: ^8.16.3
         version: 8.16.3
     devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0

@@ -1,15 +1,14 @@
 import {TInputCommand, TInputParams} from "#lib/router.js";
-import {dump, StdMap, StdRecord} from "@smuzi/std";
+import {StdMap} from "@smuzi/std";
 
-export function SystemInputParser<ParamsKeys extends string = string>(processArgv: string[]): TInputCommand<ParamsKeys> {
+export function SystemInputParser<K extends string = string>(processArgv: string[]): TInputCommand<K> {
     const [, , path, ...args] = processArgv;
 
-    const params = new StdRecord<ParamsKeys, string>();
+    const params = new StdMap<K, string>();
 
     for (const arg of args) {
         if (arg.startsWith("--")) {
             const [key, value] = arg.slice(2).split("=");
-            dump({key, value})
             params.setOther(key, value ?? "");
         }
     }
@@ -22,15 +21,15 @@ export function SystemInputParser<ParamsKeys extends string = string>(processArg
     }
 }
 
-export function SystemInputParserWithoutPath<ParamsKeys extends string = string>(processArgv: string[]): {params: TInputParams<ParamsKeys>} {
+export function SystemInputParserWithoutPath<K extends string = string>(processArgv: string[]): {params: TInputParams<K>} {
     const [, , ...args] = processArgv;
 
-    const params = new StdMap<ParamsKeys, string>();
+    const params = new StdMap<K, string>();
 
     for (const arg of args) {
         if (arg.startsWith("--")) {
             const [key, value] = arg.slice(2).split("=");
-            params.set(key, value ?? "");
+            params.setOther(key, value ?? "");
         }
     }
 

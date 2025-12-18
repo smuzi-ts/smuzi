@@ -5,8 +5,6 @@ import {faker} from "@smuzi/faker";
 import {RecordFromKeys, Simplify} from "@smuzi/std";
 
 describe("db-postgres - query", () => {
-    before(globalSetup);
-    // after(globalTeardown);
 
     it(okMsg("INSERT ROW"), async () => {
         const dbClient = buildClient();
