@@ -1,6 +1,5 @@
-[https://github.com/smuzi-ts/smuzi/tree/main/smuzi/std
-](Github)
-
+Source Code: [Github
+](https://github.com/smuzi-ts/smuzi/tree/main/smuzi/std)
 # @smuzi/std
 
 A lightweight standard library for JavaScript and TypeScript.
@@ -16,7 +15,7 @@ npm install @smuzi/std
 ```
 
 ---
-> See more examples in the [tests folder](./tests).
+> See more examples in the [tests folder](https://github.com/smuzi-ts/smuzi/tree/main/smuzi/std/tests).
 
 ## Patterns Matching
 Pattern Matching has a very powerful mechanism for working with strings, numbers, regular expressions, functions, objects, arrays, and so on.
@@ -60,7 +59,7 @@ function prepare(body: Option<string> = None()): string {
 ## Safe JSON parser
 
 ```ts
-    type User = StdRecord<{
+type User = StdRecord<{
     id: number,
     name: string,
     post: StdRecord<{title: string}>
