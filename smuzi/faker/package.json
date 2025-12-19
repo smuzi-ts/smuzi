@@ -4,8 +4,9 @@
   "private": true,
   "description": "",
   "scripts": {
-    "test": "tsx --test --no-warnings"
-  },
+    "test": "tsx tests/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build"  },
   "type": "module",
   "keywords": [],
   "author": "",

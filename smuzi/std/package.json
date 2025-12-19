@@ -24,8 +24,7 @@
     "access": "public"
   },
   "files": [
-    "./build",
-    "./tests"
+    "./build"
   ],
   "exports": {
     ".": "./src/index.js"

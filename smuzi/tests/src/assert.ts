@@ -24,6 +24,7 @@ import {assertArray, TAssertArray} from "#lib/asserts/array.js";
 import {assertionError} from "#lib/index.js";
 import {assertResult, TAssertResult} from "#lib/asserts/result.js";
 import {assertString, TAssertString} from "#lib/asserts/string.js";
+import {AssertDatetime, assertDatetime} from "#lib/asserts/datetime.js";
 
 
 export type Assert = {
@@ -56,6 +57,7 @@ export type Assert = {
     array: TAssertArray
     object: TAssertObject
     string: TAssertString
+    datetime: AssertDatetime
 };
 
 const signalOk = new Error('__OK__')
@@ -77,6 +79,7 @@ export const assert: Assert = {
     array: assertArray,
     result: assertResult,
     string: assertString,
+    datetime: assertDatetime,
 
     isEmpty(actual) {
         if (!isEmpty(actual)) {
