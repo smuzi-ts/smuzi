@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/std",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
