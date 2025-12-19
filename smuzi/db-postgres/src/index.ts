@@ -1,5 +1,6 @@
 import { Pool } from 'pg'
 import {
+    DBRows,
     ExtractPrimaryKey,
     preparedSqlFromObjectToArrayParams,
     TDatabaseClient, TInsertRow, TInsertRowResult, TQueryError,
@@ -13,7 +14,7 @@ import {
     Err,
     isArray,
     None,
-    Ok,
+    Ok, Option,
     OptionFromNullable,
     RecordFromKeys,
     Simplify,
@@ -30,6 +31,9 @@ export type Config = {
     database: string,
 }
 
+
+
+
 export class PostgresClient implements TDatabaseClient {
     readonly #pool: Pool;
 
@@ -42,7 +46,8 @@ export class PostgresClient implements TDatabaseClient {
         })
 
     }
-    async query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>> {
+
+    async query<T extends StdRecord<Record<string, unknown>>>(sql: string, params?: TQueryParams): Promise<TQueryResult<T>> {
         let preparedSql = sql;
 
         if (asObject(params)) {
@@ -57,12 +62,7 @@ export class PostgresClient implements TDatabaseClient {
                     values: params,
                 },
             );
-
-            const records: any[] = [];
-            for (const i in res.rows) {
-                records.push(new StdRecord(res.rows))
-            }
-            return Ok(records)
+            return Ok(new DBRows(res.rows))
         } catch (err) {
             return Err({
                 sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),

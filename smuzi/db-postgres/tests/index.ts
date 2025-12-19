@@ -1,9 +1,8 @@
 import {TestRunner} from "@smuzi/tests";
-import {env, Option, promiseAll, Some} from "@smuzi/std";
+import {env, main, Option, promiseAll, Some} from "@smuzi/std";
 import usersTable from "./migrations/usersTable.js";
 import {postgresClient} from "#lib/index.js";
 import {TDatabaseClient} from "@smuzi/database";
-
 
 function buildClient() {
     return postgresClient({
@@ -32,13 +31,15 @@ export const testRunner = new TestRunner<GlobalSetup>({
         }
     ),
     afterGlobal: Some(async (globalSetup) => {
-        (await globalSetup.unwrap().dbClient.query(
-            `DO $$ DECLARE
-    r RECORD;
-BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-    END LOOP;
-END $$;`)).unwrap();
+//         (await globalSetup.unwrap().dbClient.query(
+//             `DO $$ DECLARE
+//     r RECORD;
+// BEGIN
+//     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+//         EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+//     END LOOP;
+// END $$;`)).unwrap();
     }),
 });
+
+main(() => testRunner.run())

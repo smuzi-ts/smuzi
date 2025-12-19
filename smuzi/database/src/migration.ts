@@ -1,5 +1,5 @@
 import {TMigration, TMigrations} from "#lib/types.js";
-import {panic, Struct} from "@smuzi/std";
+import {panic} from "@smuzi/std";
 import {ConsoleRoute} from "@smuzi/console";
 
 export const Migrations = (groupName: string = ''): TMigrations => {
@@ -31,4 +31,6 @@ export const Migrations = (groupName: string = ''): TMigrations => {
     }
 }
 
-export const Migration = Struct<TMigration>();
+export function Migration(migration: TMigration){
+    return migration;
+}

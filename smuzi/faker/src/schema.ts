@@ -8,7 +8,8 @@ import {
     SchemaObject,
     SchemaRecord,
     SchemaRule,
-    SchemaString
+    SchemaString,
+    SchemaNativeDate,
 } from "@smuzi/schema";
 
 function makeObject(rule: SchemaObject) {
@@ -55,6 +56,7 @@ function makeMap(rule: SchemaMap<any, any>) {
     return output;
 }
 
+
 export function make<S extends SchemaRule>(schemaRule: S): S['__infer'] {
     const map = new Map<(rule) => boolean, (rule) => unknown>([
         [rule => rule instanceof SchemaString, () => faker.string()],
@@ -63,7 +65,7 @@ export function make<S extends SchemaRule>(schemaRule: S): S['__infer'] {
         [rule => rule instanceof SchemaRecord, makeRecord],
         [rule => rule instanceof SchemaList, makeList],
         [rule => rule instanceof SchemaMap, makeMap],
-
+        [rule => rule instanceof SchemaNativeDate, () => faker.datetime.native()],
     ])
 
     return matchUnknown(schemaRule, map, () => panic("Not matched " + typeof schemaRule));

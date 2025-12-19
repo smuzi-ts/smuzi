@@ -5,7 +5,7 @@ export const userSchema = schema.record({
     name: schema.string(),
     email: schema.string(),
     password: schema.string(),
-    created_at: schema.date.native(),
+    created_at: schema.datetime.native(),
 })
 
-export type UserRow = typeof userSchema.__infer;
+export type UserEntity = typeof userSchema.__infer;

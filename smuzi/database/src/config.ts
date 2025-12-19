@@ -1,4 +1,6 @@
-import {Struct} from "@smuzi/std";
 import {TDatabaseConfig} from "#lib/types.js";
+import {readonly} from "@smuzi/std";
 
-export const DatabaseConfig = Struct<TDatabaseConfig>();
+export function DatabaseConfig(config: TDatabaseConfig) {
+    return readonly(config);
+}

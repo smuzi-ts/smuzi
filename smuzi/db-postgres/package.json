@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "test": "tsx  --test --env-file=.env"
+    "test": "tsx  --env-file=.env tests/index.ts"
   },
   "type": "module",
   "keywords": [],

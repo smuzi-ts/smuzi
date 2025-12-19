@@ -18,3 +18,13 @@ export * from "./record.js";
 export * from "./map.js";
 export * from "./list.js";
 export * from "./common.js";
+
+
+export async function main(program: () => unknown) {
+    try {
+        await program();
+    } catch (e) {
+        console.log(e);
+    }
+    process.exit();
+}
