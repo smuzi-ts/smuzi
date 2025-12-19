@@ -20,7 +20,7 @@ export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams
 
 export interface TDatabaseClient {
     query<Entity = unknown>(sql: string, params?: TQueryParams): Promise<TQueryResult<Entity>>;
-    insertRow<Entity extends TRow, RC extends string[]>(table: string, row: TInsertRow<Entity>, returningColumns: RC): Promise<TInsertRowResult<RC, Entity>>;
+    insertRow<Entity extends TRow, RC extends string[] = string[]>(table: string, row: TInsertRow<Entity>, returningColumns: RC): Promise<TInsertRowResult<RC, Entity>>;
     // insertManyRows: TInsertManyRowsMethod,
     // updateRow: TUpdateRowMethod,
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,

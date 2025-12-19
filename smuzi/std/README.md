@@ -2,7 +2,7 @@
 
 A lightweight standard library for JavaScript and TypeScript.
 
-Provides core functionality and utility methods for working with **Patterns Matching**, **Option**, **Result** , **env**, and many more.
+Provides core functionality and utility methods for working with **Patterns Matching**, **Option**, **Result** , **Safe JSON**, **env**,  and many more.
 
 ---
 
@@ -27,3 +27,67 @@ const handlers = new Map([
 const result = match("B", handlers, "isDefault")
 assert.equal(result, "isB")
 ```
+
+## Result
+
+```ts
+type SomeErr = {msg: string};
+function validation(input: number): Result<string, SomeErr> {
+    return input > 100 ? Err({msg: "Too many characters"}) : Ok("Normal");
+}
+const res = validation(2).match({
+    Ok: msg => msg,
+    Err: err => err.msg,
+});
+```
+
+## Option
+
+```ts
+function prepare(body: Option<string> = None()): string {
+    return body.match({
+        Some(v) {
+           return body + "Some data"
+        },
+        None() {
+            return "Empty body"
+        }
+    })
+}
+
+```
+
+## Safe JSON parser
+
+```ts
+    type User = StdRecord<{
+    id: number,
+    name: string,
+    post: StdRecord<{title: string}>
+}>;
+
+type UserData = StdRecord<{
+    data: StdList<User>,
+}>
+
+const inputString = `{"data": [{"id":1,"name": "333", "post":{"title":"Subject"}}, {"id":2,"name": "2222", "post":{"title":"Subject2"}}]}`;
+
+const resultJSON = json.fromString<UserData>(inputString)
+    .unwrap() //Possible JSON parse error
+    .unwrap() //Possible empty JSON;
+
+const data = resultJSON
+    .get("data")
+    .unwrap(); //Possible empty data
+
+const first = data.get(0).unwrap() //Possible first element is empty
+const firstId = first.get("id").unwrap();
+const firstTitle= first.get("post")
+    .unwrap() //Possible post is empty
+    .get("title")
+    .unwrap(); //Possible title is empty
+
+assert.equal(firstId, 1);
+assert.equal(firstTitle, "Subject");
+```
+

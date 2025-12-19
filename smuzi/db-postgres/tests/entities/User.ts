@@ -1,10 +1,11 @@
-import {AutoId} from "@smuzi/database";
-import {Option} from "@smuzi/std";
+import {schema} from "@smuzi/schema";
 
-export type TUserRow = {
-    id: AutoId<Option<string>>,
-    name: Option<string>,
-    email: Option<string>,
-    password: Option<string>,
-    created_at: Option<Date>,
-}
+export const userSchema = schema.record({
+    id: schema.string(),
+    name: schema.string(),
+    email: schema.string(),
+    password: schema.string(),
+    created_at: schema.date.native(),
+})
+
+export type UserRow = typeof userSchema.__infer;

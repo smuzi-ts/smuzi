@@ -30,9 +30,9 @@ testRunner.describe("Std-json", [
         const first = data.get(0).unwrap() //Possible first element is empty
         const firstId = first.get("id").unwrap();
         const firstTitle= first.get("post")
-            .unwrap()
+            .unwrap() //Possible post is empty
             .get("title")
-            .unwrap();
+            .unwrap(); //Possible title is empty
 
         assert.equal(firstId, 1);
         assert.equal(firstTitle, "Subject");

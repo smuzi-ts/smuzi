@@ -17,7 +17,7 @@ import {
     OptionFromNullable,
     RecordFromKeys,
     Simplify,
-    Some
+    Some, StdList, StdRecord
 } from "@smuzi/std";
 export * from "#lib/migrationsLogRepository.js"
 export * from "#lib/entityRepository.js"
@@ -55,13 +55,14 @@ export class PostgresClient implements TDatabaseClient {
             const res = await this.#pool.query({
                     text: preparedSql,
                     values: params,
-                    types: {
-                        getTypeParser: () => val => OptionFromNullable(val)
-                    },
                 },
             );
 
-            return Ok(res.rows)
+            const records: any[] = [];
+            for (const i in res.rows) {
+                records.push(new StdRecord(res.rows))
+            }
+            return Ok(records)
         } catch (err) {
             return Err({
                 sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),

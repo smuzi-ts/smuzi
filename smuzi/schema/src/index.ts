@@ -267,6 +267,27 @@ export class SchemaString implements SchemaRule {
     }
 }
 
+type SchemaNativeDateConfig = { msg: string };
+type InputSchemaNativeDateConfig = { msg?: string };
+
+export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements SchemaRule {
+    #config: C;
+    __infer: Date;
+    __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
+
+    constructor(config: C) {
+        this.#config = config;
+    }
+
+    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
+        return input instanceof Date ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
+    }
+
+    getConfig(): C {
+        return this.#config;
+    }
+}
+
 export const schema = {
     number: (msg = "Expected number") => (new SchemaNumber(msg)),
     string: (msg = "Expected string") => (new SchemaString(msg)),
@@ -274,4 +295,7 @@ export const schema = {
     record: <C extends SchemaConfig>(config: C) => new SchemaRecord<C>(config),
     map: <K extends SchemaRule, C extends SchemaConfigMap>(key: K, config: C) => (new SchemaMap<K, C>(key, config)),
     list: <C extends SchemaConfigMap>(config: C) => (new SchemaList<C>(config)),
+    date: {
+        native: ({msg = "Expected Date object"}: InputSchemaNativeDateConfig = {}) => (new SchemaNativeDate({msg})),
+    }
 }

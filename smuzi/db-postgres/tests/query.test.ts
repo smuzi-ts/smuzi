@@ -1,10 +1,10 @@
 import {assert, it} from "@smuzi/tests";
-import {TUserRow} from "./entities/User.js";
+import {UserRow} from "./entities/User.js";
 import {testRunner} from "./index.js";
 
 testRunner.describe("db-postgres - query", [
     it("SELECT", async (globalSetup) => {
-        const result = (await globalSetup.unwrap().dbClient.query<TUserRow[]>('SELECT id, name, email FROM users'));
+        const result = (await globalSetup.unwrap().dbClient.query<UserRow[]>('SELECT id, name, email FROM users'));
 
         result.match({
             Err: (error) => assert.fail(error.message),

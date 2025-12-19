@@ -143,17 +143,6 @@ export async function loadDescribesFromDir(dir = "./tests", fileSuffix = '.test.
     }
 }
 
-export type CTestRunnerConfig<GS extends Option> = {
-    argv: string[],
-    folder: string,
-    config: TestConfig;
-    beforeGlobal: Option<() => Promise<GS | void>>;
-    afterGlobal: Option<(globalSetup: GS) => Promise<void>>;
-    beforeEachCase: Option<() => Promise<void>>;
-    afterEachCase: Option<() => Promise<void>>;
-    describes: Describe<GS>[];
-}
-
 export type TestRunnerConfig<GS extends Option> = {
     argv?: string[],
     folder?: string,
