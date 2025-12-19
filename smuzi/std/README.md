@@ -16,16 +16,17 @@ npm install @smuzi/std
 > See more examples in the [tests folder](./tests).
 
 ## Patterns Matching
-
+Pattern Matching has a very powerful mechanism for working with strings, numbers, regular expressions, functions, objects, arrays, and so on.
+All of this is done using a single **match()** function.
 ```ts
-const handlers = new Map([
-    ["A", "isA"],
-    ["B", "isB"],
-    ["C", "isC"],
-]);
+let input = "users/3"
+let patterns = new Map();
 
-const result = match("B", handlers, "isDefault")
-assert.equal(result, "isB")
+patterns.set("users", "users list");
+patterns.set("users/archived", "list of archived users");
+patterns.set(/^users\/\d+$/, "find"); //RegExp
+
+let resultMatch = match(input, patterns, "not found")
 ```
 
 ## Result
@@ -46,12 +47,8 @@ const res = validation(2).match({
 ```ts
 function prepare(body: Option<string> = None()): string {
     return body.match({
-        Some(v) {
-           return body + "Some data"
-        },
-        None() {
-            return "Empty body"
-        }
+        Some: bodyStr => bodyStr + "Some data",
+        None: () => "Empty body"
     })
 }
 
