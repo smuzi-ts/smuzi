@@ -7,9 +7,9 @@ import * as schema from "./schema.js";
 
 export const faker = Object.freeze({
     ...primitives,
-    ...datetime,
     object,
     array,
     repeat,
     schema,
+    datetime,
 })

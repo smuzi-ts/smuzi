@@ -1,7 +1,8 @@
-import {assert, describe, it} from "@smuzi/tests";
-import {faker} from "#lib/index.ts";
+import {assert, it} from "@smuzi/tests";
+import {faker} from "#lib/index.js";
+import {testRunner} from "./index.js";
 
-describe("Faker-Primitives", () => {
+testRunner.describe("Faker-Primitives", [
     it('string', () => {
         const fakeString = faker.string();
         assert.isString(fakeString);
@@ -11,12 +12,12 @@ describe("Faker-Primitives", () => {
         assert.isString(fakeStringWithLength);
         assert.isTrue(fakeStringWithLength.length >= min);
         assert.isTrue(fakeStringWithLength.length <= max);
-    })
+    }),
 
     it('boolean', () => {
         const fakeBoolean = faker.boolean();
         assert.isBoolean(fakeBoolean);
-    })
+    }),
 
     it('integer', () => {
         const fakeInteger = faker.integer();
@@ -29,7 +30,7 @@ describe("Faker-Primitives", () => {
         assert.isNumber(fakeIntegerWithLength)
         assert.isTrue(fakeIntegerWithLength >= min);
         assert.isTrue(fakeIntegerWithLength <= max);
-    })
+    }),
 
     it('float', () => {
         const fakeFloat = faker.float();
@@ -43,4 +44,4 @@ describe("Faker-Primitives", () => {
         assert.isTrue(fakeFloatWithLength >= min);
         assert.isTrue(fakeFloatWithLength <= max);
     })
-})
+])

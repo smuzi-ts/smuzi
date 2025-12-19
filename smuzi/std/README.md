@@ -1,3 +1,6 @@
+[https://github.com/smuzi-ts/smuzi/tree/main/smuzi/std
+](Github)
+
 # @smuzi/std
 
 A lightweight standard library for JavaScript and TypeScript.
