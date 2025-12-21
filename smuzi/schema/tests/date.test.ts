@@ -7,8 +7,8 @@ import {testRunner} from "./index.js";
 
 testRunner.describe("Std-Schema-Date", [
     it("Native-Ok", () => {
-        const schemaVal = schema.date.native();
-        assert.result.equalOk(schemaVal.validate(faker.date()))
+        const schemaVal = schema.datetime.native();
+        assert.result.equalOk(schemaVal.validate(faker.datetime.native()))
     }),
     // it("Number-Err", () => {
     //     const schemaVal = schema.number();

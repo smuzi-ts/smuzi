@@ -12,7 +12,7 @@ testRunner.describe("db-postgres - query", [
             email: faker.string(),
             password: faker.string(),
             created_at: faker.datetime.native(),
-        };
+        });
 
         const result = (await globalSetup.unwrap().dbClient.insertRow<UserEntity>('users', insert));
 

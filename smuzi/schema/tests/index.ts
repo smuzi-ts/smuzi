@@ -1,4 +1,9 @@
 import { TestRunner } from "@smuzi/tests";
-
+import {main} from "@smuzi/std";
 export const testRunner = new TestRunner();
-await testRunner.run();
+
+main(async () => {
+     await testRunner.run();
+})
+
+
