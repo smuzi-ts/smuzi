@@ -1,7 +1,7 @@
 import {Option, OptionFromNullable, RecordFromKeys, Result, Simplify, StdRecord} from "@smuzi/std"
 
 export type TQueryParams = unknown[] | Record<string, unknown>
-export type TRow = Record<string, Option>
+export type TRow = StdRecord<any>
 
 export type TQueryError = {
     message: string
@@ -16,6 +16,7 @@ export class DBRows<T extends StdRecord<Record<string, unknown>>> {
 
     constructor(array) {
         this.#list = array;
+        this.#cache = new Map
     }
 
     get(index: number): Option<T> {
@@ -42,8 +43,8 @@ export class DBRows<T extends StdRecord<Record<string, unknown>>> {
     }
 }
 
-export type TQueryResult<T extends StdRecord<Record<string, unknown>>> = Result<DBRows<T>, TQueryError>
-export type TInsertRowResult<Columns extends readonly string[], Entity extends TRow> = Result<Simplify<RecordFromKeys<Columns, Entity>>, TQueryError>
+export type TQueryResult<Row extends StdRecord<Record<string, unknown>>> = Result<DBRows<Row>, TQueryError>
+export type TInsertRowResult<Columns extends readonly string[], Row extends TRow> = Result<Simplify<RecordFromKeys<Columns, Row>>, TQueryError>
 
 export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
 // export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
@@ -51,8 +52,8 @@ export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams
 // export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
 
 export interface TDatabaseClient {
-    query<T extends StdRecord<Record<string, unknown>>>(sql: string, params?: TQueryParams): Promise<TQueryResult<T>>;
-    insertRow<Entity extends TRow, RC extends string[] = string[]>(table: string, row: TInsertRow<Entity>, returningColumns: RC): Promise<TInsertRowResult<RC, Entity>>;
+    query<Row extends TRow>(sql: string, params?: TQueryParams): Promise<TQueryResult<Row>>;
+    insertRow<Row extends TRow, RC extends string[] = string[]>(table: string, row: TInsertRow<Row>, returningColumns?: RC): Promise<TInsertRowResult<RC, TRow>>;
     // insertManyRows: TInsertManyRowsMethod,
     // updateRow: TUpdateRowMethod,
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,

@@ -1,5 +1,4 @@
 import {assert, it} from "@smuzi/tests";
-import {UserEntity} from "./entities/User.js";
 import {testRunner} from "./index.js";
 import {dump} from "@smuzi/std";
 import {schema} from "@smuzi/schema";
@@ -14,6 +13,13 @@ testRunner.describe("db-postgres - query", [
 
         const result = (await globalSetup.unwrap().dbClient.query<Row>('SELECT count(*) FROM users'));
 
-        dump(result.unwrap().unsafeSource());
+        const count =   result
+            .unwrap() // Possible query error
+            .get(0)
+            .unwrap() // Possible empty element
+            .get("count")
+            .unwrap(); // Possible empty value
+
+        assert.equal(count, "0")
     })
 ])

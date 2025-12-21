@@ -52,6 +52,9 @@ importers:
       '@smuzi/console':
         specifier: workspace:*
         version: link:../console
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
@@ -103,19 +106,6 @@ importers:
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../tests
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
-
-  smuzi/green-threads:
-    dependencies:
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-      noroutine:
-        specifier: ^0.0.7
-        version: 0.0.7
-    devDependencies:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0
@@ -203,6 +193,19 @@ importers:
       '@smuzi/console':
         specifier: workspace:*
         version: link:../console
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+
+  smuzi/threads:
+    dependencies:
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+      noroutine:
+        specifier: ^0.0.7
+        version: 0.0.7
+    devDependencies:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0

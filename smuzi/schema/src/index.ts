@@ -13,6 +13,8 @@ import {
     asList, dump
 } from "@smuzi/std";
 import {datetime} from "#lib/datetime.js";
+import {faker} from "@smuzi/faker";
+import {storage} from "#lib/storage.js";
 export {SchemaNativeDate} from "#lib/datetime.js";
 
 export interface SchemaRule {
@@ -20,8 +22,7 @@ export interface SchemaRule {
     __inferError: unknown;
 
     validate(input: unknown): Result<true, SchemaValidationError<unknown>>
-
-    getConfig(): unknown;
+    fake(): typeof this.__infer
 }
 
 type SchemaConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
@@ -52,10 +53,6 @@ export class SchemaObject<C extends SchemaConfig = SchemaConfig> implements Sche
         this.#config = config;
     }
 
-    getConfig(): C {
-        return this.#config;
-    }
-
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
         if (!asObject(input)) {
             return Err({msg: "Expected input as object", data: new StdRecord});
@@ -78,6 +75,16 @@ export class SchemaObject<C extends SchemaConfig = SchemaConfig> implements Sche
         }
 
         return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
+    }
+
+    fake() {
+        let output = {} as typeof this.__infer;
+
+        for (const field in this.#config) {
+            output[field] = this.#config[field].fake()
+        }
+
+        return output;
     }
 }
 
@@ -123,6 +130,16 @@ export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
         }
 
         return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
+    }
+
+    fake() {
+        let output = new StdRecord() as typeof this.__infer;
+
+        for (const field in this.#config) {
+            output.set(field, this.#config[field].fake());
+        }
+
+        return output;
     }
 }
 
@@ -183,6 +200,17 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer 
 
         return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
+
+    fake() {
+        let output = new StdMap() as typeof this.__infer;
+
+        for (let i = 0; i < 5; i++) {
+            output.set(i, this.#config.fake());
+        }
+
+        return output;
+    }
+
 }
 
 export class SchemaList<C extends SchemaConfigMap> implements SchemaRule {
@@ -192,10 +220,6 @@ export class SchemaList<C extends SchemaConfigMap> implements SchemaRule {
 
     constructor(config: C) {
         this.#config = config;
-    }
-
-    getConfig(): C {
-        return this.#config;
     }
 
     validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<number, Simplify<InferValidationSchemaMap<C>>>>>> {
@@ -226,6 +250,16 @@ export class SchemaList<C extends SchemaConfigMap> implements SchemaRule {
 
         return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
+
+     fake() {
+        let output = new StdList() as typeof this.__infer;
+
+        for (let i = 0; i < 5; i++) {
+            output.push(this.#config.fake());
+        }
+
+        return output;
+    }
 }
 
 type SchemaNumberConfig = { msg: string };
@@ -246,6 +280,10 @@ export class SchemaNumber implements SchemaRule {
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
         return typeof input === "number" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
     }
+
+    fake() {
+        return faker.number();
+    }
 }
 
 
@@ -264,8 +302,8 @@ export class SchemaString implements SchemaRule {
         return typeof input === "string" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
     }
 
-    getConfig(): SchemaStringConfig {
-        return this.#config;
+    fake() {
+        return faker.string();
     }
 }
 
@@ -278,5 +316,6 @@ export const schema = {
     record: <C extends SchemaConfig>(config: C) => new SchemaRecord<C>(config),
     map: <K extends SchemaRule, C extends SchemaConfigMap>(key: K, config: C) => (new SchemaMap<K, C>(key, config)),
     list: <C extends SchemaConfigMap>(config: C) => (new SchemaList<C>(config)),
-    datetime
+    datetime,
+    storage,
 }

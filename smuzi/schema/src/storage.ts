@@ -1,15 +1,15 @@
 import {
- SchemaRule, SchemaValidationError
+    SchemaRule, SchemaValidationError
 } from "#lib/index.js";
 import {Err, Ok, Result, Simplify, StdRecord} from "@smuzi/std";
 import {faker} from "@smuzi/faker";
 
-type SchemaNativeDateConfig = { msg: string };
-type InputSchemaNativeDateConfig = { msg?: string };
+type SchemaStorageAutonumberConfig = { msg: string };
+type InputSchemaStorageAutonumberConfig = { msg?: string };
 
-export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements SchemaRule {
+export class SchemaStorageAutonumber<C extends SchemaStorageAutonumberConfig> implements SchemaRule {
     #config: C;
-    __infer: Date;
+    __infer: number;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(config: C) {
@@ -21,10 +21,10 @@ export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements Schem
     }
 
     fake() {
-        return faker.datetime.native();
+        return faker.number();
     }
 }
 
-export const datetime = {
-    native: ({msg = "Expected instance of Date"}: InputSchemaNativeDateConfig = {}) => (new SchemaNativeDate({msg})),
+export const storage = {
+    autoNumber: ({msg = "Expected Autonumber"}: InputSchemaStorageAutonumberConfig = {}) => (new SchemaStorageAutonumber({msg})),
 }

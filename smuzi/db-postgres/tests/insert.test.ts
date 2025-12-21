@@ -2,28 +2,30 @@ import {assert, it, okMsg} from "@smuzi/tests";
 import {buildClient} from "./setup.js";
 import {UserEntity} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
-import {RecordFromKeys} from "@smuzi/std";
+import {RecordFromKeys, StdRecord} from "@smuzi/std";
 import {testRunner} from "./index.js";
 
 testRunner.describe("db-postgres - query", [
-    // it("insert row", async (globalSetup) => {
-    //     const result = (await globalSetup.unwrap().dbClient.insertRow<TUserRow>('users', {
-    //         name: faker.string(),
-    //         email: faker.string(),
-    //         password: faker.string(),
-    //         created_at: faker.date(),
-    //     }, ["name"]));
-    //
-    //     result.match({
-    //         Err: (error) => assert.fail(error.message),
-    //         Ok: (row) => {
-    //
-    //         },
-    //     })
-    //
-    //
-    //
-    // })
+    it("insert row", async (globalSetup) => {
+        const insert = new StdRecord({
+            name: faker.string(),
+            email: faker.string(),
+            password: faker.string(),
+            created_at: faker.datetime.native(),
+        };
+
+        const result = (await globalSetup.unwrap().dbClient.insertRow<UserEntity>('users', insert));
+
+        result.match({
+            Err: (error) => assert.fail(error.message),
+            Ok: (row) => {
+
+            },
+        })
+
+
+
+    })
 
     // it(okMsg("SELECT"), async () => {
     //     const dbClient = buildClient();
