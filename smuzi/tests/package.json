@@ -12,10 +12,9 @@
   "license": "ISC",
   "files": ["./src"],
   "dependencies": {
+    "@smuzi/std": "workspace:*",
+    "@smuzi/schema": "workspace:*"
 
-  },
-  "peerDependencies": {
-    "@smuzi/std": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",

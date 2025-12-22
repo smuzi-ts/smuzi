@@ -1,5 +1,4 @@
 import { Option, OptionFromNullable } from "#lib/option.js";
-import {dump} from "#lib/debug.js";
 
 export class StdMap<K = unknown, V = unknown> {
     #map: Map<K, V>;

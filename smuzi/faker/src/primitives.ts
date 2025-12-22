@@ -1,4 +1,4 @@
-import {isEmpty, panic} from "@smuzi/std";
+import {isEmpty, None, panic} from "@smuzi/std";
 import {faker} from "#lib/index.js";
 
 export function string({min = 5, max = 10, prefix = '', suffix = ''} = {}): string {
@@ -36,4 +36,8 @@ export function notNumber(): unknown {
 
 export function notString(): unknown {
     return faker.array.getItem([number, boolean])();
+}
+
+export function nullable() {
+    return faker.array.getItem([null, undefined, None()]);
 }

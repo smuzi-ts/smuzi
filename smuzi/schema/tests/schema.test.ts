@@ -4,9 +4,9 @@ import { faker } from "@smuzi/faker";
 import { None, Some, StdRecord, StdMap, dump } from "@smuzi/std";
 import {testRunner} from "./index.js";
 
-
 testRunner.describe("Std-Schema", [
     it("Number-Ok", () => {
+
         const schemaVal = schema.number();
         assert.result.equalOk(schemaVal.validate(faker.number()))
     }),
@@ -21,6 +21,7 @@ testRunner.describe("Std-Schema", [
             }
         })
     }),
+
     it("String-Ok", () => {
         const schemaVal = schema.string();
         assert.result.equalOk(schemaVal.validate(faker.string()))
@@ -85,25 +86,17 @@ testRunner.describe("Std-Schema", [
             }
         })
     }),
-    it("Object-missing field", () => {
+    it("Object-empty field-Ok", () => {
         const schemaVal = schema.obj({
             id: schema.number(),
             name: schema.string()
         });
 
         const user = {
-            id: faker.number(), //Not Number
-            //missing name
+            id: faker.number(),
         };
-        schemaVal.validate(user).match({
-            Ok() {
-                assert.fail("Expected error validation")
-            },
-            Err(err) {
-                assert.deepEqual(err.data.get("id"), None());
-                assert.deepEqual(err.data.get("name").unwrap().msg, "required");
-            }
-        })
+        assert.result.equalOk(schemaVal.validate(user));
+
     }),
     it("Record-Ok", () => {
         const schemaVal = schema.record({
@@ -120,7 +113,7 @@ testRunner.describe("Std-Schema", [
 
         assert.result.equalOk(validate)
     }),
-    it("Record-missing field", () => {
+    it("Record-empty field-Ok", () => {
         const schemaVal = schema.record({
             id: schema.number(),
             name: schema.string()
@@ -128,19 +121,9 @@ testRunner.describe("Std-Schema", [
 
         const input = new StdRecord({
             id: faker.number(),
-            //missing name
         })
 
-        schemaVal.validate(input)
-            .match({
-                Ok() {
-                    assert.fail("Expected error validation")
-                },
-                Err(err) {
-                    assert.deepEqual(err.data.get("id"), None());
-                    assert.deepEqual(err.data.get("name").unwrap().msg, "required");
-                }
-            })
+        assert.result.equalOk(schemaVal.validate(input));
     }),
     it("Map-Ok", () => {
         const schemaVal = schema.map(schema.number(),

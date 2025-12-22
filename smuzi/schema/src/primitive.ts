@@ -1,24 +1,22 @@
-import { SchemaRule, SchemaValidationError} from "#lib/index.js";
-import {Err, Ok, Result, Simplify, StdRecord} from "@smuzi/std";
+import {dump, Err, isNull, Ok, Result, Simplify, StdRecord} from "@smuzi/std";
 import {faker} from "@smuzi/faker";
+import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 
-type SchemaNumberConfig = { msg: string };
 
 export class SchemaNumber implements SchemaRule {
-    #config: SchemaNumberConfig;
+    #msg: string;
     readonly __infer: number;
     readonly __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
-        this.#config = {msg};
-    }
-
-    getConfig(): SchemaNumberConfig {
-        return this.#config;
+        this.#msg = msg;
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return typeof input === "number" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
+        if (isNull(input)) {
+            return Ok(true);
+        }
+        return typeof input === "number" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
     }
 
     fake() {
@@ -26,20 +24,20 @@ export class SchemaNumber implements SchemaRule {
     }
 }
 
-
-type SchemaStringConfig = { msg: string };
-
 export class SchemaString implements SchemaRule {
-    #config: SchemaStringConfig;
+    #msg: string;
     __infer: string;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
-        this.#config = {msg};
+        this.#msg = msg;
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return typeof input === "string" ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
+        if (isNull(input)) {
+            return Ok(true);
+        }
+        return typeof input === "string" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
     }
 
     fake() {

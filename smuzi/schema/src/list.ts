@@ -1,15 +1,16 @@
 import {asList, Err, Ok, Result, Simplify, StdList, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaObject} from "#lib/obj.js";
-import {SchemaConfig, SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaRecord} from "#lib/record.js";
+import {SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
+import {SchemaRequired} from "#lib/required.js";
 
-export type SchemaConfigList<C extends SchemaConfig = SchemaConfig> = SchemaRule | SchemaObject<C> | SchemaRecord<C>;
+export type SchemaListConfig<C extends SchemaRecordConfig = SchemaRecordConfig> = SchemaRule | SchemaObject<C> | SchemaRecord<C>;
 
-type InferListSchema<C extends SchemaConfigList> = StdList<C['__infer']>;
+type InferListSchema<C extends SchemaListConfig> = StdList<C['__infer']>;
 
-type InferValidationSchemaList<C extends SchemaConfigList> = C['__inferError'];
+type InferValidationSchemaList<C extends SchemaListConfig> = C['__inferError'];
 
-export class SchemaList<C extends SchemaConfigList> implements SchemaRule {
+export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
     #config: C;
     __infer: Simplify<InferListSchema<C>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaList<C>>>>>
@@ -29,7 +30,7 @@ export class SchemaList<C extends SchemaConfigList> implements SchemaRule {
 
         const self = this;
 
-        for (const [key, val] of input) {
+        for (const [key, val] of input as StdList) {
             val.match({
                 Some(value) {
                     self.#config.validate(value).errThen(err => {
@@ -38,8 +39,10 @@ export class SchemaList<C extends SchemaConfigList> implements SchemaRule {
                     })
                 },
                 None() {
-                    hasErrors = true;
-                    errors.set(key, {msg: "required", data: new StdRecord()});
+                    if (self.#config instanceof SchemaRequired) {
+                        hasErrors = true;
+                        errors.set(key, self.#config.getErr());
+                    }
                 }
             })
         }

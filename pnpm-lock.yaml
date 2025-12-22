@@ -149,13 +149,14 @@ importers:
         version: 22.19.0
 
   smuzi/schema:
-    devDependencies:
+    dependencies:
       '@smuzi/faker':
         specifier: workspace:*
         version: link:../faker
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
+    devDependencies:
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../tests
@@ -186,6 +187,9 @@ importers:
 
   smuzi/tests:
     dependencies:
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std

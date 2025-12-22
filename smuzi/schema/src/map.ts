@@ -1,13 +1,14 @@
 import { asMap, Err, Ok, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaObject} from "#lib/obj.js";
-import {SchemaConfig, SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaRecord} from "#lib/record.js";
+import {SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
+import {SchemaRequired} from "#lib/required.js";
 
-type SchemaConfigMap<C extends SchemaConfig = SchemaConfig> = SchemaRule | SchemaObject<C> | SchemaRecord<C>;
-type InferMapSchema<K extends SchemaRule, C extends SchemaConfigMap> = StdMap<K['__infer'], C['__infer']>;
-type InferValidationSchemaMap<C extends SchemaConfigMap> = C['__inferError'];
+export type SchemaMapConfig = SchemaRule;
+type InferMapSchema<K extends SchemaRule, C extends SchemaMapConfig> = StdMap<K['__infer'], C['__infer']>;
+type InferValidationSchemaMap<C extends SchemaMapConfig> = C['__inferError'];
 
-export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer = K["__infer"]> implements SchemaRule {
+export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implements SchemaRule {
     #config: C;
     #key: K;
     __infer: Simplify<InferMapSchema<K, C>>
@@ -16,14 +17,6 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer 
     constructor(key: K, config: C) {
         this.#key = key;
         this.#config = config;
-    }
-
-    getConfig(): C {
-        return this.#config;
-    }
-
-    getKey(): K {
-        return this.#key;
     }
 
     validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>> {
@@ -37,7 +30,7 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer 
 
         const self = this;
 
-        for (const [key, val] of input) {
+        for (const [key, val] of input as StdMap) {
             self.#key.validate(key).match({
                 Err(errKey) {
                     hasErrors = true;
@@ -51,8 +44,10 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer 
                             })
                         },
                         None() {
-                            hasErrors = true;
-                            errors.set(key, {msg: "required", data: new StdRecord()});
+                            if (self.#config instanceof SchemaRequired) {
+                                hasErrors = true;
+                                errors.set(key, self.#config.getErr());
+                            }
                         }
                     })
                 }
@@ -67,8 +62,8 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaConfigMap, K_infer 
     fake() {
         let output = new StdMap() as typeof this.__infer;
 
-        for (let i = 0; i < 5; i++) {
-            output.set(i, this.#config.fake());
+        for (let i = 1; i <= 2; i++) {
+            output.set(this.#key.fake(), this.#config.fake());
         }
 
         return output;

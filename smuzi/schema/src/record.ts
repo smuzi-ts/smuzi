@@ -1,12 +1,15 @@
-import {asMap, asRecord, Err, Ok, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
-import {SchemaConfig, SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {asMap, asRecord, dump, Err, None, Ok, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
+import { SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {SchemaObject} from "#lib/obj.js";
+import {SchemaRequired} from "#lib/required.js";
 
-type InferSchema<C extends SchemaConfig> = {
+export type SchemaRecordConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
+type InferSchema<C extends SchemaRecordConfig> = {
     [K in keyof C]: C[K]['__infer'];
 };
-type InferValidationSchema<C extends SchemaConfig> = { [K in keyof C]: C[K]['__inferError'] }
-type SchemaRecordValidationError<C extends SchemaConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
-export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
+type InferValidationSchema<C extends SchemaRecordConfig> = { [K in keyof C]: C[K]['__inferError'] }
+type SchemaRecordValidationError<C extends SchemaRecordConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
+export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
     #config: C;
     __infer: StdRecord<Simplify<InferSchema<C>>>
     __inferError: Simplify<SchemaRecordValidationError<C>>
@@ -38,8 +41,10 @@ export class SchemaRecord<C extends SchemaConfig> implements SchemaRule {
                     })
                 },
                 None() {
-                    hasErrors = true;
-                    errors.set(key, {msg: "required", data: errors});
+                    if (self.#config[key] instanceof SchemaRequired) {
+                        hasErrors = true;
+                        errors.set(key, self.#config[key].getErr());
+                    }
                 }
             })
         }

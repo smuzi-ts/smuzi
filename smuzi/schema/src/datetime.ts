@@ -1,11 +1,8 @@
-import {
- SchemaRule, SchemaValidationError
-} from "#lib/index.js";
 import {Err, Ok, Result, Simplify, StdRecord} from "@smuzi/std";
 import {faker} from "@smuzi/faker";
+import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 
 type SchemaNativeDateConfig = { msg: string };
-type InputSchemaNativeDateConfig = { msg?: string };
 
 export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements SchemaRule {
     #config: C;
@@ -26,5 +23,5 @@ export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements Schem
 }
 
 export const datetime = {
-    native: ({msg = "Expected instance of Date"}: InputSchemaNativeDateConfig = {}) => (new SchemaNativeDate({msg})),
+    native: ({msg = "Expected instance of Date"}: Partial<SchemaNativeDateConfig> = {}) => (new SchemaNativeDate({msg})),
 }
