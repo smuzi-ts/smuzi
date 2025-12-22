@@ -9,7 +9,7 @@ export type SchemaRequiredConfig<C extends SchemaRecordConfig = SchemaRecordConf
 export class SchemaRequired<C extends SchemaRequiredConfig> implements SchemaRule {
     #msg: string
     #config: C;
-    __infer: C['__infer']
+    __infer: NonNullable<C['__infer']>;
     __inferError: C['__inferError']
 
     constructor(config: C, msg: string) {

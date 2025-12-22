@@ -12,7 +12,7 @@ type InferValidationSchema<C extends SchemaObjConfig> = { [K in keyof C]: C[K]['
 
 export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implements SchemaRule {
     #config: C;
-    __infer: Simplify<InferSchemaObj<C>>
+    __infer: Simplify<InferSchemaObj<C>> | undefined;
     __inferError: SchemaValidationError<StdRecord<InferValidationSchema<C>>>
 
     constructor(config: C) {

@@ -5,8 +5,8 @@ import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 
 export class SchemaNumber implements SchemaRule {
     #msg: string;
-    readonly __infer: number;
-    readonly __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
+    __infer: number | undefined;
+    __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
         this.#msg = msg;
@@ -26,7 +26,7 @@ export class SchemaNumber implements SchemaRule {
 
 export class SchemaString implements SchemaRule {
     #msg: string;
-    __infer: string;
+    __infer: string | undefined;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {

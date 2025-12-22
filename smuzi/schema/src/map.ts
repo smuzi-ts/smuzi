@@ -11,7 +11,7 @@ type InferValidationSchemaMap<C extends SchemaMapConfig> = C['__inferError'];
 export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implements SchemaRule {
     #config: C;
     #key: K;
-    __infer: Simplify<InferMapSchema<K, C>>
+    __infer: Simplify<InferMapSchema<K, C>> | undefined;
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
     constructor(key: K, config: C) {

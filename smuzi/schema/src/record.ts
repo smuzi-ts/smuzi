@@ -7,11 +7,12 @@ export type SchemaRecordConfig = Record<PropertyKey, SchemaRule | SchemaObject |
 type InferSchema<C extends SchemaRecordConfig> = {
     [K in keyof C]: C[K]['__infer'];
 };
+
 type InferValidationSchema<C extends SchemaRecordConfig> = { [K in keyof C]: C[K]['__inferError'] }
 type SchemaRecordValidationError<C extends SchemaRecordConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
 export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
     #config: C;
-    __infer: StdRecord<Simplify<InferSchema<C>>>
+    __infer: StdRecord<Simplify<InferSchema<C>>> | undefined
     __inferError: Simplify<SchemaRecordValidationError<C>>
 
     constructor(config: C) {
@@ -53,7 +54,7 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
     }
 
     fake() {
-        let output = new StdRecord() as typeof this.__infer;
+        let output = new StdRecord() as NonNullable<typeof this.__infer>;
 
         for (const field in this.#config) {
             output.set(field, this.#config[field].fake());
