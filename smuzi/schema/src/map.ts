@@ -1,4 +1,4 @@
-import { asMap, Err, Ok, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
+import {asMap, Err, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaObject} from "#lib/obj.js";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
@@ -11,7 +11,7 @@ type InferValidationSchemaMap<C extends SchemaMapConfig> = C['__inferError'];
 export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implements SchemaRule {
     #config: C;
     #key: K;
-    __infer: Simplify<InferMapSchema<K, C>> | undefined;
+    __infer: Option<Simplify<InferMapSchema<K, C>>>;
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
     constructor(key: K, config: C) {
@@ -53,14 +53,13 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
                 }
             })
 
-
         }
 
         return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
 
     fake() {
-        let output = new StdMap() as typeof this.__infer;
+        let output = new StdMap() as any;
 
         for (let i = 1; i <= 2; i++) {
             output.set(this.#key.fake(), this.#config.fake());

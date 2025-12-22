@@ -238,7 +238,8 @@ export class TestRunner<GS extends Option> {
             this.#config.output.printer.info(json.toString(generalResult).unwrap());
         } else {
             this.#config.output.printer.info("ℹ️  ok: " + generalResult.ok);
-            this.#config.output.printer.info("ℹ️  err: " + generalResult.err);
+            const errPrintMethod = generalResult.err > 0 ? "error" : "info";
+            this.#config.output.printer[errPrintMethod]("ℹ️  err: " + generalResult.err);
             this.#config.output.printer.info("ℹ️  skip: " + generalResult.skip);
         }
     }

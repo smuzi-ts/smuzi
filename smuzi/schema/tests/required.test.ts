@@ -111,8 +111,14 @@ testRunner.describe("Std-Schema-Required", [
             );
 
             const input = new StdMap([
-                ["1", faker.string()],
-                ["2", faker.nullable() as any]
+                ["1", new StdRecord({
+                    name: faker.string(),
+                    title: faker.string(),
+                })],
+                ["2", new StdRecord({
+                    name: faker.string(),
+                    title: faker.nullable() as any,
+                })]
             ])
             schemaVal.validate(input)
                 .match({
@@ -120,7 +126,14 @@ testRunner.describe("Std-Schema-Required", [
                         assert.fail("Expected error validation")
                     },
                     Err(err) {
-                        assert.equal(err.data.get("2").unwrapByKey("msg"), "required");
+                        assert.equal(
+                            err
+                                .data.get("2")
+                                .unwrapByKey("data")
+                                .get("title")
+                                .unwrapByKey("msg"),
+                            "required"
+                        );
                     }
                 })
         }),

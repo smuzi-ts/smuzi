@@ -1,4 +1,4 @@
-import {asList, Err, Ok, Result, Simplify, StdList, StdMap, StdRecord} from "@smuzi/std";
+import {asList, Err, Ok, Option, Result, Simplify, StdList, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaObject} from "#lib/obj.js";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
@@ -12,7 +12,7 @@ type InferValidationSchemaList<C extends SchemaListConfig> = C['__inferError'];
 
 export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
     #config: C;
-    __infer: Simplify<InferListSchema<C>>
+    __infer: Option<Simplify<InferListSchema<C>>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaList<C>>>>>
 
     constructor(config: C) {
@@ -51,7 +51,7 @@ export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
     }
 
     fake() {
-        let output = new StdList() as typeof this.__infer;
+        let output = new StdList() as any;
 
         for (let i = 0; i < 5; i++) {
             output.push(this.#config.fake());

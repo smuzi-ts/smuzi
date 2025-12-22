@@ -1,7 +1,7 @@
 import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaObject} from "#lib/obj.js";
-import {dump, Err, isNone, isNull, None, Ok, Result, StdRecord} from "@smuzi/std";
+import {asNull, dump, Err, isNone, isNull, None, Ok, Option, Result, Some, StdRecord} from "@smuzi/std";
 import {faker} from "@smuzi/faker";
 
 export type SchemaRequiredConfig<C extends SchemaRecordConfig = SchemaRecordConfig> = SchemaRule | SchemaObject<C> | SchemaRecord<C>;
@@ -9,7 +9,7 @@ export type SchemaRequiredConfig<C extends SchemaRecordConfig = SchemaRecordConf
 export class SchemaRequired<C extends SchemaRequiredConfig> implements SchemaRule {
     #msg: string
     #config: C;
-    __infer: NonNullable<C['__infer']>;
+    __infer: C['__infer'] extends Option<infer T> ? T : NonNullable<C['__infer']>;
     __inferError: C['__inferError']
 
     constructor(config: C, msg: string) {
@@ -18,11 +18,11 @@ export class SchemaRequired<C extends SchemaRequiredConfig> implements SchemaRul
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<C['__inferError']>> {
-        if (isNull(input) || isNone(input)) {
+        if (asNull(input) || isNone(input)) {
             return Err(this.getErr());
         }
 
-        return this.#config.validate(input);
+        return this.#config.validate(Some(input));
     }
 
     fake() {

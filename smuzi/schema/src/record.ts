@@ -1,26 +1,22 @@
-import {asMap, asRecord, dump, Err, None, Ok, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
+import {asMap, asRecord, dump, Err, None, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
 import { SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaObject} from "#lib/obj.js";
 import {SchemaRequired} from "#lib/required.js";
 
 export type SchemaRecordConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
 type InferSchema<C extends SchemaRecordConfig> = {
-    [K in keyof C]: C[K]['__infer'];
+    [K in keyof C]: C[K]['__infer'] extends Option<infer T> ? T : C[K]['__infer'];
 };
 
 type InferValidationSchema<C extends SchemaRecordConfig> = { [K in keyof C]: C[K]['__inferError'] }
 type SchemaRecordValidationError<C extends SchemaRecordConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
 export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
     #config: C;
-    __infer: StdRecord<Simplify<InferSchema<C>>> | undefined
+    __infer: Option<StdRecord<Simplify<InferSchema<C>>>>
     __inferError: Simplify<SchemaRecordValidationError<C>>
 
     constructor(config: C) {
         this.#config = config;
-    }
-
-    getConfig(): C {
-        return this.#config;
     }
 
     validate(input: unknown): Result<true, SchemaRecordValidationError<C>> {
@@ -54,7 +50,7 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
     }
 
     fake() {
-        let output = new StdRecord() as NonNullable<typeof this.__infer>;
+        let output = new StdRecord() as any;
 
         for (const field in this.#config) {
             output.set(field, this.#config[field].fake());

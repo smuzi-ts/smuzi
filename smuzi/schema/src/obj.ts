@@ -1,18 +1,18 @@
-import {asObject, Err, isNull, Ok, Result, Simplify, StdRecord} from "@smuzi/std";
+import {asObject, Err, isNull, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord} from "#lib/record.js";
 
 export type SchemaObjConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
 
 type InferSchemaObj<C extends SchemaObjConfig> = {
-    [K in keyof C]: C[K]['__infer'];
+    [K in keyof C]: C[K]['__infer'] extends Option<infer T> ? T : C[K]['__infer'];
 };
 
 type InferValidationSchema<C extends SchemaObjConfig> = { [K in keyof C]: C[K]['__inferError'] }
 
 export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implements SchemaRule {
     #config: C;
-    __infer: Simplify<InferSchemaObj<C>> | undefined;
+    __infer: Option<Simplify<InferSchemaObj<C>>>;
     __inferError: SchemaValidationError<StdRecord<InferValidationSchema<C>>>
 
     constructor(config: C) {
@@ -38,7 +38,7 @@ export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implement
     }
 
     fake() {
-        let output = {} as typeof this.__infer;
+        let output = {} as any;
 
         for (const field in this.#config) {
             output[field] = this.#config[field].fake()
