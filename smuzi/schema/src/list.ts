@@ -2,7 +2,7 @@ import {asList, Err, Ok, Option, Result, Simplify, StdList, StdMap, StdRecord} f
 import {SchemaObject} from "#lib/obj.js";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
-import {SchemaRequired} from "#lib/required.js";
+import {SchemaOption} from "#lib/option.js";
 
 export type SchemaListConfig<C extends SchemaRecordConfig = SchemaRecordConfig> = SchemaRule | SchemaObject<C> | SchemaRecord<C>;
 
@@ -12,7 +12,7 @@ type InferValidationSchemaList<C extends SchemaListConfig> = C['__inferError'];
 
 export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
     #config: C;
-    __infer: Option<Simplify<InferListSchema<C>>>
+    __infer: Simplify<InferListSchema<C>>
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaList<C>>>>>
 
     constructor(config: C) {
@@ -39,9 +39,9 @@ export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
                     })
                 },
                 None() {
-                    if (self.#config instanceof SchemaRequired) {
+                    if (! (self.#config[key] instanceof SchemaOption)) {
                         hasErrors = true;
-                        errors.set(key, self.#config.getErr());
+                        errors.set(key, {msg: "Required", data: new StdRecord()});
                     }
                 }
             })

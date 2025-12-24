@@ -1,17 +1,18 @@
 import {datetime} from "#lib/datetime.js";
-import {storage} from "#lib/storage.js";
 import {SchemaNumber, SchemaString} from "#lib/primitive.js";
 import {SchemaObjConfig, SchemaObject} from "#lib/obj.js";
-import {SchemaRule} from "#lib/types.js";
+import {SchemaRule as _SchemaRule} from "#lib/types.js";
 import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
 import {SchemaMapConfig, SchemaMap} from "#lib/map.js";
 import {SchemaListConfig, SchemaList} from "#lib/list.js";
-import {SchemaRequired, SchemaRequiredConfig} from "#lib/required.js";
+import {SchemaOption, SchemaOptionConfig} from "#lib/option.js";
 export {SchemaNativeDate} from "#lib/datetime.js";
-export {type SchemaRule} from "#lib/types.js";
+export {SchemaValidationError} from "#lib/types.js";
+
+export type SchemaRule = _SchemaRule;
 
 export const schema = {
-    required: <C extends SchemaRequiredConfig>(config: C, msg: string = "required") => (new SchemaRequired(config, msg)),
+    option: <C extends SchemaOptionConfig>(config: C) => (new SchemaOption(config)),
     number: (msg: string = "Expected number") => (new SchemaNumber(msg)),
     string: (msg: string = "Expected string") => (new SchemaString(msg)),
     obj: <C extends SchemaObjConfig>(config: C) => new SchemaObject<C>(config),
@@ -19,5 +20,4 @@ export const schema = {
     map: <K extends SchemaRule, C extends SchemaMapConfig>(key: K, config: C) => (new SchemaMap<K, C>(key, config)),
     list: <C extends SchemaListConfig>(config: C) => (new SchemaList<C>(config)),
     datetime,
-    storage,
 }

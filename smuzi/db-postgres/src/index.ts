@@ -1,7 +1,5 @@
 import { Pool } from 'pg'
 import {
-    DBRows,
-    ExtractPrimaryKey,
     preparedSqlFromObjectToArrayParams,
     TDatabaseClient, TInsertRow, TInsertRowResult, TQueryError,
     TQueryMethod,
@@ -10,7 +8,7 @@ import {
 } from "@smuzi/database";
 import {
     asArray,
-    asObject,
+    asObject, dump,
     Err,
     isArray,
     None,
@@ -62,7 +60,7 @@ export class PostgresClient implements TDatabaseClient {
                     values: params,
                 },
             );
-            return Ok(new DBRows(res.rows))
+            return Ok(new StdList(res.rows))
         } catch (err) {
             return Err({
                 sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
@@ -74,27 +72,28 @@ export class PostgresClient implements TDatabaseClient {
         }
     }
 
-    async insertRow<Entity extends TRow = TRow,   const RC extends readonly string[] = ['id']>(table: string, row: TInsertRow<Entity>, returningColumns: RC): Promise<TInsertRowResult<RC, Entity>> {
+    async insertRow(tableSchema, row, returningColumns) {
         //TODO: protected for injections
         const columns = Object.keys(row);
         const values = Object.values(row);
         const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
         const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query<Simplify<RecordFromKeys<RC, Entity>>[]>(sql, values))
-            .okThen(rows => {
-                if (0 in rows) {
-                    return Ok(rows[0]);
-                }
-
-                return Err({
-                    sql: sql,
-                    message: 'Result of query insert row not contain any rows',
-                    code: Some("SYSTEM:1000"),
-                    detail: None(),
-                    table: Some(table)
-                });
-            });
+        return (await this.query(sql, values))
+            .errOr(rows => {
+                return rows.get(0).match({
+                    Some: row => Ok(row),
+                    None: () => {
+                        Err({
+                            sql: sql,
+                            message: 'Result of query insert row not contain any rows',
+                            code: Some("SYSTEM:1000"),
+                            detail: None(),
+                            table: Some(table)
+                        })
+                    }
+                })
+        });
     }
 
     async insertManyRows(table, rows, idColumn = 'id') {

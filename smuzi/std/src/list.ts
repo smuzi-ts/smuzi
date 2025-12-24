@@ -12,6 +12,10 @@ export class StdList<T = unknown> {
         return OptionFromNullable(this.#list[key]);
     }
 
+    has(key: number): boolean {
+        return key in this.#list;
+    }
+
     push(value: T): this {
         this.#list.push(value);
         return this;

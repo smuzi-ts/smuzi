@@ -1,18 +1,19 @@
-import {asObject, Err, isNull, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
+import {asObject, dump, Err, isNone, isNull, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord} from "#lib/record.js";
+import {SchemaOption} from "#lib/option.js";
 
 export type SchemaObjConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
 
 type InferSchemaObj<C extends SchemaObjConfig> = {
-    [K in keyof C]: C[K]['__infer'] extends Option<infer T> ? T : C[K]['__infer'];
+    [K in keyof C]: C[K]['__infer'];
 };
 
 type InferValidationSchema<C extends SchemaObjConfig> = { [K in keyof C]: C[K]['__inferError'] }
 
 export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implements SchemaRule {
     #config: C;
-    __infer: Option<Simplify<InferSchemaObj<C>>>;
+    __infer: Simplify<InferSchemaObj<C>>;
     __inferError: SchemaValidationError<StdRecord<InferValidationSchema<C>>>
 
     constructor(config: C) {
@@ -28,6 +29,12 @@ export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implement
         let hasErrors = false;
 
         for (const key in this.#config) {
+            if ((isNull(input[key]) || isNone(input[key])) && ! (this.#config[key] instanceof SchemaOption)) {
+                hasErrors = true;
+                errors.set(key,  {msg: "Required", data: new StdRecord() });
+                continue;
+            }
+
             this.#config[key].validate(input[key]).errThen(err => {
                 hasErrors = true;
                 errors.set(key, err);

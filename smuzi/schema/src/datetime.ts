@@ -6,7 +6,7 @@ type SchemaNativeDateConfig = { msg: string };
 
 export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements SchemaRule {
     #config: C;
-    __infer: Option<Date>;
+    __infer: Date;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(config: C) {
@@ -14,10 +14,8 @@ export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements Schem
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return OptionFromNullable(input).match({
-            Some: (v)=>  input instanceof Date ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()}),
-            None: () => Ok(true)
-        })
+        return  input instanceof Date ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
+
     }
 
     fake() {

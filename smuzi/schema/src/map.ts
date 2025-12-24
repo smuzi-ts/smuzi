@@ -1,8 +1,6 @@
 import {asMap, Err, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
-import {SchemaObject} from "#lib/obj.js";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
-import {SchemaRequired} from "#lib/required.js";
+import {SchemaOption} from "#lib/option.js";
 
 export type SchemaMapConfig = SchemaRule;
 type InferMapSchema<K extends SchemaRule, C extends SchemaMapConfig> = StdMap<K['__infer'], C['__infer']>;
@@ -11,7 +9,7 @@ type InferValidationSchemaMap<C extends SchemaMapConfig> = C['__inferError'];
 export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implements SchemaRule {
     #config: C;
     #key: K;
-    __infer: Option<Simplify<InferMapSchema<K, C>>>;
+    __infer: Simplify<InferMapSchema<K, C>>;
     __inferError: Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>
 
     constructor(key: K, config: C) {
@@ -44,9 +42,9 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
                             })
                         },
                         None() {
-                            if (self.#config instanceof SchemaRequired) {
+                            if (! (self.#config instanceof SchemaOption)) {
                                 hasErrors = true;
-                                errors.set(key, self.#config.getErr());
+                                errors.set(key,  {msg: "Required", data: new StdRecord() });
                             }
                         }
                     })

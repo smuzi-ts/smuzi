@@ -57,37 +57,33 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         return this;
     }
 
-    errOr<RE = unknown>(ok: ((value: E) => RE) | RE): T | RE {
+    okOr<RE extends Result>(errHandler: ((value: E) => RE) | RE): RE | Result<T, never> {
         if (this instanceof ResultErr) {
-            return asFunction(ok) ? ok(this._val) : ok;
+            return asFunction(errHandler) ? errHandler(this._val) : errHandler;
         }
 
-        return this._val as T;
+        return this as unknown as Result<T, never>;
     }
 
-    okOr<RO = unknown>(err: ((value: E) => RO) | RO): E | RO {
+    errOr<RO extends Result>(okHandler: ((value: T) => RO) | RO): RO | Result<never, E> {
         if (this instanceof ResultOk) {
-            return asFunction(err) ? err(this._val) : err;
+            return asFunction(okHandler) ? okHandler(this._val) : okHandler;
         }
 
-        return this._val as E;
+        return this as unknown as Result<never, E>;
     }
 
-    okThen<R = unknown>(handler: (value: T) => R): E | R {
+    okThen<R = unknown>(handler: (value: T) => void): void {
         if (this instanceof ResultOk) {
-            return handler(this._val);
+            handler(this._val);
         }
-
-        return this._val as E;
     }
 
 
-    errThen<R = unknown>(handler: (value: E) => R): T | R {
+    errThen<R = unknown>(handler: (value: E) => void): void {
         if (this instanceof ResultErr) {
-            return handler(this._val);
+            handler(this._val);
         }
-
-        return this._val as T;
     }
 
     mapOk<RO>(handler: (value: T) => RO): Result<RO, E> {

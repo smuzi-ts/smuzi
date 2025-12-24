@@ -2,10 +2,38 @@ import {testRunner} from "./index.js";
 import {schema} from "#lib/index.js";
 import {assert, it} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
-import {StdRecord} from "@smuzi/std";
+import {StdMap, StdRecord} from "@smuzi/std";
 
 
 testRunner.describe("Std-Schema-Record", [
+    it("Record-Ok", () => {
+        const schemaVal = schema.record({
+            id: schema.number(),
+            name: schema.string()
+        });
+
+        const input = new StdRecord({
+            id: faker.number(),
+            name: faker.string()
+        })
+
+        const validate = schemaVal.validate(input);
+
+        assert.result.equalOk(validate)
+    }),
+    it("Record-empty field-Ok", () => {
+        const schemaVal = schema.record({
+            id: schema.number(),
+            name: schema.option(schema.string())
+        });
+
+        const input = new StdRecord({
+            id: faker.number(),
+        })
+
+        assert.result.equalOk(schemaVal.validate(input));
+    }),
+
     it("with Map-Ok", () => {
         const postSchema = schema.record({
             id: schema.number(),

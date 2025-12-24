@@ -4,7 +4,7 @@ import {dump} from "@smuzi/std";
 import {schema} from "@smuzi/schema";
 
 testRunner.describe("db-postgres - query", [
-    it("SELECT", async (globalSetup) => {
+    it("SELECT count", async (globalSetup) => {
         const rowSchema = schema.record({
             count: schema.string()
         })

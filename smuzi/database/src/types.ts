@@ -1,7 +1,20 @@
-import {Option, OptionFromNullable, RecordFromKeys, Result, Simplify, StdRecord} from "@smuzi/std"
+import {
+    dump,
+    None,
+    Option,
+    OptionFromNullable,
+    RecordFromKeys,
+    Result,
+    Simplify,
+    Some,
+    StdList,
+    StdRecord
+} from "@smuzi/std"
+import {SchemaRule} from "@smuzi/schema"
+import {DBSchemaRule} from "#lib/schema/types.js";
 
 export type TQueryParams = unknown[] | Record<string, unknown>
-export type TRow = StdRecord<any>
+export type TRow = Record<string, unknown>
 
 export type TQueryError = {
     message: string
@@ -9,51 +22,58 @@ export type TQueryError = {
     detail: Option<string>
     table: Option<string>
 }
-
-export class DBRows<T extends StdRecord<Record<string, unknown>>> {
-    #list: Array<Record<string, unknown>>;
-    #cache: Map<number, Option<T>>
-
-    constructor(array) {
-        this.#list = array;
-        this.#cache = new Map
-    }
-
-    get(index: number): Option<T> {
-        if (this.#cache.has(index)) {
-            return this.#cache.get(index) as Option<T>;
-        }
-        const row = OptionFromNullable(new StdRecord(this.#list.splice(index, 1)[0])) as Option<T>;
-        this.#cache.set(index, row);
-        return row;
-    }
-
-    *entries(): IterableIterator<[number, Option<T>]> {
-        for (let k = 0; k < this.#list.length; k++) {
-            yield [k, this.get(k)];
-        }
-    }
-
-    [Symbol.iterator](): IterableIterator<[number, Option<T>]> {
-        return this.entries();
-    }
-
-    unsafeSource(): Array<unknown> {
-        return this.#list;
-    }
-}
-
-export type TQueryResult<Row extends StdRecord<Record<string, unknown>>> = Result<DBRows<Row>, TQueryError>
-export type TInsertRowResult<Columns extends readonly string[], Row extends TRow> = Result<Simplify<RecordFromKeys<Columns, Row>>, TQueryError>
+export type TQueryResult<Row extends StdRecord<Record<string, unknown>>> = Result<StdList<Row>, TQueryError>
+export type TInsertRowResult<TS extends TableSchema, Columns extends readonly (keyof TS["__inferSchema"])[]> = Result<Simplify<RecordFromKeys<TS["__inferSchema"], Columns>>, TQueryError>
 
 export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
 // export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
 // export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>;
 // export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
 
+export class TableSchema<S extends SchemaRule = SchemaRule> {
+    #schema: S;
+    __inferSchema: S
+    readonly table: string;
+    constructor(table: string, schema: S) {
+        this.table = table;
+        this.#schema = schema;
+    }
+}
+
+export class TableRows<Schema extends DBSchemaRule, Rows extends Array<Record<string, unknown>>> {
+    #rows: Rows
+    #schema: Schema
+
+    constructor(schema: Schema, rows: Rows) {
+        this.#rows = rows;
+        this.#schema = schema;
+    }
+
+    #prepareRow(row: Record<string, unknown>) {
+
+    }
+
+    get(key: number) {
+        if (this.has(key)) {
+
+        }
+    }
+
+    has(key: number) {
+        return key in this.#rows;
+    }
+}
+
 export interface TDatabaseClient {
     query<Row extends TRow>(sql: string, params?: TQueryParams): Promise<TQueryResult<Row>>;
-    insertRow<Row extends TRow, RC extends string[] = string[]>(table: string, row: TInsertRow<Row>, returningColumns?: RC): Promise<TInsertRowResult<RC, TRow>>;
+
+    insertRow<TS extends TableSchema, const RC extends string[],>(
+        tableSchema: TS,
+        row: TInsertRow<TS["__inferSchema"]["__infer"]>,
+        returningColumns: RC
+    ): Promise<TInsertRowResult<TableSchema, RC>>;
+
+
     // insertManyRows: TInsertManyRowsMethod,
     // updateRow: TUpdateRowMethod,
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
@@ -134,8 +154,5 @@ export type ExcludeExcludeSaveKeys<T> = {
 
 export type TInsertRow<T> = {
     [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
-}
+};
 
-export type ExtractPrimaryKey<T> = {
-    [K in keyof T]: T[K] extends AutoId<infer U> ? U : Option
-}[keyof T];

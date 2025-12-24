@@ -15,9 +15,8 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
         return OptionFromNullable(this.#entity[key]);
     }
 
-    setOther<K extends keyof T>(key: unknown, value: T[K]) {
+    setOther<K extends keyof T>(key: unknown, value: NonNullable<any>) {
         this.#entity[key as K] = value;
-        return this;
     }
 
     getOther<K extends keyof T>(key: unknown): Option<T[K]> {

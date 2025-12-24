@@ -5,7 +5,7 @@ import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 
 export class SchemaNumber implements SchemaRule {
     #msg: string;
-    __infer: Option<number>;
+    __infer: number;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
@@ -13,10 +13,8 @@ export class SchemaNumber implements SchemaRule {
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return OptionFromNullable(input).match({
-            Some: (v)=>  typeof v === "number" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()}),
-            None: () => Ok(true)
-        })
+        return  typeof input === "number" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
+
     }
 
     fake() {
@@ -26,7 +24,7 @@ export class SchemaNumber implements SchemaRule {
 
 export class SchemaString implements SchemaRule {
     #msg: string;
-    __infer: Option<string>;
+    __infer: string;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(msg: string) {
@@ -34,10 +32,7 @@ export class SchemaString implements SchemaRule {
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return OptionFromNullable(input).match({
-            Some: (v)=>  typeof v === "string" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()}),
-            None: () => Ok(true)
-        })
+        return  typeof input === "string" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
     }
 
     fake() {
