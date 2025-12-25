@@ -10,8 +10,13 @@ import {
     StdList,
     StdRecord
 } from "@smuzi/std"
-import {SchemaRule} from "@smuzi/schema"
-import {DBSchemaRule} from "#lib/schema/types.js";
+import {
+    SchemaObject,
+    SchemaOption,
+    SchemaRule,
+    SchemaStorageAutoNumber,
+    SchemaStorageExcludeSaving
+} from "@smuzi/schema"
 
 export type TQueryParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, unknown>
@@ -22,25 +27,10 @@ export type TQueryError = {
     detail: Option<string>
     table: Option<string>
 }
-export type TQueryResult<Row extends StdRecord<Record<string, unknown>>> = Result<StdList<Row>, TQueryError>
-export type TInsertRowResult<TS extends TableSchema, Columns extends readonly (keyof TS["__inferSchema"])[]> = Result<Simplify<RecordFromKeys<TS["__inferSchema"], Columns>>, TQueryError>
+export type TQueryResult<S extends SchemaObject> = Result<TableRows<S>, TQueryError>
+export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<S["__infer"], TQueryError>
 
-export type TQueryMethod<Entity = unknown> = (sql: string, params?: TQueryParams) => Promise<TQueryResult<Entity>>;
-// export type TInsertMethod<Entity = TRow>= (table: string, row: TInsertRow<Entity>, idColumn?: string) => Promise<TInsertRowResult<Entity>>
-// export type TInsertManyRowsMethod = <Entity = TRow>(table: string, rows: TInsertRow<Entity>[], idColumn?: string) => Promise<TInsertRowResult<Entity>[]>;
-// export type TUpdateRowMethod = <Entity = TRow>(table: string, id: string|number, row: TInsertRow<Entity>, idColumn?: string) => Promise<TQueryResult>
-
-export class TableSchema<S extends SchemaRule = SchemaRule> {
-    #schema: S;
-    __inferSchema: S
-    readonly table: string;
-    constructor(table: string, schema: S) {
-        this.table = table;
-        this.#schema = schema;
-    }
-}
-
-export class TableRows<Schema extends DBSchemaRule, Rows extends Array<Record<string, unknown>>> {
+export class TableRows<Schema extends SchemaObject, Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>> {
     #rows: Rows
     #schema: Schema
 
@@ -49,14 +39,23 @@ export class TableRows<Schema extends DBSchemaRule, Rows extends Array<Record<st
         this.#schema = schema;
     }
 
-    #prepareRow(row: Record<string, unknown>) {
+    #prepareRow(row: Record<string, unknown>): Schema['__infer'] {
+        const prepare = {} as any;
+        for (const field in this.#schema) {
+            if (this.#schema[field] instanceof SchemaOption) {
+                prepare[field] = OptionFromNullable(row[field]);
+            }
+        }
 
+        return prepare;
     }
 
-    get(key: number) {
+    get(key: number): Option<Schema['__infer']> {
         if (this.has(key)) {
-
+            return Some(this.#prepareRow(this.#rows[key]));
         }
+
+        return None();
     }
 
     has(key: number) {
@@ -64,14 +63,16 @@ export class TableRows<Schema extends DBSchemaRule, Rows extends Array<Record<st
     }
 }
 
-export interface TDatabaseClient {
-    query<Row extends TRow>(sql: string, params?: TQueryParams): Promise<TQueryResult<Row>>;
 
-    insertRow<TS extends TableSchema, const RC extends string[],>(
-        tableSchema: TS,
-        row: TInsertRow<TS["__inferSchema"]["__infer"]>,
+export interface TDatabaseClient {
+    query<S extends SchemaObject<any>>(schema: S, sql: string, params?: TQueryParams): Promise<TQueryResult<S>>;
+
+    insertRow<S extends SchemaObject<any>, const RC extends string[],>(
+        schema: S,
+        table: string,
+        row: TInsertRow<S>,
         returningColumns: RC
-    ): Promise<TInsertRowResult<TableSchema, RC>>;
+    ): Promise<TInsertRowResult<S, RC>>;
 
 
     // insertManyRows: TInsertManyRowsMethod,
@@ -138,21 +139,20 @@ export type TMigrationsLogRepository = {
     freshSchema(): Promise<TQueryResult>
 };
 
-export type ExcludeSaving<T> = T & { readonly __ExcludeSaving: unique symbol };
-export type AutoId<T> = T & { readonly __PrimaryKey: unique symbol };
-
 export type UnwrapOption<T> = T extends Option<infer U> ? U : T;
 
-export type IsExcludeSaving<T> = T extends ExcludeSaving<infer U> | AutoId<infer U>
-    ? (U extends Option ? true : false)
-    : false;
-
+export type IsExcludeSaving<T> = T extends SchemaStorageAutoNumber ? true : false;
 
 export type ExcludeExcludeSaveKeys<T> = {
     [K in keyof T]: IsExcludeSaving<T[K]> extends true ? never : K
 }[keyof T];
 
-export type TInsertRow<T> = {
-    [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
-};
+// export type TInsertRow<T> = {
+//     [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
+// };
+
+
+export type TInsertRow<S extends SchemaObject> = S extends SchemaObject<infer U> ? {
+     [K in ExcludeExcludeSaveKeys<U>]: S["__infer"][K]
+} : unknown;
 

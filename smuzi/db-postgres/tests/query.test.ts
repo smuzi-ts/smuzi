@@ -13,7 +13,7 @@ testRunner.describe("db-postgres - query", [
 
         const result = (await globalSetup.unwrap().dbClient.query<Row>('SELECT count(*) FROM users'));
 
-        const count =   result
+        const count = result
             .unwrap() // Possible query error
             .get(0)
             .unwrap() // Possible empty element

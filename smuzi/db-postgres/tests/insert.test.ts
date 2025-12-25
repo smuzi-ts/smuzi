@@ -1,5 +1,5 @@
-import {assert, it } from "@smuzi/tests";
-import {userTable} from "./entities/User.js";
+import {assert, it} from "@smuzi/tests";
+import {userSchema, usersTable} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
 import {dump, None, RecordFromKeys, Some, StdRecord} from "@smuzi/std";
 import {testRunner} from "./index.js";
@@ -13,19 +13,22 @@ testRunner.describe("db-postgres - query", [
             created_at: faker.datetime.native(),
         };
 
-        const result = (await globalSetup.unwrap().dbClient.insertRow(
-            userTable,
-            insert,
-            ['id']
-    ));
+        const result =
+            (await globalSetup.unwrap()
+                .dbClient
+                .insertRow(
+                    userSchema,
+                    usersTable,
+                    insert,
+                    ['id']
+                ));
 
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (row) => {
-                dump(row.id.);
+                dump(row.id);
             },
         })
-
 
 
     })

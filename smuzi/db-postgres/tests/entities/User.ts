@@ -1,13 +1,14 @@
 import {schema} from "@smuzi/schema";
-import {dbSchema, TableSchema} from "@smuzi/database";
 
-export const userTable = new TableSchema('users',
-    dbSchema.row({
-        id: dbSchema.autoNumber(),
+export const usersTable = 'users';
+
+export const userSchema =
+    schema.obj({
+        id: schema.storage.autoNumber(),
         name: schema.string(),
         email: schema.string(),
         password: schema.string(),
         created_at: schema.datetime.native(),
-    }))
+    });
 
-export type UserEntity = typeof userTable.__inferSchema.__infer;
+export type UserEntity = typeof userSchema.__infer;

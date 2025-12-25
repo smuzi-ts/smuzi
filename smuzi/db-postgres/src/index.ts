@@ -1,8 +1,7 @@
 import { Pool } from 'pg'
 import {
-    preparedSqlFromObjectToArrayParams,
+    preparedSqlFromObjectToArrayParams, TableRows,
     TDatabaseClient, TInsertRow, TInsertRowResult, TQueryError,
-    TQueryMethod,
     TQueryParams,
     TQueryResult, TRow
 } from "@smuzi/database";
@@ -14,10 +13,11 @@ import {
     None,
     Ok, Option,
     OptionFromNullable,
-    RecordFromKeys,
+    RecordFromKeys, Result,
     Simplify,
     Some, StdList, StdRecord
 } from "@smuzi/std";
+import {SchemaObject} from "@smuzi/schema";
 export * from "#lib/migrationsLogRepository.js"
 export * from "#lib/entityRepository.js"
 
@@ -45,7 +45,7 @@ export class PostgresClient implements TDatabaseClient {
 
     }
 
-    async query<T extends StdRecord<Record<string, unknown>>>(sql: string, params?: TQueryParams): Promise<TQueryResult<T>> {
+    async query<S extends SchemaObject>(schema: S, sql: string, params?: TQueryParams): Promise<TQueryResult<S>> {
         let preparedSql = sql;
 
         if (asObject(params)) {
@@ -60,7 +60,7 @@ export class PostgresClient implements TDatabaseClient {
                     values: params,
                 },
             );
-            return Ok(new StdList(res.rows))
+            return Ok(new TableRows(schema, res.rows))
         } catch (err) {
             return Err({
                 sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
@@ -72,48 +72,55 @@ export class PostgresClient implements TDatabaseClient {
         }
     }
 
-    async insertRow(tableSchema, row, returningColumns) {
+    async insertRow<S extends SchemaObject, const RC extends string[],>(
+        schema: S,
+        table: string,
+        row: TInsertRow<S["__infer"]>,
+        returningColumns: RC
+    ): Promise<TInsertRowResult<S, RC>> {
         //TODO: protected for injections
         const columns = Object.keys(row);
         const values = Object.values(row);
         const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
         const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query(sql, values))
+        return (await this.query(schema, sql, values))
             .errOr(rows => {
                 return rows.get(0).match({
-                    Some: row => Ok(row),
-                    None: () => {
-                        Err({
+                    Some(row) {
+                        return Ok(row) ;
+                    },
+                    None() {
+                        return Err({
                             sql: sql,
                             message: 'Result of query insert row not contain any rows',
                             code: Some("SYSTEM:1000"),
                             detail: None(),
                             table: Some(table)
-                        })
-                    }
+                        }) as Result<S['__infer'], TQueryError>
+                    },
                 })
         });
     }
 
-    async insertManyRows(table, rows, idColumn = 'id') {
-        if (rows.length === 0) return Ok([]);
-        //TODO: protected for injections
-
-        const columns = Object.keys(rows[0]);
-        const values: any[] = [];
-        const placeholders = rows.map((row, rowIndex) => {
-            return `(${columns.map((_, colIndex) => {
-                const placeholderIndex = rowIndex * columns.length + colIndex + 1;
-                return `$${placeholderIndex}`;
-            }).join(', ')})`;
-        }).join(', ');
-
-        rows.forEach(row => values.push(...Object.values(row)));
-
-        return (await this.query<TRow[]>(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
-            .mapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
-    }
+    // async insertManyRows(table, rows, idColumn = 'id') {
+    //     if (rows.length === 0) return Ok([]);
+    //     //TODO: protected for injections
+    //
+    //     const columns = Object.keys(rows[0]);
+    //     const values: any[] = [];
+    //     const placeholders = rows.map((row, rowIndex) => {
+    //         return `(${columns.map((_, colIndex) => {
+    //             const placeholderIndex = rowIndex * columns.length + colIndex + 1;
+    //             return `$${placeholderIndex}`;
+    //         }).join(', ')})`;
+    //     }).join(', ');
+    //
+    //     rows.forEach(row => values.push(...Object.values(row)));
+    //
+    //     return (await this.query<TRow[]>(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
+    //         .mapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
+    // }
 
     // async updateRow(table, id, row, idColumn = 'id') {
     //     return this.updateManyRows(table, row, `${idColumn} = ${id}`)
