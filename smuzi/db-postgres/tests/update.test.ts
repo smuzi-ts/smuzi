@@ -1,10 +1,10 @@
 import {assert, it} from "@smuzi/tests";
 import {userSchema, usersTable} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
-import {Some} from "@smuzi/std";
+import {dump, Some, StdError} from "@smuzi/std";
 import {testRunner} from "./index.js";
 
-testRunner.describe("db-postgres-insert", [
+testRunner.describe("db-postgres-update", [
     it("one row", async (globalSetup) => {
         const insert = {
             name: Some(faker.string()),
@@ -13,7 +13,7 @@ testRunner.describe("db-postgres-insert", [
             created_at: faker.datetime.native(),
         };
 
-        const result =
+        const resultInsert =
             (await globalSetup.unwrap()
                 .dbClient
                 .insertRow(
@@ -23,42 +23,33 @@ testRunner.describe("db-postgres-insert", [
                     ['id', 'name']
                 ));
 
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (row) => {
-                assert.isNumber(row.id);
-                assert.isString(row.name.unwrap());
-            },
-        })
+        const insertId = resultInsert.unwrap().id;
 
-
-    }),
-
-    it("many rows", async (globalSetup) => {
-        const inserts = faker.repeat.asArray(3, () => ({
+        const update = {
             name: Some(faker.string()),
             email: faker.string(),
             password: faker.string(),
             created_at: faker.datetime.native(),
-        }));
+        };
 
-        const result =
+        const resultUpdate =
             (await globalSetup.unwrap()
                 .dbClient
-                .insertManyRows(
+                .updateRowById(
                     usersTable,
                     userSchema,
-                    inserts,
-                    ['id', 'name']
+                    insertId,
+                    update,
                 ));
 
-        result.match({
-            Err: (error) => assert.fail(error.message),
-            Ok: (rows) => {
-                const firstInsertRow = rows.get(0).unwrap();
-                assert.isNumber(firstInsertRow.id);
-                assert.isString(firstInsertRow.name.unwrap());
+
+        resultUpdate.match({
+            Err: (error) => assert.fail(error.toError()),
+            Ok: (res) => {
+                assert.equal(res.rowCount.unwrap(), 1)
             },
         })
-    }),
+
+
+    })
 ])

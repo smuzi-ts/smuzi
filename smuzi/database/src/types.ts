@@ -6,7 +6,7 @@ import {
     RecordFromKeys,
     Result,
     Simplify,
-    Some,
+    Some, StdError,
     StdList,
     StdRecord
 } from "@smuzi/std"
@@ -20,28 +20,56 @@ import {
 import {TMigrations, TMigrationsLogRepository} from "#lib/migration.js";
 
 export type TQueryParams = unknown[] | Record<string, unknown>
-export type TRow = Record<string, unknown>
 
-export type TQueryError = {
-    message: string
-    code: Option<string>
-    detail: Option<string>
-    table: Option<string>
+export class DBQueryError {
+    readonly sql: string
+    readonly message: string
+    readonly code: Option<string>
+    readonly detail: Option<string>
+    readonly table: Option<string>
+    readonly trace: string
+
+    constructor(config: {sql: string, message: string, code: Option<string>, detail: Option<string>, table: Option<string>} ) {
+        this.sql = config.sql;
+        this.message = config.message;
+        this.code = config.code;
+        this.detail = config.detail;
+        this.table = config.table;
+        this.trace = new Error().stack as string;
+    }
+
+    toError(): StdError {
+        return new StdError(
+            this.message,
+            Some(this.trace),
+            Some({
+                sql: this.sql,
+                code: this.code,
+                table: this.table,
+                detail: this.detail,
+            })
+        )
+    }
 }
-export type TQueryResult<S extends SchemaObject> = Result<TableRows<S, Option<S>>, TQueryError>
-export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Simplify<RecordFromKeys<S["__infer"], Columns>>, TQueryError>
+
+export type TQueryRawResult<S extends SchemaObject> = {
+    rows: TableRows<S>,
+    rowCount: Option<number>
+}
+export type TQueryResult<S extends SchemaObject> = Result<TQueryRawResult<S>, DBQueryError>
+export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Simplify<RecordFromKeys<S["__infer"], Columns>>, DBQueryError>
+export type TInsertManyRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[], Prepared extends SchemaObject = SchemaObject<RecordFromKeys<ReturnType<S["getConfig"]>, Columns>>> = Result<TableRows<Prepared>, DBQueryError>
 
 
 export class TableRows<
     Schema extends SchemaObject,
-    SchemaValue extends Option<Schema>,
-    TableRow extends SchemaValue extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"] = SchemaValue extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"],
+    TableRow extends Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"] = Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"],
    Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>
 > {
     #rows: Rows
-    #schema: SchemaValue
+    #schema: Option<Schema>
 
-    constructor(schema: SchemaValue, rows: Rows) {
+    constructor(schema: Option<Schema>, rows: Rows) {
         this.#rows = rows;
         this.#schema = schema;
     }
@@ -106,7 +134,11 @@ export class TableRows<
 
 
 export interface TDatabaseClient {
-    query<S extends SchemaObject<any>>(sql: string, params?: TQueryParams, schema?: Option<S>): Promise<TQueryResult<S>>;
+    query<S extends SchemaObject<any>>(
+        sql: string,
+        params?: TQueryParams,
+        schema?: Option<S>
+    ): Promise<TQueryResult<S>>;
 
     insertRow<S extends SchemaObject<any>, const RC extends string[]>(
         table: string,
@@ -115,13 +147,25 @@ export interface TDatabaseClient {
         returningColumns?: RC
     ): Promise<TInsertRowResult<S, RC>>;
 
+    insertManyRows<S extends SchemaObject<any>, const RC extends string[]>(
+        table: string,
+        schema: S,
+        rows: TInsertRow<S>[],
+        returningColumns?: RC
+    ): Promise<TInsertManyRowResult<S, RC>>;
 
-    // insertManyRows: TInsertManyRowsMethod,
-    // updateRow: TUpdateRowMethod,
+    updateRowById<S extends SchemaObject<any>>(
+        table: string,
+        schema: S,
+        id: number | string,
+        row: Partial<TInsertRow<S>>,
+        idColumn?: string
+    ): Promise<TQueryResult<S>>;
+
+    updateManyRows<S extends SchemaObject<any>>(table: string, values: Partial<TInsertRow<S>>, where): Promise<TQueryResult<S>>
+
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
 }
-
-
 
 export type TDatabaseService = {
     client: TDatabaseClient,
@@ -134,18 +178,12 @@ export type TDatabaseConfig = {
     current: TDatabaseService
 };
 
-export type UnwrapOption<T> = T extends Option<infer U> ? U : T;
 
 export type IsExcludeSaving<T> = T extends SchemaStorageAutoNumber ? true : false;
 
 export type ExcludeExcludeSaveKeys<T> = {
     [K in keyof T]: IsExcludeSaving<T[K]> extends true ? never : K
 }[keyof T];
-
-// export type TInsertRow<T> = {
-//     [K in ExcludeExcludeSaveKeys<T>]: UnwrapOption<T[K]>
-// };
-
 
 export type TInsertRow<S extends SchemaObject> = S extends SchemaObject<infer U> ? {
      [K in ExcludeExcludeSaveKeys<U>]: S["__infer"][K]

@@ -17,7 +17,7 @@ import {
     TEmpty, isArray,
     isSome,
     StdError,
-    asString
+    asString, dump
 } from "@smuzi/std";
 import {assertObject, TAssertObject} from "#lib/asserts/object.js";
 import {assertArray, TAssertArray} from "#lib/asserts/array.js";
@@ -111,7 +111,7 @@ export const assert: Assert = {
 
     //Numbers
     isNumber(actual) {
-        if (!isNumber(actual)) {
+        if (! isNumber(actual)) {
             assertionError({
                     message: "Expected number, but get other",
                     actual,

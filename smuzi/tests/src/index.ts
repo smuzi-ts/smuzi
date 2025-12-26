@@ -49,7 +49,11 @@ export type TAssertionError = {
 }
 
 export function assertionError(details: TAssertionError) {
-    throw details;
+    throw new StdError(
+        details.message,
+        Some((new Error()).stack as string),
+        Some(details),
+    );
 }
 
 export function repeatIt(
@@ -117,7 +121,7 @@ export function it<GS extends Option>(msg: string, testCase: TestCase<GS>): ItRe
                 await testCase(globalSetup);
                 return Ok(true);
             } catch (error) {
-                return Err(transformError(error));
+                return Err(error);
             }
         }
     }

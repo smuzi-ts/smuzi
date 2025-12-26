@@ -1,5 +1,5 @@
 import {TestRunner} from "@smuzi/tests";
-import {dump, env, main, Option, promiseAll, Some} from "@smuzi/std";
+import {dump, env, main, Option, promiseAll, scripts, Some} from "@smuzi/std";
 import usersTable from "./migrations/usersTable.js";
 import {postgresClient} from "#lib/index.js";
 import {TDatabaseClient} from "@smuzi/database";
@@ -18,32 +18,43 @@ export type GlobalSetup = Option<{
     dbClient: TDatabaseClient
 }>
 
+
 export const testRunner = new TestRunner<GlobalSetup>({
     beforeGlobal: Some(async () => {
         const dbClient = buildClient();
+            const migrations = [
+                usersTable,
+            ].map(sql => dbClient.query(sql));
 
+            const migrateResult = (await promiseAll(migrations));
+            migrateResult.unwrap();
 
 
         return Some({dbClient});
     }
     ),
+    afterGlobal: Some(async (globalSetup) => {
+       (await globalSetup.unwrap().dbClient.query(
+            `DO $$ DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP;
+END $$;`)).unwrap();
+    }),
     beforeEachCase: Some(async (globalSetup) => {
-        const migrations = [
-            usersTable,
-        ].map(sql => globalSetup.unwrap().dbClient.query(sql));
-
-        const migrateResult = (await promiseAll(migrations));
-        migrateResult.unwrap();
+        dump(await scripts.runFromDir("./tests/seeds"))
     }),
     afterEachCase: Some(async (globalSetup) => {
-//         (await globalSetup.unwrap().dbClient.query(
-//             `DO $$ DECLARE
-//     r RECORD;
-// BEGIN
-//     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-//         EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-//     END LOOP;
-// END $$;`)).unwrap();
+        (await globalSetup.unwrap().dbClient.query(
+            `DO $$ DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'TRUNCATE TABLE public.' || quote_ident(r.tablename) || '';
+    END LOOP;
+END $$;`)).unwrap();
     }),
 });
 

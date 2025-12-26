@@ -1,9 +1,9 @@
 import { Pool } from 'pg'
 import {
     preparedSqlFromObjectToArrayParams, TableRows,
-    TDatabaseClient, TInsertRow, TInsertRowResult, TQueryError,
+    TDatabaseClient, TInsertManyRowResult, TInsertRow, TInsertRowResult, DBQueryError,
     TQueryParams,
-    TQueryResult, TRow
+    TQueryResult
 } from "@smuzi/database";
 import {
     asArray,
@@ -61,15 +61,18 @@ export class PostgresClient implements TDatabaseClient {
                 },
             );
 
-            return Ok(new TableRows(schema, res.rows))
+            return Ok({
+                rows: new TableRows(schema, res.rows),
+                rowCount: OptionFromNullable(res.rowCount),
+            })
         } catch (err) {
-            return Err({
+            return Err(new DBQueryError({
                 sql: preparedSql.substring(0, 200) + (preparedSql.length > 200 ? " ..." : ""),
                 message: err.message,
                 code: OptionFromNullable(err.code),
                 detail: OptionFromNullable(err.detail),
                 table: OptionFromNullable(err.table),
-            });
+            }));
         }
     }
 
@@ -87,61 +90,77 @@ export class PostgresClient implements TDatabaseClient {
         const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
 
         return (await this.query(sql, values, Some(schema)))
-            .errOr(rows => {
-                return rows.get(0).match({
+            .errOr(result => {
+                return result.rows.get(0).match({
                     Some(row) {
                         return Ok(row) as TInsertRowResult<S, RC>;
                     },
                     None() {
-                        return Err({
-                            sql: sql,
-                            message: 'Result of query insert row not contain any rows',
-                            code: Some("SYSTEM:1000"),
-                            detail: None(),
-                            table: Some(table)
-                        }) as TInsertRowResult<S, RC>
+                        return Err(new DBQueryError(
+                            {
+                                sql,
+                                message: 'Result of query insert row not contain any rows',
+                                code: Some("SYSTEM:1000"),
+                                detail: None(),
+                                table: Some(table)
+                            })
+                        ) as TInsertRowResult<S, RC>
                     },
                 })
         });
     }
 
-    // async insertManyRows(table, rows, idColumn = 'id') {
-    //     if (rows.length === 0) return Ok([]);
-    //     //TODO: protected for injections
-    //
-    //     const columns = Object.keys(rows[0]);
-    //     const values: any[] = [];
-    //     const placeholders = rows.map((row, rowIndex) => {
-    //         return `(${columns.map((_, colIndex) => {
-    //             const placeholderIndex = rowIndex * columns.length + colIndex + 1;
-    //             return `$${placeholderIndex}`;
-    //         }).join(', ')})`;
-    //     }).join(', ');
-    //
-    //     rows.forEach(row => values.push(...Object.values(row)));
-    //
-    //     return (await this.query<TRow[]>(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${idColumn}`, values))
-    //         .mapOk(rows => rows.map(r => OptionFromNullable(r[idColumn])));
-    // }
+    async insertManyRows<S extends SchemaObject<any>, const RC extends string[]>(
+        table: string,
+        schema: S,
+        rows: TInsertRow<S>[],
+        returningColumns: RC = Array<string>() as RC
+    ): Promise<TInsertManyRowResult<S, RC>> {
+        if (rows.length === 0) return Ok(new TableRows(Some(schema), [])) as any;
 
-    // async updateRow(table, id, row, idColumn = 'id') {
-    //     return this.updateManyRows(table, row, `${idColumn} = ${id}`)
-    // }
+        //TODO: protected for injections
 
-    // async updateManyRows(table, values, where) {
-    //     //TODO: protected for injections
-    //     const entries = Object.entries(values);
-    //
-    //     const setClause = entries
-    //         .map(([key], i) => `${key} = $${i + 1}`)
-    //         .join(", ");
-    //
-    //     const sql = `UPDATE ${table} SET ${setClause} WHERE ${where};`;
-    //
-    //     const params = entries.map(([, val]) => val);
-    //
-    //     return (await this.query(sql, params)).mapOk(v);
-    // }
+        const columns = Object.keys(rows[0]);
+        const values: any[] = [];
+        const placeholders = rows.map((row, rowIndex) => {
+            return `(${columns.map((_, colIndex) => {
+                const placeholderIndex = rowIndex * columns.length + colIndex + 1;
+                return `$${placeholderIndex}`;
+            }).join(', ')})`;
+        }).join(', ');
+
+        rows.forEach(row => values.push(...Object.values(row).map(val => isOption(val) ? val.someOr(null) : val)));
+
+        return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${returningColumns.join(',')}`, values, Some(schema))).mapOk(result => result.rows) as any;
+    }
+
+    async updateRowById<S extends SchemaObject<any>>(
+        table: string,
+        schema: S,
+        id: number | string,
+        row: Partial<TInsertRow<S>>,
+        idColumn: string = 'id'
+    ): Promise<TQueryResult<S>>
+    {
+        //TODO: protected for injections
+        return await this.updateManyRows(table, row, `${idColumn} = ${id}`);
+    }
+
+    async updateManyRows<S extends SchemaObject<any>>(table: string, values: Partial<TInsertRow<S>>, where): Promise<TQueryResult<S>>
+    {
+        //TODO: protected for injections
+        const entries = Object.entries(values);
+
+        const setClause = entries
+            .map(([key], i) => `${key} = $${i + 1}`)
+            .join(", ");
+
+        const sql = `UPDATE ${table} SET ${setClause} WHERE ${where};`;
+
+        const params = entries.map(([, val]) => val);
+
+        return (await this.query(sql, params));
+    }
 
 }
 
