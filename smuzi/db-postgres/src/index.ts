@@ -73,9 +73,9 @@ export class PostgresClient implements TDatabaseClient {
         }
     }
 
-    async insertRow<S extends SchemaObject, const RC extends string[],>(
-        schema: S,
+    async insertRow<S extends SchemaObject<any>, const RC extends string[]>(
         table: string,
+        schema: S,
         row: TInsertRow<S>,
         returningColumns: RC = Array<string>() as RC
     ): Promise<TInsertRowResult<S, RC>> {
@@ -90,7 +90,7 @@ export class PostgresClient implements TDatabaseClient {
             .errOr(rows => {
                 return rows.get(0).match({
                     Some(row) {
-                        return Ok(row) ;
+                        return Ok(row) as TInsertRowResult<S, RC>;
                     },
                     None() {
                         return Err({
@@ -99,7 +99,7 @@ export class PostgresClient implements TDatabaseClient {
                             code: Some("SYSTEM:1000"),
                             detail: None(),
                             table: Some(table)
-                        }) as Result<S['__infer'], TQueryError>
+                        }) as TInsertRowResult<S, RC>
                     },
                 })
         });

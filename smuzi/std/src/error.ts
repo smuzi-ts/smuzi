@@ -20,7 +20,7 @@ export class StdError {
     }
 }
 
-export function tranformError(err: unknown): StdError {
+export function transformError(err: unknown): StdError {
     if (asObject(err)) {
         return {
             code: isNull(err.code) ? "" : asString(err.code) || asNumber(err.code) ? err.code : "",
@@ -33,7 +33,7 @@ export function tranformError(err: unknown): StdError {
     return new StdError(
         "",
         asString(err) ? err : "Unknown error",
-        None(),
+        Some(new Error().stack ?? ''),
         asString(err) ? None() : OptionFromNullable(err)
     )
 }

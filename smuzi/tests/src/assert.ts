@@ -35,6 +35,7 @@ export type Assert = {
     fail(err: string | StdError | AssertionError): never;
 
     isEmpty: (actual: unknown) => asserts actual is TEmpty,
+    isNotNullable: (actual: unknown) => asserts actual is NonNullable<unknown>,
 
     isNumber: (actual: unknown) => asserts actual is number,
 
@@ -85,11 +86,23 @@ export const assert: Assert = {
     schema: assertSchema,
 
     isEmpty(actual) {
-        if (!isEmpty(actual)) {
+        if (! isEmpty(actual)) {
             assertionError({
                     message: "Expected TEmpty, but get other",
                     actual,
                     expected: "TEmpty",
+                    operator: 'isEmpty'
+                }
+            )
+        }
+    },
+
+    isNotNullable(actual) {
+        if (isEmpty(actual)) {
+            assertionError({
+                    message: "Expected NotNullable, but get nullable",
+                    actual,
+                    expected: "NotNullable",
                     operator: 'isEmpty'
                 }
             )

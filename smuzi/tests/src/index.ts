@@ -5,6 +5,7 @@ import {argv} from 'node:process';
 
 export {assert} from "#lib/assert.js"
 import {
+    asString,
     dump,
     Err,
     isEmpty,
@@ -18,7 +19,7 @@ import {
     Some,
     StdError, StdMap,
     StdRecord,
-    tranformError
+    transformError
 } from "@smuzi/std";
 import {
     CommandAction,
@@ -116,7 +117,7 @@ export function it<GS extends Option>(msg: string, testCase: TestCase<GS>): ItRe
                 await testCase(globalSetup);
                 return Ok(true);
             } catch (error) {
-                return Err(error);
+                return Err(transformError(error));
             }
         }
     }

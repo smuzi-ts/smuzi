@@ -2,7 +2,7 @@ import http2, { Http2SecureServer, Http2Server, IncomingHttpHeaders, ServerHttp2
 import fs from 'node:fs';
 
 import { methodFromString } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, tranformError, StdError, dump, HttpResponse } from '@smuzi/std';
+import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, transformError, StdError, dump, HttpResponse } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http2ServerConfig } from "#lib/index.js";
 
 type NativeServer = Http2SecureServer | Http2Server;
@@ -16,7 +16,7 @@ export class StdHttp2Server implements HttpServer {
     async close(): Promise<Result<boolean, StdError>> {
         return new Promise(resolve => {
             this.#server.close((err) => {
-                return resolve(isNull(err) ? Ok(true) : Err(tranformError(err)));
+                return resolve(isNull(err) ? Ok(true) : Err(transformError(err)));
             })
         })
     }

@@ -12,6 +12,7 @@ export {type SchemaValidationError} from "#lib/types.js";
 export {SchemaObject} from "#lib/obj.js";
 export {SchemaOption} from "#lib/option.js";
 export {SchemaStorageAutoNumber} from "#lib/storage.js";
+export {SchemaNumber, SchemaString} from "#lib/primitive.js";
 
 export type SchemaRule = _SchemaRule;
 

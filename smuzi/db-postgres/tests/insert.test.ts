@@ -17,8 +17,8 @@ testRunner.describe("db-postgres - query", [
             (await globalSetup.unwrap()
                 .dbClient
                 .insertRow(
-                    userSchema,
                     usersTable,
+                    userSchema,
                     insert,
                     ['id', 'name']
                 ));

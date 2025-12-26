@@ -1,7 +1,8 @@
-import {TDatabaseConfig, TMigrationLogAction} from "#lib/types.js";
+import {TDatabaseConfig} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
 import {clearSQL} from "#lib/helpers.js";
+import {TMigrationLogAction} from "#lib/migration.js";
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {
@@ -37,6 +38,7 @@ export default function (config: TDatabaseConfig) {
                 branch,
                 action: TMigrationLogAction.up,
                 sql_source,
+                created_at: new Date(),
             })).unwrap()
         }
     }

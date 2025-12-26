@@ -1,7 +1,8 @@
-import {TDatabaseConfig, TMigrationLogAction} from "#lib/types.js";
+import {TDatabaseConfig, } from "#lib/types.js";
 import {TOutputConsole} from "@smuzi/console";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {clearSQL} from "#lib/helpers.js";
+import {TMigrationLogAction} from "#lib/migration.js";
 
 export default function (config: TDatabaseConfig) {
     return async (output: TOutputConsole, params) => {
@@ -16,8 +17,8 @@ export default function (config: TDatabaseConfig) {
         const sortedLogMigrations = (await migrationsLogRepository.listRuned()).unwrap();
         const migrations = service.buildMigrations();
 
-        for (const rowLog of sortedLogMigrations) {
-            const name = rowLog.name.unwrap();
+        for (const [key, rowLog] of sortedLogMigrations) {
+            const name = rowLog.name;
             const migration = migrations.getByName(name)
 
             output.success('Down migration - ' + name)
@@ -27,9 +28,10 @@ export default function (config: TDatabaseConfig) {
 
             (await migrationsLogRepository.create({
                 name,
-                branch: rowLog.branch.unwrap(),
+                branch: rowLog.branch,
                 action: TMigrationLogAction.down,
                 sql_source,
+                created_at: new Date()
             })).unwrap()
         }
 
@@ -50,6 +52,7 @@ export default function (config: TDatabaseConfig) {
                 branch,
                 action: TMigrationLogAction.up,
                 sql_source,
+                created_at: new Date()
             })
         }
     }

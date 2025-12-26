@@ -11,11 +11,13 @@ import {
     StdRecord
 } from "@smuzi/std"
 import {
+    schema,
     SchemaObject,
     SchemaOption,
     SchemaRule,
     SchemaStorageAutoNumber,
 } from "@smuzi/schema"
+import {TMigrations, TMigrationsLogRepository} from "#lib/migration.js";
 
 export type TQueryParams = unknown[] | Record<string, unknown>
 export type TRow = Record<string, unknown>
@@ -26,10 +28,16 @@ export type TQueryError = {
     detail: Option<string>
     table: Option<string>
 }
-export type TQueryResult<Row extends Record<string, unknown> | never, S extends SchemaObject> = Result<TableRows<Row, S>, TQueryError>
+export type TQueryResult<S extends SchemaObject> = Result<TableRows<S, Option<S>>, TQueryError>
 export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Simplify<RecordFromKeys<S["__infer"], Columns>>, TQueryError>
 
-export class TableRows<Row extends Record<string, unknown> | never, Schema extends SchemaObject, SchemaValue extends Option<Schema> = Option<never>, Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>> {
+
+export class TableRows<
+    Schema extends SchemaObject,
+    SchemaValue extends Option<Schema>,
+    TableRow extends SchemaValue extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"] = SchemaValue extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"],
+   Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>
+> {
     #rows: Rows
     #schema: SchemaValue
 
@@ -38,7 +46,7 @@ export class TableRows<Row extends Record<string, unknown> | never, Schema exten
         this.#schema = schema;
     }
 
-    #prepareRow(row: Record<string, unknown>): SchemaValue extends Option<never> ?  StdRecord<Row> : Schema["__infer"] {
+    #prepareRow(row: Record<string, unknown>): TableRow {
         return this.#schema.match({
             None: () => new StdRecord(row),
             Some: (schema) => {
@@ -73,7 +81,7 @@ export class TableRows<Row extends Record<string, unknown> | never, Schema exten
 
     }
 
-    get(key: number): Option<SchemaValue extends Option<never> ? StdRecord<Row> : Schema["__infer"]> {
+    get(key: number): Option<TableRow> {
         if (this.has(key)) {
             return Some(this.#prepareRow(this.#rows[key]));
         }
@@ -84,15 +92,25 @@ export class TableRows<Row extends Record<string, unknown> | never, Schema exten
     has(key: number) {
         return key in this.#rows;
     }
+
+    *entries(): IterableIterator<[number, TableRow]> {
+        for (let k = 0; k < this.#rows.length; k++) {
+            yield [k, this.get(k).unwrap()];
+        }
+    }
+
+    [Symbol.iterator](): IterableIterator<[number, TableRow]> {
+        return this.entries();
+    }
 }
 
 
 export interface TDatabaseClient {
-    query<Row extends Record<string, unknown> | never, S extends SchemaObject<any> | never = never>(sql: string, params?: TQueryParams, schema?: Option<S>): Promise<TQueryResult<Row, S>>;
+    query<S extends SchemaObject<any>>(sql: string, params?: TQueryParams, schema?: Option<S>): Promise<TQueryResult<S>>;
 
-    insertRow<S extends SchemaObject<any>, const RC extends string[],>(
-        schema: S,
+    insertRow<S extends SchemaObject<any>, const RC extends string[]>(
         table: string,
+        schema: S,
         row: TInsertRow<S>,
         returningColumns?: RC
     ): Promise<TInsertRowResult<S, RC>>;
@@ -103,18 +121,7 @@ export interface TDatabaseClient {
     // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
 }
 
-export type TMigration = {
-    up: () => string,
-    down: () => string,
-}
 
-export type TMigrations = {
-    add: (name: string, migration: TMigration) => void,
-    group: (migrations: TMigrations) => void,
-    getList: () => Map<string, TMigration>,
-    getByName: (name: string) => TMigration,
-    getGroupName:() => string
-}
 
 export type TDatabaseService = {
     client: TDatabaseClient,
@@ -125,41 +132,6 @@ export type TDatabaseService = {
 export type TDatabaseConfig = {
     services: Record<string, TDatabaseService>,
     current: TDatabaseService
-};
-
-
-export enum TMigrationLogAction {
-    up = 'up',
-    down = 'down',
-}
-
-export type TMigrationLogSave = {
-    name: Option<string>,
-    branch: Option<number>,
-    action: Option<TMigrationLogAction>,
-    sql_source: Option<string>,
-}
-
-export type TMigrationLogRow = {
-    id: Option<string>,
-    name: Option<string>,
-    branch: Option<number>,
-    action: Option<string>,
-    sql_source: Option<string>,
-    created_at: Option<Date>,
-}
-
-
-export type TMigrationsLogRepository = {
-    getTable(): string,
-    createTableIfNotExists(): Promise<TQueryResult>,
-    listRuned(): Promise<TQueryResult<TMigrationLogRow>>,
-    listRunedByBranch(branch: number): Promise<TQueryResult<TMigrationLogRow>>,
-    getLastBranch(): Promise<Option<number>>,
-    create<RC extends string[] = ['id']>(row: TMigrationLogSave, returningColumns?: RC): Promise<TInsertRowResult<[], TMigrationLogSave>>,
-    migrationLastAction(name: string): Promise<Option<string>>,
-    migrationWillBeRuned(name: string): Promise<boolean>,
-    freshSchema(): Promise<TQueryResult>
 };
 
 export type UnwrapOption<T> = T extends Option<infer U> ? U : T;

@@ -1,5 +1,11 @@
 import {isEmpty, None, Option, Some} from "@smuzi/std";
-import {TDatabaseClient, TMigrationLogAction, TMigrationLogRow, TMigrationsLogRepository} from "@smuzi/database";
+import {
+    migrationLogRowSchema,
+    TDatabaseClient,
+    TMigrationLogAction,
+    TMigrationLogRowSchema,
+    TMigrationsLogRepository
+} from "@smuzi/database";
 
 const table = 'migrations_log';
 
@@ -20,10 +26,10 @@ export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): T
 `)
         },
         listRuned() {
-            return client.query<TMigrationLogRow>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
+            return client.query<TMigrationLogRowSchema>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
         },
         listRunedByBranch(branch: number) {
-            return client.query<TMigrationLogRow>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} WHERE branch = ${branch} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
+            return client.query<TMigrationLogRowSchema>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} WHERE branch = ${branch} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
         },
         async getLastBranch(): Promise<Option<number>> {
             const res = (await client.query(`SELECT MAX(branch) as last_branch FROM ${table}`)).unwrap();
@@ -33,7 +39,7 @@ export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): T
                 : res[0].last_branch as Option<number>
         },
         create(row) {
-            return client.insertRow(table, row);
+            return client.insertRow(table, migrationLogRowSchema, row);
         },
         async migrationLastAction(name: string) {
             const res = (await client.query(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, [name])).unwrap();

@@ -19,7 +19,7 @@ import {
     Err,
     Ok,
     isNull,
-    tranformError,
+    transformError,
     StdError,
     dump,
     HttpResponse,
@@ -44,7 +44,7 @@ export class StdHttp1Server implements HttpServer {
     async close(): Promise<Result<boolean, StdError>> {
         return new Promise(resolve => {
             this.#server.close((err) => {
-                return resolve(isNull(err) ? Ok(true) : Err(tranformError(err)));
+                return resolve(isNull(err) ? Ok(true) : Err(transformError(err)));
             })
         })
     }
