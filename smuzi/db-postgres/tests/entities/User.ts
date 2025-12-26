@@ -5,7 +5,7 @@ export const usersTable = 'users';
 export const userSchema =
     schema.obj({
         id: schema.storage.autoNumber(),
-        name: schema.string(),
+        name: schema.option(schema.string()),
         email: schema.string(),
         password: schema.string(),
         created_at: schema.datetime.native(),

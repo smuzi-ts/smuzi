@@ -9,7 +9,7 @@ import {
     asArray,
     asObject, dump,
     Err,
-    isArray,
+    isArray, isOption,
     None,
     Ok, Option,
     OptionFromNullable,
@@ -45,7 +45,7 @@ export class PostgresClient implements TDatabaseClient {
 
     }
 
-    async query<S extends SchemaObject>(schema: S, sql: string, params?: TQueryParams): Promise<TQueryResult<S>> {
+    async query<S extends SchemaObject>( sql: string, params: TQueryParams = [], schema: Option<S> = None()): Promise<TQueryResult<S>> {
         let preparedSql = sql;
 
         if (asObject(params)) {
@@ -60,6 +60,7 @@ export class PostgresClient implements TDatabaseClient {
                     values: params,
                 },
             );
+
             return Ok(new TableRows(schema, res.rows))
         } catch (err) {
             return Err({
@@ -75,16 +76,17 @@ export class PostgresClient implements TDatabaseClient {
     async insertRow<S extends SchemaObject, const RC extends string[],>(
         schema: S,
         table: string,
-        row: TInsertRow<S["__infer"]>,
-        returningColumns: RC
+        row: TInsertRow<S>,
+        returningColumns: RC = Array<string>() as RC
     ): Promise<TInsertRowResult<S, RC>> {
         //TODO: protected for injections
         const columns = Object.keys(row);
-        const values = Object.values(row);
+        const values = Object.values(row).map(val => isOption(val) ? val.someOr(null) : val);
         const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
+
         const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query(schema, sql, values))
+        return (await this.query(sql, values, Some(schema)))
             .errOr(rows => {
                 return rows.get(0).match({
                     Some(row) {

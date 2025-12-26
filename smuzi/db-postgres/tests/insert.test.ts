@@ -7,7 +7,7 @@ import {testRunner} from "./index.js";
 testRunner.describe("db-postgres - query", [
     it("insert row", async (globalSetup) => {
         const insert = {
-            name: faker.string(),
+            name: Some(faker.string()),
             email: faker.string(),
             password: faker.string(),
             created_at: faker.datetime.native(),
@@ -20,13 +20,14 @@ testRunner.describe("db-postgres - query", [
                     userSchema,
                     usersTable,
                     insert,
-                    ['id']
+                    ['id', 'name']
                 ));
 
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (row) => {
-                dump(row.id);
+                assert.isNumber(row.id);
+                assert.isString(row.name.unwrap());
             },
         })
 

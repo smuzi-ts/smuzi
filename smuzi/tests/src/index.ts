@@ -80,8 +80,8 @@ type DescribeOptions<GS extends unknown> = {
     inputParams: TestRunnerInputParams,
     config: TestConfig,
     globalSetup: GS,
-    beforeEachCase: Option<() => Promise<void>>,
-    afterEachCase: Option<() => Promise<void>>,
+    beforeEachCase: Option<(globalSetup: GS) => Promise<void>>,
+    afterEachCase: Option<(globalSetup: GS) => Promise<void>>,
     filters: {
         byMsg: Option<(msg: string) => boolean>
     }
@@ -149,8 +149,8 @@ export type TestRunnerConfig<GS extends Option> = {
     config?: TestConfig;
     beforeGlobal?: Option<() => Promise<GS | void>>;
     afterGlobal?: Option<(globalSetup: GS) => Promise<void>>;
-    beforeEachCase?: Option<() => Promise<void>>;
-    afterEachCase?: Option<() => Promise<void>>;
+    beforeEachCase?: Option<(globalSetup: GS) => Promise<void>>;
+    afterEachCase?: Option<(globalSetup: GS) => Promise<void>>;
     describes?: Describe<GS>[];
 }
 
@@ -163,8 +163,8 @@ export class TestRunner<GS extends Option> {
     #config: TestConfig;
     #beforeGlobal: Option<() => Promise<GS | void>>;
     #afterGlobal: Option<(globalSetup: GS) => Promise<void>>;
-    #beforeEachCase: Option<() => Promise<void>>;
-    #afterEachCase: Option<() => Promise<void>>;
+    #beforeEachCase: Option<(globalSetup: GS) => Promise<void>>;
+    #afterEachCase: Option<(globalSetup: GS) => Promise<void>>;
     #describes: Describe<GS>[];
     
     constructor({
@@ -252,7 +252,6 @@ export class TestRunner<GS extends Option> {
                 skip: 0,
             }
             for (const it of cases) {
-                await options.beforeEachCase.asyncMapSome();
                 const generalMsg = msg + "-" + it.msg;
                 const filteredByMsg = options.filters.byMsg.someOr(() => false);
 
@@ -260,6 +259,8 @@ export class TestRunner<GS extends Option> {
                     ++result.skip;
                     continue;
                 }
+
+                await options.beforeEachCase.asyncMapSome(options.globalSetup);
 
                 (await it.testCase(options.globalSetup)).match({
                     Ok(_) {
@@ -281,7 +282,7 @@ export class TestRunner<GS extends Option> {
                     }
                 });
 
-                await options.afterEachCase.asyncMapSome();
+                await options.afterEachCase.asyncMapSome(options.globalSetup);
             }
             return result;
         }

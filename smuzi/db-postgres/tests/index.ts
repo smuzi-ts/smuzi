@@ -1,5 +1,5 @@
 import {TestRunner} from "@smuzi/tests";
-import {env, main, Option, promiseAll, Some} from "@smuzi/std";
+import {dump, env, main, Option, promiseAll, Some} from "@smuzi/std";
 import usersTable from "./migrations/usersTable.js";
 import {postgresClient} from "#lib/index.js";
 import {TDatabaseClient} from "@smuzi/database";
@@ -22,15 +22,20 @@ export const testRunner = new TestRunner<GlobalSetup>({
     beforeGlobal: Some(async () => {
         const dbClient = buildClient();
 
-        const migrations = [
-                usersTable,
-            ].map(sql => dbClient.query(sql));
 
-            (await promiseAll(migrations)).unwrap();
-            return Some({dbClient});
-        }
+
+        return Some({dbClient});
+    }
     ),
-    afterGlobal: Some(async (globalSetup) => {
+    beforeEachCase: Some(async (globalSetup) => {
+        const migrations = [
+            usersTable,
+        ].map(sql => globalSetup.unwrap().dbClient.query(sql));
+
+        const migrateResult = (await promiseAll(migrations));
+        migrateResult.unwrap();
+    }),
+    afterEachCase: Some(async (globalSetup) => {
 //         (await globalSetup.unwrap().dbClient.query(
 //             `DO $$ DECLARE
 //     r RECORD;

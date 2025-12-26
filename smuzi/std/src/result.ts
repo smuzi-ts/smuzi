@@ -24,14 +24,7 @@ export function OkOrNullableAsError<T extends unknown, E = string>(value: T, err
 
 function unwrapErrorPanic(err): never
 {
-    panic(
-        err instanceof StdError ? err :
-         (asString(err) ? err : json.toString(err).match({
-            Ok: (v) => v,
-            Err: (e) => e.message
-            })
-         )
-    );
+    panic(err);
 }
 
 export class Result<T = unknown, E = unknown> implements IMatched {

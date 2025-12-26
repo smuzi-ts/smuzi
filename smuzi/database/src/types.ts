@@ -15,7 +15,6 @@ import {
     SchemaOption,
     SchemaRule,
     SchemaStorageAutoNumber,
-    SchemaStorageExcludeSaving
 } from "@smuzi/schema"
 
 export type TQueryParams = unknown[] | Record<string, unknown>
@@ -27,30 +26,54 @@ export type TQueryError = {
     detail: Option<string>
     table: Option<string>
 }
-export type TQueryResult<S extends SchemaObject> = Result<TableRows<S>, TQueryError>
-export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<S["__infer"], TQueryError>
+export type TQueryResult<Row extends Record<string, unknown> | never, S extends SchemaObject> = Result<TableRows<Row, S>, TQueryError>
+export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Simplify<RecordFromKeys<S["__infer"], Columns>>, TQueryError>
 
-export class TableRows<Schema extends SchemaObject, Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>> {
+export class TableRows<Row extends Record<string, unknown> | never, Schema extends SchemaObject, SchemaValue extends Option<Schema> = Option<never>, Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>> {
     #rows: Rows
-    #schema: Schema
+    #schema: SchemaValue
 
-    constructor(schema: Schema, rows: Rows) {
+    constructor(schema: SchemaValue, rows: Rows) {
         this.#rows = rows;
         this.#schema = schema;
     }
 
-    #prepareRow(row: Record<string, unknown>): Schema['__infer'] {
-        const prepare = {} as any;
-        for (const field in this.#schema) {
-            if (this.#schema[field] instanceof SchemaOption) {
-                prepare[field] = OptionFromNullable(row[field]);
-            }
-        }
+    #prepareRow(row: Record<string, unknown>): SchemaValue extends Option<never> ?  StdRecord<Row> : Schema["__infer"] {
+        return this.#schema.match({
+            None: () => new StdRecord(row),
+            Some: (schema) => {
 
-        return prepare;
+                const config = schema.getConfig();
+                const prepare = {} as any;
+                for (const field in config) {
+                    /**
+                     * TODO:
+                     * A database is a sufficiently reliable data source
+                     * to skip validating the retrieved data.
+                     * However, it is important to understand that type inference in this case
+                     * does not guarantee a 100% match with the actual database types.
+                     * This especially affects working with nullable fields.
+                     * For example, a field was required but later became nullable.
+                     * In this case, without changing the schema, `null` values will start flowing into your code.
+                     * This issue can be solved by `StdRecord`, but then all fields have to be handled as `Option`,
+                     * which is very inconvenient for developers.
+                    **/
+                    if (field in row) {
+                        if (config[field] instanceof SchemaOption) {
+                            prepare[field] = OptionFromNullable(row[field]);
+                        } else {
+                            prepare[field] = row[field];
+                        }
+                    }
+                }
+
+                return prepare;
+            }
+        })
+
     }
 
-    get(key: number): Option<Schema['__infer']> {
+    get(key: number): Option<SchemaValue extends Option<never> ? StdRecord<Row> : Schema["__infer"]> {
         if (this.has(key)) {
             return Some(this.#prepareRow(this.#rows[key]));
         }
@@ -65,13 +88,13 @@ export class TableRows<Schema extends SchemaObject, Rows extends Array<Record<st
 
 
 export interface TDatabaseClient {
-    query<S extends SchemaObject<any>>(schema: S, sql: string, params?: TQueryParams): Promise<TQueryResult<S>>;
+    query<Row extends Record<string, unknown> | never, S extends SchemaObject<any> | never = never>(sql: string, params?: TQueryParams, schema?: Option<S>): Promise<TQueryResult<Row, S>>;
 
     insertRow<S extends SchemaObject<any>, const RC extends string[],>(
         schema: S,
         table: string,
         row: TInsertRow<S>,
-        returningColumns: RC
+        returningColumns?: RC
     ): Promise<TInsertRowResult<S, RC>>;
 
 
@@ -154,5 +177,5 @@ export type ExcludeExcludeSaveKeys<T> = {
 
 export type TInsertRow<S extends SchemaObject> = S extends SchemaObject<infer U> ? {
      [K in ExcludeExcludeSaveKeys<U>]: S["__infer"][K]
-} : unknown;
+} : {};
 

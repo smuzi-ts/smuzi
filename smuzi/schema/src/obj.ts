@@ -44,6 +44,10 @@ export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implement
         return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
     }
 
+    getConfig() {
+        return this.#config;
+    }
+
     fake() {
         let output = {} as any;
 
