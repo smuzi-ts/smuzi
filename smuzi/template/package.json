@@ -35,7 +35,8 @@
   "devDependencies": {
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
-    "@smuzi/tests": "workspace:*"
+    "@smuzi/tests": "workspace:*",
+    "@smuzi/faker": "workspace:*"
   }
 
 }

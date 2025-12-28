@@ -191,6 +191,9 @@ importers:
         specifier: workspace:*
         version: link:../std
     devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../tests
@@ -244,6 +247,9 @@ importers:
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
+      '@smuzi/template':
+        specifier: workspace:*
+        version: link:../template
     devDependencies:
       '@smuzi/tests':
         specifier: workspace:*

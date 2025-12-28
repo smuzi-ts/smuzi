@@ -1,5 +1,7 @@
-import "./globals.js";
-import {http2ServerRun} from '@smuzi/http-server';
+import {http1ServerRun} from '@smuzi/http-server';
 import {httpServerConfig} from "#configs/server.js";
+import {main} from "@smuzi/std";
 
-const server = await http2ServerRun(httpServerConfig)
+main(async () => {
+    await http1ServerRun(httpServerConfig)
+})

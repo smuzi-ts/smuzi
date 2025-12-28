@@ -22,8 +22,5 @@ const services = {
     }
 }
 
-export const databaseConfig = new DatabaseConfig({
-    services,
-    current: services.default,
-});
+
 

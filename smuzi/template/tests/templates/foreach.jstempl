@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
 </head>
 <body>
-{{ data.var }}
+@foreach(data.users as user)
+    <div>{{ user.name }} - {{ user.email }}</div>
+@endforeach
 </body>
 </html>
