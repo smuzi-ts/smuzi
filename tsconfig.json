@@ -12,6 +12,7 @@
     { "path": "smuzi/db-postgres" },
     { "path": "smuzi/http-server" },
     { "path": "smuzi/http-client" },
+    { "path": "smuzi/zoho-oauth" },
     { "path": "project/dashboard" }
   ]
 }

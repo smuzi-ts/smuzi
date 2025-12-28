@@ -1,0 +1,41 @@
+{
+  "name": "@smuzi/template",
+  "version": "0.0.1",
+  "description": "Simple template engine for JavaScript and TypeScript",
+  "scripts": {
+    "test": "tsx tests/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "type": "module",
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "template",
+    "html",
+    "render"
+  ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
+
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "./build"
+  ],
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  },
+  "dependencies": {
+    "@smuzi/std": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "tsx": "^4.20.6",
+    "@smuzi/tests": "workspace:*"
+  }
+
+}

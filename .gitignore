@@ -18,3 +18,4 @@ ssl
 # compiled output
 build/
 dist/
+/smuzi/zoho-oauth/

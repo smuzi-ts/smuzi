@@ -185,6 +185,22 @@ importers:
         specifier: ^4.20.6
         version: 4.20.6
 
+  smuzi/template:
+    dependencies:
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+    devDependencies:
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+
   smuzi/tests:
     dependencies:
       '@smuzi/schema':
@@ -213,6 +229,31 @@ importers:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0
+
+  smuzi/zoho-oauth:
+    dependencies:
+      '@smuzi/http-client':
+        specifier: workspace:*
+        version: link:../http-client
+      '@smuzi/http-server':
+        specifier: workspace:*
+        version: link:../http-server
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+    devDependencies:
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
 
 packages:
 
