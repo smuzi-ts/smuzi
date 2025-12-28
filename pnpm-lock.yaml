@@ -110,6 +110,25 @@ importers:
         specifier: ^22.15.21
         version: 22.19.0
 
+  smuzi/html-template:
+    dependencies:
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+    devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+
   smuzi/http-client:
     dependencies:
       '@smuzi/std':
@@ -185,25 +204,6 @@ importers:
         specifier: ^4.20.6
         version: 4.20.6
 
-  smuzi/template:
-    dependencies:
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-    devDependencies:
-      '@smuzi/faker':
-        specifier: workspace:*
-        version: link:../faker
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
-      tsx:
-        specifier: ^4.20.6
-        version: 4.20.6
-
   smuzi/tests:
     dependencies:
       '@smuzi/schema':
@@ -235,6 +235,9 @@ importers:
 
   smuzi/zoho-oauth:
     dependencies:
+      '@smuzi/html-template':
+        specifier: workspace:*
+        version: link:../html-template
       '@smuzi/http-client':
         specifier: workspace:*
         version: link:../http-client
@@ -247,9 +250,6 @@ importers:
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
-      '@smuzi/template':
-        specifier: workspace:*
-        version: link:../template
     devDependencies:
       '@smuzi/tests':
         specifier: workspace:*

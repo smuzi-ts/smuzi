@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
 </head>
 <body>
-@foreach(data.users as user)
-    <div>{{ user.name }} - {{ user.email }}</div>
-@endforeach
+{{ message }}
+{{ message.includes("some") }}
+
 </body>
 </html>

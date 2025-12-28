@@ -18,6 +18,8 @@ export * from "./record.js";
 export * from "./map.js";
 export * from "./list.js";
 export * from "./common.js";
+export * from "./uuid.js";
+
 import * as _scripts from "./scripts.js";
 export const scripts = _scripts;
 

@@ -1,7 +1,7 @@
 {
-  "name": "@smuzi/template",
+  "name": "@smuzi/html-template",
   "version": "0.0.1",
-  "description": "Simple template engine for JavaScript and TypeScript",
+  "description": "Simple template engine for generation HTML pages with advanced syntaxes",
   "scripts": {
     "test": "tsx tests/index.ts",
     "build": "tsc --project tsconfig.build.json",
