@@ -36,12 +36,12 @@ function evaluateExpression(expression: string, context: any): string {
 }
 
 type InputData = Record<string, unknown>
-type TemplateEngineConfig = {
+type SSREngineConfig = {
     pathDir: string,
     extension: string,
 }
 
-export function templateEngine({pathDir = "./src/templates", extension = "html"}: Partial<TemplateEngineConfig> = {}) {
+export function ssrEngine({pathDir = "./src/templates", extension = "html"}: Partial<SSREngineConfig> = {}) {
     const render = async (templateName: string, inputData: InputData = {}): Promise<Result<string, StdError>> => {
         const template = fs.readFileSync(getPath(pathDir, templateName, extension), 'utf-8');
 
@@ -77,7 +77,7 @@ export function templateEngine({pathDir = "./src/templates", extension = "html"}
 
     const response = async (templateName: string, inputData: InputData = {}) => {
         return (await render(templateName, inputData)).match({
-            Err: err => err.message,
+            Err: err => err,
             Ok: html => html,
         });
     }

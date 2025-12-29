@@ -38,6 +38,10 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         return handlers.Err(this._val as E);
     }
 
+    unwrapValue(): T | E {
+        return this._val;
+    }
+
     unwrap(): T | never {
         return this.match({
             Ok: (v) => v,

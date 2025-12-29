@@ -1,16 +1,16 @@
 import {testRunner} from "./index.js";
 import {it, assert} from "@smuzi/tests";
-import {templateEngine} from "#lib/index.js";
+import {ssrEngine} from "#lib/index.js";
 import {faker} from "@smuzi/faker";
 
-const template = templateEngine({pathDir: "./tests/templates"});
+const ssr = ssrEngine({pathDir: "./tests/templates"});
 
 testRunner.describe("Template", [
     it("variable", async () => {
         const data = {
             message: faker.string()
         }
-        const html = (await template.render("variable", data)).unwrap();
+        const html = (await ssr.render("variable", data)).unwrap();
         assert.string.contains(html, data.message)
     }),
 
@@ -20,7 +20,7 @@ testRunner.describe("Template", [
                     name: faker.string(),
                     email: faker.string(),
                 }))
-        const html = (await template.render("for_of", {users})).unwrap();
+        const html = (await ssr.render("for_of", {users})).unwrap();
         assert.string.contains(html, users[0].name);
         assert.string.contains(html, users[1].name);
         assert.string.contains(html, users[2].name);
@@ -36,7 +36,7 @@ testRunner.describe("Template", [
                 email: faker.string(),
             }))
 
-        const html = (await template.render("for_of", {users})).unwrap();
+        const html = (await ssr.render("for_of", {users})).unwrap();
         for (const user of users) {
             assert.string.contains(html, user.name)
             assert.string.contains(html, user.name)

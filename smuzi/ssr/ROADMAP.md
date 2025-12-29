@@ -1,3 +1,2 @@
 - Tests for response() via http-client
-- Options object instead of arguments for templateEngine
 - Cache with timers (global, separate method renderViaCache(), responseViaCache())

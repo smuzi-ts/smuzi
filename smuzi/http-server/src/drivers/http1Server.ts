@@ -121,7 +121,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
             if (isOption(response)) {
                 response = response.someOr("");
             } else if(isResult(response)) {
-                response = response.okOr(err => err);
+                response = response.unwrapValue();
             }
 
             if (isNull(response)) {
