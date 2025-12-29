@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
 </head>
 <body>
-<script astempl>
-    for (const user of users) {
-        _print(user.name + '<br>')
-    }
-</script>
-<script astempl>
-    for (const user of users) {
-        _print(user.name + '__suffix<br>')
-    }
-</script>
+@for(const user of _data.users)
+    <div>{{ user.name }}</div>
+@end
 </body>
 </html>

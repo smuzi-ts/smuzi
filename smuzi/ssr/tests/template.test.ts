@@ -8,10 +8,14 @@ const ssr = ssrEngine({pathDir: "./tests/templates"});
 testRunner.describe("Template", [
     it("variable", async () => {
         const data = {
-            message: faker.string()
+            var1: faker.string(),
+            var2: faker.string(),
+
         }
         const html = (await ssr.render("variable", data)).unwrap();
-        assert.string.contains(html, data.message)
+        assert.string.contains(html, data.var1)
+        assert.string.contains(html, data.var1)
+
     }),
 
     it("for of - Array", async () => {
@@ -43,4 +47,14 @@ testRunner.describe("Template", [
             assert.string.contains(html, user.name)
         }
     }),
+
+    // it("component", async () => {
+    //     const pageData = {
+    //         title: faker.string()
+    //     }
+    //
+    //     const html = (await ssr.render("extends_layout", pageData)).unwrap();
+    //     assert.string.contains(html, pageData.title)
+    //
+    // }),
 ])
