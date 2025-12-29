@@ -9,7 +9,16 @@ export function asArray<T extends unknown>(count: number, callback: () => T): T[
     return res;
 }
 
-export function asMap<T extends unknown>(count: number, callback: () => T): StdMap {
+export function asNativeSet<T extends unknown>(count: number, callback: () => T): Set<T> {
+    const res = new Set<T>;
+    for (let i = 0; i < count; ++i) {
+        res.add(callback());
+    }
+
+    return res;
+}
+
+export function asStdMap<T extends unknown>(count: number, callback: () => T): StdMap {
     const res = new StdMap;
     for (let i = 0; i < count; ++i) {
         res.set(i, callback());
@@ -18,7 +27,7 @@ export function asMap<T extends unknown>(count: number, callback: () => T): StdM
     return res;
 }
 
-export function asList<T extends unknown>(count: number, callback: () => T): StdList<T> {
+export function asStdList<T extends unknown>(count: number, callback: () => T): StdList<T> {
     const res = new StdList<T>();
     for (let i = 0; i < count; ++i) {
         res.push(callback());

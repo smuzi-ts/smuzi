@@ -1,5 +1,5 @@
 {
-  "name": "@smuzi/html-template",
+  "name": "@smuzi/ssr",
   "version": "0.0.1",
   "description": "Simple template engine for generation HTML pages with advanced syntaxes",
   "scripts": {
@@ -21,7 +21,8 @@
     "access": "public"
   },
   "files": [
-    "./build"
+    "./build",
+    "globals.d.ts"
   ],
   "exports": {
     ".": "./src/index.js"

@@ -89,7 +89,7 @@ function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T
 }
 
 
-export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, HttpServerRunError>> {
+export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<StdHttp1Server, HttpServerRunError>> {
     return new Promise((resolve) => {
         async function handler(nativeRequest: IncomingMessage, nativeResponse: ServerResponse) {
             const methodStr = OptionFromNullable(nativeRequest.method).unwrap();
@@ -145,7 +145,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
             });
 
             handlers.set(resp => resp instanceof StdError, (error: StdError) => {
-                nativeResponse.statusCode = Number(error.code);
+                nativeResponse.statusCode = 500;
                 nativeResponse.statusMessage = error.message;
                 nativeResponse.end(error.message);
             });
@@ -172,7 +172,7 @@ export function http1ServerRun(config: Http1ServerConfig): Promise<Result<any, H
 
 
             matchUnknown(response, handlers, () => {
-                nativeResponse.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+                nativeResponse.writeHead(500, { "Content-Type": "text/html; charset=utf-8" });
                 nativeResponse.end("Internal Server Error");
             }, false);
         }
