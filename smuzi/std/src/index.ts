@@ -19,6 +19,7 @@ export * from "./map.js";
 export * from "./list.js";
 export * from "./common.js";
 export * from "./uuid.js";
+export * from "./regexp.js";
 
 import * as _scripts from "./scripts.js";
 export const scripts = _scripts;

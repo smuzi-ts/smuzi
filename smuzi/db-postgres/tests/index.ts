@@ -1,5 +1,5 @@
 import {TestRunner} from "@smuzi/tests";
-import {dump, env, main, Option, promiseAll, scripts, Some} from "@smuzi/std";
+import {dump, env, main, Option, promise, scripts, Some} from "@smuzi/std";
 import usersTable from "./migrations/usersTable.js";
 import {postgresClient} from "#lib/index.js";
 import {TDatabaseClient} from "@smuzi/database";
@@ -26,7 +26,7 @@ export const testRunner = new TestRunner<GlobalSetup>({
                 usersTable,
             ].map(sql => dbClient.query(sql));
 
-            const migrateResult = (await promiseAll(migrations));
+            const migrateResult = (await promise.all(migrations));
             migrateResult.unwrap();
 
 

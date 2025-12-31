@@ -11,7 +11,7 @@ import {
     Result,
     Err,
     Ok,
-    transformError, StdError
+    transformError, StdError, panic, Pipe, regexp
 } from "@smuzi/std";
 import * as vm from "node:vm";
 
@@ -28,8 +28,9 @@ type SSREngineConfig = {
     extension: string,
 }
 
-function runSSRCode(context, code: string): string {
+async function runSSRCode(context, code: string): Promise<Result<string, StdError>> {
     const printFunc = `
+                (async () => {
                 function _print(html) {
                     _output += html
                 }`;
@@ -37,22 +38,72 @@ function runSSRCode(context, code: string): string {
                 _output = '';
                 ${printFunc}
                 ${code}
-                _output`
+                return _output
+                })()`
     const script = new vm.Script(code);
 
-    const result = script.runInContext(context);
-    return result !== undefined ? String(result) : '';
+    const result = await script.runInContext(context);
+
+    return Ok(result !== undefined ? String(result) : '');
 }
+
+async function parseCode(context: any, templateCode: string) {
+    try {
+        let result = (await regexp.asyncReplace(
+            templateCode,
+            /@for\s*\(\s*(\w+)\s+of\s+([^)]+)\s*\)([\s\S]*?)@end/g,
+            async (match, item, iterable, body) => {
+                const code = `
+                            for (const ${item} of ${iterable}) {
+                                _output += "111"
+                            }
+                        `;
+
+                return await runSSRCode(context, code);
+            }
+            ));
+
+        return result.match({
+            Err: err => Err(err),
+            Ok: async templateCode => {
+                return await regexp.asyncReplace(templateCode, /{{([\s\S]*?)}}/g, async (match, code) => {
+                    return await runSSRCode(context, `_print(${code})`)
+                });
+            }
+        })
+
+
+        // const res1 = Ok(
+        //     templateCode
+        //         //@if(condition)...@else...@end or @if(condition)...@end
+        //         .replace(/@if\s*\(\s*([^)]+)\s*\)([\s\S]*?)(?:@else([\s\S]*?))?@end/g, (match, condition, ifBody, elseBody) => {
+        //             const code = `
+        //                     _print((${condition}) ? \`${ifBody.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\` : \`${(elseBody || '').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`);
+        //                 `;
+        //             return runSSRCode(context, code);
+        //         })
+        //         //<script ssr>...</script>
+        //         .replace(/<script\b[^>]*\bssr>([\s\S]*?)<\/script>/g, (match, code) => runSSRCode(context, code))
+        //
+        //         //{{ ... }}
+        //         .replace(/{{([\s\S]*?)}}/g, (match, code) => {
+        //             return runSSRCode(context, `_print(${code})`)
+        //         })
+        // );
+    } catch (err) {
+        return Err(transformError(err));
+    }
+}
+
 
 function renderTemplate(
     pathDir: string,
     extension: string,
-
 ): ( templateName: string,
      inputData: InputData,
      slots?: Option
 ) => Promise<Result<string, StdError>> {
-    return async(
+    return async (
         templateName: string,
         inputData: InputData = {},
         slots: Option = None()
@@ -60,30 +111,16 @@ function renderTemplate(
         let template = fs.readFileSync(getPath(pathDir, templateName, extension), 'utf-8');
 
         const context = vm.createContext({
-            _data: inputData,
+            ...inputData,
             _output: '',
             _ssrEngine: {
-                renderComponent: renderTemplate(pathDir, extension)
+                render: async (templateNameChild: string, inputDataChild) => {
+                    return await (renderTemplate(pathDir, extension))(templateNameChild, inputDataChild)
+                }
             },
-            _std,
         })
 
-        const renderComponent = renderTemplate(pathDir, extension);
-
-        try {
-            return Ok(
-                template
-                    //<script ssr>...</script>
-                    .replace(/<script\b[^>]*\bssr>([\s\S]*?)<\/script>/g, (match, code) => runSSRCode(context, code))
-                    //{{ ... }}
-                    .replace(/{{([\s\S]*?)}}/g, (match, code) => {
-                        return runSSRCode(context, `_print(${code})`)
-                    })
-            );
-        } catch (err) {
-            return Err(transformError(err));
-        }
-
+        return parseCode(context, template);
     }
 }
 

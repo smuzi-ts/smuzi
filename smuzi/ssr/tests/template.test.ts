@@ -2,6 +2,7 @@ import {testRunner} from "./index.js";
 import {it, assert} from "@smuzi/tests";
 import {ssrEngine} from "#lib/index.js";
 import {faker} from "@smuzi/faker";
+import {dump} from "@smuzi/std";
 
 const ssr = ssrEngine({pathDir: "./tests/templates"});
 
@@ -24,6 +25,7 @@ testRunner.describe("Template", [
                     name: faker.string(),
                     email: faker.string(),
                 }))
+
         const html = (await ssr.render("for_of", {users})).unwrap();
         assert.string.contains(html, users[0].name);
         assert.string.contains(html, users[1].name);
