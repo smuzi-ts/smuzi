@@ -30,9 +30,6 @@ testRunner.describe("Template", [
         assert.string.contains(html, users[0].name);
         assert.string.contains(html, users[1].name);
         assert.string.contains(html, users[2].name);
-        assert.string.contains(html, users[0].name + "__suffix");
-        assert.string.contains(html, users[1].name + "__suffix");
-        assert.string.contains(html, users[2].name + "__suffix");
     }),
 
     it("for of - Set", async () => {

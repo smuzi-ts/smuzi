@@ -49,25 +49,25 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         });
     }
 
-    debug(): this {
-        console.trace(this);
+    debug(message: string = ''): this {
+        console.trace(message, this);
         return this;
     }
 
-    okOr<RE extends Result>(errHandler: ((value: E) => RE) | RE): RE | Result<T, never> {
+    okOr<RE>(errHandler: ((value: E) => RE) | RE): RE | T {
         if (this instanceof ResultErr) {
             return asFunction(errHandler) ? errHandler(this._val) : errHandler;
         }
 
-        return this as unknown as Result<T, never>;
+        return this._val as T;
     }
 
-    errOr<RO extends Result>(okHandler: ((value: T) => RO) | RO): RO | Result<never, E> {
+    errOr<RO>(okHandler: ((value: T) => RO) | RO): RO | E {
         if (this instanceof ResultOk) {
             return asFunction(okHandler) ? okHandler(this._val) : okHandler;
         }
 
-        return this as unknown as Result<never, E>;
+        return this._val as E;
     }
 
     okThen<R = unknown>(handler: (value: T) => void): void {

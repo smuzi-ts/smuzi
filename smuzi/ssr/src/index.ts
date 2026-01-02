@@ -55,7 +55,8 @@ async function parseCode(context: any, templateCode: string) {
             async (match, item, iterable, body) => {
                 const code = `
                             for (const ${item} of ${iterable}) {
-                                _output += "111"
+                                const res = await _ssrEngine.parseCode({${item}}, \`${body}\`);
+                                _output += res.unwrap();
                             }
                         `;
 
@@ -95,6 +96,27 @@ async function parseCode(context: any, templateCode: string) {
     }
 }
 
+function createContext(inputData, pathDir, extension )
+{
+    return vm.createContext({
+        ...inputData,
+        _std,
+        _output: '',
+        _ssrEngine: {
+            renderComponent: async (templateNameChild: string, inputDataChild) => {
+                return (renderTemplate(pathDir, extension))(templateNameChild, inputDataChild)
+            },
+            parseCode: async (inputDataChild, templateCode) => {
+                return parseCode(
+                    createContext(
+                        Object.assign(inputDataChild, inputData),
+                        pathDir,
+                        extension
+                    ), templateCode)
+            }
+        },
+    })
+}
 
 function renderTemplate(
     pathDir: string,
@@ -108,19 +130,12 @@ function renderTemplate(
         inputData: InputData = {},
         slots: Option = None()
     ) => {
-        let template = fs.readFileSync(getPath(pathDir, templateName, extension), 'utf-8');
 
-        const context = vm.createContext({
-            ...inputData,
-            _output: '',
-            _ssrEngine: {
-                render: async (templateNameChild: string, inputDataChild) => {
-                    return await (renderTemplate(pathDir, extension))(templateNameChild, inputDataChild)
-                }
-            },
-        })
+        let templateCode = fs.readFileSync(getPath(pathDir, templateName, extension), 'utf-8');
 
-        return parseCode(context, template);
+        const context = createContext(inputData, pathDir, extension);
+
+        return parseCode(context, templateCode);
     }
 }
 

@@ -4,27 +4,25 @@ import {promise} from "#lib/promise.js";
 import {dump} from "#lib/debug.js";
 
 export const regexp = {
-    async asyncReplace<E extends StdError>(str: string, regex: RegExp, asyncCallback: (...args) => Promise<Result<string, E>>): Promise<Result<string, E>> {
+    async asyncReplace<E extends StdError>(
+        str: string,
+        regex: RegExp,
+        asyncCallback: (...args) => Promise<Result<string, E>>
+    ): Promise<Result<string, E | StdError>> {
+        //TODO: needs optimization, one loop instead of two call "replace"
         const promises = new Array<Promise<Result<string, E>>>;
-        const matches: unknown[] = [];
 
         str.replace(regex, (...args) => {
             promises.push(asyncCallback(...args));
-            matches.push(args);
-            return ''; // временное значение
+            return '';
         });
 
-        return (await promise.all(promises)).mapOk(
+        const res = (await promise.all(promises));
+        return res.mapOk(
             (results) => {
-            dump({
-                str,
-                regex,
-                results
-            });
+                let index = 0;
+                return  str.replace(regex, () => results[index++].okOr(''));
         });
 
-        let index = 0;
-
-        return  Ok(str.replace(regex, () => results[index++].okOr('')));
     }
 }

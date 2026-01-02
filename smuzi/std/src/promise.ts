@@ -7,7 +7,7 @@ export const promise = {
     {
         return Promise.all(values)
             .then((result) => {
-                return result;
+                return Ok(result);
             })
             .catch((error) => Err(transformError(error)));
     }
