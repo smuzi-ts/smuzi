@@ -5,6 +5,7 @@ import { StdMap } from "./map.js";
 import {dump} from "#lib/debug.js";
 import {Result} from "#lib/result.js";
 import {JsonFromStringError} from "#lib/json.js";
+import {StdError} from "#lib/error.js";
 
 export enum HttpMethod {
     GET = "GET",
@@ -68,6 +69,9 @@ export class HttpResponse<B = unknown> {
 export type HttpQuery = StdMap<string, string | string[]>
 export type HttpInputBody = () => Promise<Result<Buffer, Error>>;
 export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, JsonFromStringError | Error>>;
+export type HttpInputRawBody = <T = unknown>() => Promise<Result<string, StdError>>;
+export type HttpInputData = <T extends Record<string, unknown> = Record<string, unknown>>() => Promise<Result<StdRecord<T>, StdError>>;
+
 export type HttpRequestOptions = {
     path: string;
     method: HttpMethod;
@@ -75,6 +79,8 @@ export type HttpRequestOptions = {
     headers?: RequestHttpHeaders;
     body: HttpInputBody;
     json: HttpInputJson;
+    rawBody: HttpInputRawBody,
+    input: HttpInputData,
 }
 
 export class HttpRequest{
@@ -84,14 +90,19 @@ export class HttpRequest{
     readonly headers: RequestHttpHeaders;
     readonly body: HttpInputBody;
     readonly json: HttpInputJson;
+    readonly rawBody: HttpInputRawBody;
+    readonly input: HttpInputData;
 
-    constructor({ method, path, body, json,  query = new StdMap, headers = new RequestHttpHeaders}: HttpRequestOptions) {
+
+    constructor({ method, path, body, json, rawBody, input, query = new StdMap, headers = new RequestHttpHeaders}: HttpRequestOptions) {
         this.path = path;
         this.method = method;
         this.query = query;
         this.headers = headers;
         this.body = body;
+        this.rawBody = rawBody;
         this.json = json;
+        this.input = input;
     }
 }
 

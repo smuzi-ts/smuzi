@@ -29,7 +29,7 @@ import {
     isOption,
     isResult,
     isIterable,
-    ResponseHttpHeaders, RequestHttpHeaders, JsonFromStringError, asList, asRecord, asMap
+    ResponseHttpHeaders, RequestHttpHeaders, JsonFromStringError, asList, asRecord, asMap, querystring
 } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
 
@@ -88,6 +88,46 @@ function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T
     }
 }
 
+function readRequestInput(req: IncomingMessage): <T extends Record<string, unknown>>() => Promise<Result<StdRecord<T>, StdError>> {
+    return async(encoding: BufferEncoding = "utf-8") => {
+        return new Promise((resolve) => {
+            let body = "";
+
+            req.setEncoding(encoding);
+
+            req.on("data", (chunk: string) => {
+                body += chunk;
+            });
+
+            req.on("end", () => {
+                resolve(querystring.fromString(body));
+            });
+
+            req.on("error", (err) => resolve(Err(transformError(err))));
+        });
+    }
+}
+
+function readRawBody(req: IncomingMessage): <T>() => Promise<Result<string, StdError>> {
+    return async(encoding: BufferEncoding = "utf-8") => {
+        return new Promise((resolve) => {
+            let body = "";
+
+            req.setEncoding(encoding);
+
+            req.on("data", (chunk: string) => {
+                body += chunk;
+            });
+
+            req.on("end", () => {
+                resolve(Ok(body));
+            });
+
+            req.on("error", (err) => resolve(Err(transformError(err))));
+        });
+    }
+}
+
 
 export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<StdHttp1Server, HttpServerRunError>> {
     return new Promise((resolve) => {
@@ -111,7 +151,9 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
                     query: new StdMap(urlObj.searchParams),
                     headers: new RequestHttpHeaders(nativeRequest.headers as any),
                     body: readRequestBody(nativeRequest),
+                    rawBody: readRawBody(nativeRequest),
                     json: readRequestJson(nativeRequest),
+                    input: readRequestInput(nativeRequest),
                 }),
                 response: nativeResponse,
                 pathParams: routeMatched.pathParams,
@@ -130,7 +172,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
 
             const handlers = new Map();
             
-            handlers.set(isString, (response) => {
+            handlers.set(resp => isString(resp) || resp instanceof Buffer, (response) => {
                 nativeResponse.writeHead(200, {
                     "Content-Type": "text/html; charset=utf-8",
                 });
