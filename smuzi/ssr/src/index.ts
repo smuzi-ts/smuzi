@@ -57,8 +57,7 @@ async function parseCode(context: any, templateCode: string) {
                             for (const ${item} of ${iterable}) {
                                 const res = await _ssrEngine.parseCode({${item}}, \`${body}\`);
                                 _output += res.unwrap();
-                            }
-                        `;
+                            }`;
 
                 return await runSSRCode(context, code);
             }
