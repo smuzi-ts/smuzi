@@ -23,12 +23,16 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
         return OptionFromNullable(this.#entity[key as K]);
     }
 
-    *[Symbol.iterator](): IterableIterator<[keyof T, Option<T[keyof T]>]> {
+    *entries<K extends keyof T>(): IterableIterator<[K, Option<T[K]>]> {
         for (const key in this.#entity) {
             if (Object.prototype.hasOwnProperty.call(this.#entity, key)) {
-                yield [key as keyof T, this.get(key)];
+                yield [key as any, this.get(key) as any];
             }
         }
+    }
+
+    [Symbol.iterator]<K extends keyof T>(): IterableIterator<[K, Option<T[K]>]> {
+        return this.entries();
     }
 
     unsafeSource(): T {
