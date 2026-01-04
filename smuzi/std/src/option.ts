@@ -135,7 +135,11 @@ export function isSome(value: unknown): value is Option<unknown> {
     return value instanceof OptionSome;
 }
 
-
+//TODO: Deprecated, use asNone() instead of
 export function isNone(value: unknown): value is Option<never> {
+    return value instanceof OptionNone;
+}
+
+export function asNone(value: unknown): value is Option<never> {
     return value instanceof OptionNone;
 }
