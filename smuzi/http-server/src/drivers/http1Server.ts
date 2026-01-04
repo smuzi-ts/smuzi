@@ -163,7 +163,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
             if (isOption(response)) {
                 response = response.someOr("");
             } else if(isResult(response)) {
-                response = response.unwrapValue();
+                response = response.unsafeSource();
             }
 
             if (isNull(response)) {
