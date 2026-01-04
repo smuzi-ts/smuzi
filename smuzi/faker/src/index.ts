@@ -3,9 +3,11 @@ import * as object from "./obj.js";
 import * as array from "./array.js";
 import * as datetime from "./datetime.js";
 import * as repeat from "./repeat.js";
+import * as stringModule from "./string.js";
 
 export const faker = Object.freeze({
     ...primitives,
+    stringModule,
     object,
     array,
     repeat,
