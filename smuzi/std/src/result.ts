@@ -38,7 +38,7 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         return handlers.Err(this._val as E);
     }
 
-    unwrapValue(): T | E {
+    unsafeSource(): T | E {
         return this._val;
     }
 
