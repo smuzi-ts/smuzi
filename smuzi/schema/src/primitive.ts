@@ -1,4 +1,16 @@
-import {dump, Err, isNone, isNull, Ok, Option, OptionFromNullable, Result, Simplify, StdRecord} from "@smuzi/std";
+import {
+    asString,
+    dump,
+    Err,
+    isNone,
+    isNull,
+    Ok,
+    Option,
+    OptionFromNullable,
+    Result,
+    Simplify,
+    StdRecord
+} from "@smuzi/std";
 import {faker} from "@smuzi/faker";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 
@@ -32,7 +44,7 @@ export class SchemaString implements SchemaRule {
     }
 
     validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return  typeof input === "string" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
+        return  asString(input) ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
     }
 
     fake() {

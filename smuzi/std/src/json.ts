@@ -3,22 +3,7 @@ import {isOption, isSome, None, Option, OptionFromNullable, Some} from "#lib/opt
 import {Err, isResult, Ok, Result} from "#lib/result.js";
 import {StdRecord} from "#lib/record.js";
 import {StdList} from "#lib/list.js";
-
-export class JsonFromStringError {
-    message: string
-
-    constructor(message: string) {
-        this.message = message;
-    }
-}
-
-class JsonToStringError {
-    message: string
-
-    constructor(message: string) {
-        this.message = message;
-    }
-}
+import {StdError} from "#lib/error.js";
 
 function eachFromString(this, key, value) {
     if (isArray(value)) {
@@ -69,16 +54,16 @@ function eachToString(this, key, value) {
     return newValue;
 }
 
-export const json = {
-    fromString<T = unknown>(value: string): Result<Option<T>, JsonFromStringError> {
+export const StdJson = {
+    fromString<T = unknown>(value: string): Result<Option<T>, StdError> {
         try {
             let result = JSON.parse(value, eachFromString);
             return  Ok(isOption(result) ? result : OptionFromNullable(result));
         } catch (err) {
-            return Err(new JsonFromStringError(err.message ?? "Unknown JSON parsing error"));
+            return Err(new StdError(err.message ?? "Unknown JSON parsing error"));
         }
     },
-    toString(value: unknown): Result<string, JsonToStringError> {
+    toString(value: unknown): Result<string, StdError> {
         try {
             return Ok(JSON.stringify(value, eachToString));
         } catch (err) {

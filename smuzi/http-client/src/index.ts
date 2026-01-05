@@ -1,4 +1,23 @@
-import { dump, Err, json, None, Ok, Option, OptionFromNullable, Result, HttpMethod, HttpResponse, RequestHttpHeaders, ResponseHttpHeaders, isObject, isNull, asNull, StdError, isNone, asString } from "@smuzi/std";
+import {
+    dump,
+    Err,
+    None,
+    Ok,
+    Option,
+    OptionFromNullable,
+    Result,
+    HttpMethod,
+    HttpResponse,
+    RequestHttpHeaders,
+    ResponseHttpHeaders,
+    isObject,
+    isNull,
+    asNull,
+    StdError,
+    isNone,
+    asString,
+    StdJson
+} from "@smuzi/std";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
@@ -64,7 +83,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
             bodyParsed = body.mapSome((body) => {
                 if (isObject(body) && !(body instanceof FormData)) {
                     return {
-                        body: json.toString(body).unwrap(),
+                        body: StdJson.toString(body).unwrap(),
                         contentType: "application/json; charset=utf-8"
                     }
                 }
@@ -102,7 +121,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                             return rawData;
                         }
 
-                        return json.fromString(rawData).unwrap();
+                        return StdJson.fromString(rawData).unwrap();
                     }).flat();
 
                 if (!response.ok) {

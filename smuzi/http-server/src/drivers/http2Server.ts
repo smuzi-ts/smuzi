@@ -2,7 +2,7 @@ import http2, { Http2SecureServer, Http2Server, IncomingHttpHeaders, ServerHttp2
 import fs from 'node:fs';
 
 import { methodFromString } from "#lib/router.js";
-import { isArray, isObject, isString, json, match, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, transformError, StdError, dump, HttpResponse } from '@smuzi/std';
+import { isArray, isObject, isString, match, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, transformError, StdError, dump, HttpResponse, StdJson } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http2ServerConfig } from "#lib/index.js";
 
 type NativeServer = Http2SecureServer | Http2Server;
@@ -88,7 +88,7 @@ export function http2ServerRun(config: Http2ServerConfig): Promise<Result<StdHtt
                     ':status': 200,
                 });
 
-                stream.end(json.toString(response).match({
+                stream.end(StdJson.toString(response).match({
                     Ok: (json) => json,
                     Err: (err) => {
                         stream.respond({

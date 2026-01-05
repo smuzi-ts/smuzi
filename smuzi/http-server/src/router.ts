@@ -112,10 +112,6 @@ function http1NotFoundHandler(context: Context<ServerResponse>) {
     return HttpResponse.asJson({error:"Not Found"}, 404);
 }
 
-function http1ErrorHandler(context: Context<ServerResponse>, error) {
-    return HttpResponse.asJson({error:"Internal Server Error"}, 500);
-}
-
 
 function http2NotFoundHandler(context: Context<ServerHttp2Stream>) {
     context.response.respond({
@@ -191,7 +187,6 @@ function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<Resp>>(
 export function CreateHttp1Router(
     groupRoute: GroupRoute,
     notFound: Action<ServerResponse> = http1NotFoundHandler,
-    errorHandler: ActionErrorHandler<ServerResponse> = http1ErrorHandler,
 ): Http1Router {
     return CreateHttpRouter<ServerResponse, Http1Router>(groupRoute, notFound);
 }

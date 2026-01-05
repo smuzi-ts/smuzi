@@ -1,6 +1,7 @@
 import {assert, errMsg, it, okMsg} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
-import {json} from "#lib/json.js";
+import {StdJson} from "#lib/json.js";
+
 import {None, Some} from "#lib/option.js";
 import {Err, Ok} from "#lib/result.js";
 import {StdRecord} from "#lib/record.js";
@@ -19,7 +20,7 @@ testRunner.describe("Std-json", [
             data: StdList<User>,
         }>
         const inputString = `{"data": [{"id":1,"name": "333", "post":{"title":"Subject"}}, {"id":2,"name": "2222", "post":{"title":"Subject2"}}]}`;
-        const resultJSON = json.fromString<UserData>(inputString)
+        const resultJSON = StdJson.fromString<UserData>(inputString)
             .unwrap() //Possible JSON parse error
             .unwrap() //Possible empty JSON;
 
@@ -44,7 +45,7 @@ testRunner.describe("Std-json", [
             "": number,
         }>
         const value =`{"":1}`
-        const result = json.fromString<Obj>(value);
+        const result = StdJson.fromString<Obj>(value);
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -57,7 +58,7 @@ testRunner.describe("Std-json", [
     it(okMsg("fromString - string"), () => {
         const value = faker.string();
         const inputString = `"${value}"`;
-        const result = json.fromString<string>(inputString);
+        const result = StdJson.fromString<string>(inputString);
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -69,7 +70,7 @@ testRunner.describe("Std-json", [
 
     it(okMsg("fromString - number"), () => {
         const value = faker.number();
-        const result = json.fromString<number>(String(value));
+        const result = StdJson.fromString<number>(String(value));
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -81,7 +82,7 @@ testRunner.describe("Std-json", [
 
     it(okMsg("fromString - boolean"), () => {
         const value = 'true';
-        const result = json.fromString<boolean>(value);
+        const result = StdJson.fromString<boolean>(value);
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -93,7 +94,7 @@ testRunner.describe("Std-json", [
 
     it(okMsg("fromString - null"), () => {
         const value = 'null';
-        const result = json.fromString<never>(value);
+        const result = StdJson.fromString<never>(value);
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -105,7 +106,7 @@ testRunner.describe("Std-json", [
 
     it(errMsg("fromString - bad json"), () => {
         const inputString = '{"name":"' + faker.string() + '", "email": "' + faker.string() + '"/}';
-        const result = json.fromString(inputString);
+        const result = StdJson.fromString(inputString);
 
         result.match({
             Ok: (val) => {
@@ -126,7 +127,7 @@ testRunner.describe("Std-json", [
             ],
             "meta": Ok({"more_records": true})
         };
-        const result = json.toString(obj);
+        const result = StdJson.toString(obj);
 
         result.match({
             Err: (error) => assert.fail(error.message),
@@ -138,7 +139,7 @@ testRunner.describe("Std-json", [
 
     it(errMsg("toString - string value"), () => {
         const value = faker.string();
-        const result = json.toString(value);
+        const result = StdJson.toString(value);
 
         result.match({
             Ok: (actual) => {
@@ -152,7 +153,7 @@ testRunner.describe("Std-json", [
         const strVal = faker.string();
         const value = Some(strVal);
 
-        const resultSome = json.toString(value);
+        const resultSome = StdJson.toString(value);
 
         resultSome.match({
             Ok: (actual) => {
@@ -161,7 +162,7 @@ testRunner.describe("Std-json", [
             Err: error => assert.fail(error.message),
         })
 
-        const resultNone = json.toString(None());
+        const resultNone = StdJson.toString(None());
 
         resultNone.match({
             Ok: (actual) => {
@@ -172,7 +173,7 @@ testRunner.describe("Std-json", [
     }),
 
     it(errMsg("toString - null value"), () => {
-        const result = json.toString(null);
+        const result = StdJson.toString(null);
 
         result.match({
             Ok: (actual) => {
@@ -186,7 +187,7 @@ testRunner.describe("Std-json", [
         const strVal = faker.string();
         const valueOk = Ok(strVal);
 
-        const resultOk = json.toString(valueOk);
+        const resultOk = StdJson.toString(valueOk);
 
         resultOk.match({
             Ok: (actual) => {
@@ -196,7 +197,7 @@ testRunner.describe("Std-json", [
         })
 
         const valueErr = Err(strVal);
-        const resultErr = json.toString(valueErr);
+        const resultErr = StdJson.toString(valueErr);
 
         resultErr.match({
             Ok: (actual) => {
@@ -206,7 +207,7 @@ testRunner.describe("Std-json", [
         })
     }),
     it("toString - from Array", () => {
-        const result = json.toString(["a", "b", "c"]);
+        const result = StdJson.toString(["a", "b", "c"]);
 
         result.match({
             Ok: (actual) => {
@@ -222,7 +223,7 @@ testRunner.describe("Std-json", [
             arr[key] = key;
         }
 
-        const result = json.toString(arr);
+        const result = StdJson.toString(arr);
 
         result.match({
             Ok: (actual) => {
@@ -242,11 +243,11 @@ testRunner.describe("Std-json", [
             data: StdList<User>,
         }>
         const inputString = `{"data":[{"id":1,"name":"333","post":{"title":"Subject"}},{"id":2,"name":"2222","post":{"title":"Subject2"}}]}`;
-        const resultJSON = json.fromString<UserData>(inputString)
+        const resultJSON = StdJson.fromString<UserData>(inputString)
             .unwrap() //Possible JSON parse error
             .unwrap();
 
-        const outputString = json.toString(resultJSON);
+        const outputString = StdJson.toString(resultJSON);
         assert.equal(outputString.unwrap(), inputString);
     }),
 ])

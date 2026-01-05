@@ -1,4 +1,4 @@
-import {asMap, Err, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
+import {asMap, dump, Err, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaOption} from "#lib/option.js";
 

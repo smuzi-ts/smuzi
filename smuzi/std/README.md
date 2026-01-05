@@ -71,7 +71,7 @@ type UserData = StdRecord<{
 
 const inputString = `{"data": [{"id":1,"name": "333", "post":{"title":"Subject"}}, {"id":2,"name": "2222", "post":{"title":"Subject2"}}]}`;
 
-const resultJSON = json.fromString<UserData>(inputString)
+const resultJSON = StdJson.fromString<UserData>(inputString)
     .unwrap() //Possible JSON parse error
     .unwrap() //Possible empty JSON;
 

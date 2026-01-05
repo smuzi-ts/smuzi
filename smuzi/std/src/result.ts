@@ -1,7 +1,8 @@
 import {asFunction, asString, isNull} from "./checker.js";
 import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
-import {json} from "#lib/json.js";
+import {StdJson} from "#lib/json.js";
+
 import { None } from "./option.js";
 import { StdError } from "./error.js";
 import {dump} from "#lib/debug.js";
@@ -70,7 +71,7 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         return this._val as E;
     }
 
-    okThen<R extends Result>(handler: (value: T) => R): R | Result<T, E> {
+    okThen<R extends Result>(handler: (value: T) => R): R | this  {
         if (this instanceof ResultOk) {
             return handler(this._val);
         }
@@ -93,12 +94,12 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         }
     }
 
-    mapOk<RO>(handler: (value: T) => RO): Result<RO, E> {
+    mapOk<RO>(handler: (value: T) => RO): Result<RO | T, E> {
         if (this instanceof ResultOk) {
             return Ok(handler(this._val));
         }
 
-        return this as unknown as Result<never, E>;
+        return this;
     }
 
     mapErr<RE>(handler: (value: E) => RE): Result<T, RE> {

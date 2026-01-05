@@ -1,30 +1,39 @@
-import {Option, HttpProtocol, None} from "@smuzi/std";
-import {Http1Router} from "#lib/router.js";
+import {Option, HttpProtocol, None, HttpResponse, transformError, dump} from "@smuzi/std";
+import {ActionErrorHandler, Context, Http1Router} from "#lib/router.js";
+import {ServerResponse} from "node:http";
 
 type Cert = Option<{
         key: string,
         cert: string,
     }>
 
-type Http1BaseServerConfig = {
+export type Http1ServerConfig = {
     host: string;
     port: number,
     router: Http1Router,
-    cert?: Cert
-}
-
-export type Http1ServerConfig = Http1BaseServerConfig & {
     cert: Cert,
     protocol: HttpProtocol,
+    errorHandler: ActionErrorHandler<ServerResponse>
 }
 
-export function buildHttp1ServerConfig({host, port, router, cert = None()}: Http1BaseServerConfig): Http1ServerConfig {
+type InputHttp1ServerConfig = Partial<Http1ServerConfig> & {
+    router: Http1Router,
+}
+
+function http1ErrorHandler(context: Context<ServerResponse>, error) {
+    //TODO: write error to log and remove dump()
+    dump(error)
+    return HttpResponse.asJson({error:"Internal Server Error"}, 500);
+}
+
+export function buildHttp1ServerConfig({host = 'localhost', port = 8080, router, cert = None(), errorHandler = http1ErrorHandler}: InputHttp1ServerConfig): Http1ServerConfig {
     return {
         host, 
         port,
         router,
         cert,
-        protocol: cert.someOrNone(HttpProtocol.HTTPS, HttpProtocol.HTTP)
+        protocol: cert.someOrNone(HttpProtocol.HTTPS, HttpProtocol.HTTP),
+        errorHandler,
     };
 };
 
@@ -35,12 +44,12 @@ type Http2BaseServerConfig = {
     cert?: Cert
 }
 
-export type Http2ServerConfig = Http1BaseServerConfig & {
+export type Http2ServerConfig = Http2BaseServerConfig & {
     cert: Cert,
     protocol: HttpProtocol,
 }
 
-export function buildHttp2ServerConfig({host, port, router, cert = None()}: Http2BaseServerConfig): Http2ServerConfig {
+export function buildHttp2ServerConfig({host, port, router, cert = None() }: Http2BaseServerConfig): Http2ServerConfig {
     return {
         host, 
         port,

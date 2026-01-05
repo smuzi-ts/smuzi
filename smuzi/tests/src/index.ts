@@ -240,7 +240,7 @@ export class TestRunner<GS extends Option> {
         await this.#afterGlobal.asyncMapSome(globalSetup);
 
         if (this.#config.output.format == "json") {
-            this.#config.output.printer.info(json.toString(generalResult).unwrap());
+            this.#config.output.printer.info(StdJson.toString(generalResult).unwrap());
         } else {
             this.#config.output.printer.info("ℹ️  ok: " + generalResult.ok);
             const errPrintMethod = generalResult.err > 0 ? "error" : "info";
@@ -279,7 +279,7 @@ export class TestRunner<GS extends Option> {
                     Err(error) {
                         ++result.err;
                         if (options.config.output.format == "json") {
-                            options.config.output.printer.info(`{"describe":"${msg}","it":"${it.msg}","ok":false,"error":${json.toString(error)}}`)
+                            options.config.output.printer.info(`{"describe":"${msg}","it":"${it.msg}","ok":false,"error":${StdJson.toString(error)}}`)
                         } else {
                             options.config.output.printer.error(generalMsg);
                             options.config.output.printer.error(error);

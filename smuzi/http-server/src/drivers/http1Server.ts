@@ -8,7 +8,6 @@ import {
     isArray,
     isObject,
     isString,
-    json,
     match,
     StdRecord,
     matchUnknown,
@@ -29,7 +28,8 @@ import {
     isOption,
     isResult,
     isIterable,
-    ResponseHttpHeaders, RequestHttpHeaders, JsonFromStringError, asList, asRecord, asMap, querystring, QueryParams
+    ResponseHttpHeaders, RequestHttpHeaders, asList, asRecord, asMap, querystring, QueryParams,
+    StdJson, uuid
 } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
 
@@ -68,7 +68,7 @@ function readRequestBodyAsBuffer(req: IncomingMessage): () => Promise<Result<Buf
     }
 }
 
-function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T>, JsonFromStringError | Error>> {
+function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T>, StdError>> {
     return async(encoding: BufferEncoding = "utf-8") => {
         return new Promise((resolve) => {
         let body = "";
@@ -80,10 +80,10 @@ function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T
         });
 
         req.on("end", () => {
-            resolve(json.fromString(body));
+            resolve(StdJson.fromString(body));
         });
 
-        req.on("error", (err) => resolve(Err(err)));
+        req.on("error", (err) => resolve(Err(transformError(err))));
     });
     }
 }
@@ -128,6 +128,7 @@ function readRawBody(req: IncomingMessage): <T>() => Promise<Result<string, StdE
     }
 }
 
+let COUNTER = 0;
 
 export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<StdHttp1Server, HttpServerRunError>> {
     return new Promise((resolve) => {
@@ -144,7 +145,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
             
             const routeMatched = config.router.match(request);
 
-            let response = await routeMatched.action({
+            let context = {
                 request: new HttpRequest({
                     method: request.method,
                     path: request.path,
@@ -157,7 +158,14 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
                 }),
                 response: nativeResponse,
                 pathParams: routeMatched.pathParams,
-            })
+            };
+
+            let response;
+            try {
+                response = await routeMatched.action(context)
+            } catch (error) {
+                response = await config.errorHandler(context, error);
+            }
 
 
             if (isOption(response)) {
@@ -199,7 +207,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
                     nativeResponse.setHeader("Content-Type", "application/json; charset=utf-8" );
 
                     try {
-                        const resp = json.toString(response).match({
+                        const resp = StdJson.toString(response).match({
                             Ok: (jsonStr) => ({status: 200, body: jsonStr }),
                             Err: (err) => ({status: 500 , body: '{"error":"Internal Server Error"}' }),
                         });

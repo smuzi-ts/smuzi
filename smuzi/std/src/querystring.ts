@@ -11,23 +11,30 @@ export type QueryParams = Record<string, unknown>;
 function toString(params: QueryParams): Result<string, StdError> {
     const pairs: string[] = [];
 
-    for (const key in params) {
-        if (params.hasOwnProperty(key)) {
-            const value = params[key];
+    for (const field in params) {
+        if (params.hasOwnProperty(field)) {
+            const value = params[field];
 
             if (asNull(value) || isNone(value)) {
                 continue;
             }
 
-            if (asArray(value)) {
-                value.forEach((item) => {
+            if (asList(value)) {
+                for (const [key, item] of value) {
+                    dump({item})
                     pairs.push(
-                        encodeURIComponent(key) + '=' + encodeURIComponent(String(item))
+                        encodeURIComponent(field) + '=' + encodeURIComponent(String(item.someOr('')))
                     );
-                });
-            } else {
+                }
+            } else if (asArray(value)) {
+                for (const item of value) {
+                    pairs.push(
+                        encodeURIComponent(field) + '=' + encodeURIComponent(String(item))
+                    );
+                }
+            }  else {
                 pairs.push(
-                    encodeURIComponent(key) + '=' + encodeURIComponent(String(value))
+                    encodeURIComponent(field) + '=' + encodeURIComponent(String(value))
                 );
             }
         }

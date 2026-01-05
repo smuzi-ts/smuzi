@@ -4,7 +4,7 @@ import { StdRecord } from "./record.js";
 import { StdMap } from "./map.js";
 import {dump} from "#lib/debug.js";
 import {Result} from "#lib/result.js";
-import {JsonFromStringError} from "#lib/json.js";
+import {StdJson} from "#lib/json.js";
 import {StdError} from "#lib/error.js";
 import {QueryParams} from "#lib/querystring.js";
 
@@ -66,17 +66,27 @@ export class HttpResponse<B = unknown> {
 
 
     static asJson(json: any, status = 200) {
+        return StdJson.toString(json).mapOk((jsonString) =>{
+            return new HttpResponse({
+                status,
+                body: Some(jsonString),
+                headers: new ResponseHttpHeaders([["content-type", "application/json; charset=utf-8"]])
+            })
+        })
+
+    }
+
+    static asRedirect(toUrl: string) {
         return new HttpResponse({
-            status,
-            body: Some(json),
-            headers: new ResponseHttpHeaders([["content-type", "application/json; charset=utf-8"]])
+            status: 302,
+            headers: new ResponseHttpHeaders([["location", toUrl]])
         })
     }
 }
 
 export type HttpQuery = StdMap<string, string | string[]>
 export type HttpInputBodyAsBuffer = () => Promise<Result<Buffer, Error>>;
-export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, JsonFromStringError | Error>>;
+export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, StdError>>;
 export type HttpInputRawBody = () => Promise<Result<string, StdError>>;
 export type HttpInputData = <T extends StdRecord<QueryParams> = StdRecord<QueryParams>>() => Promise<Result<T, StdError>>;
 
