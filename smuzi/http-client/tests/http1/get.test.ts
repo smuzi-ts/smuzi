@@ -23,7 +23,7 @@ http1TestRunner.describe("http-client-http1-GET-", [
             const response = (await httpClient.get('/users/list/notFound'));
             assert.result.equalErr(response);
 
-            response.errThen((err) => {
+            response.runThenErr((err) => {
                 if (err instanceof StdError) {
                     assert.fail(err);
                 }
@@ -37,7 +37,7 @@ http1TestRunner.describe("http-client-http1-GET-", [
 
             assert.result.equalErr(response);
 
-            response.errThen((err) => {
+            response.runThenErr((err) => {
                 if (err instanceof StdError) {
                     assert.fail(err);
                 }
@@ -52,7 +52,7 @@ http1TestRunner.describe("http-client-http1-GET-", [
 
             assert.result.equalOk(response);
 
-            response.okThen((resp) => {
+            response.runThenOk((resp) => {
                 assert.equal(resp.status, 200);
                 assert.equal(resp.statusText, "Authorized");
             })
@@ -71,7 +71,7 @@ http1TestRunner.describe("http-client-http1-GET-", [
 
             assert.result.equalOk(response);
 
-            response.okThen((resp) => {
+            response.runThenOk((resp) => {
                 assert.equal(resp.status, 200);
                 assert.equal(resp.statusText, "OK");
                 const body = resp.body.unwrap();
@@ -93,7 +93,7 @@ http1TestRunner.describe("http-client-http1-GET-", [
 
             assert.result.equalOk(response);
 
-            response.okThen((resp) => {
+            response.runThenOk((resp) => {
                 assert.equal(resp.status, 200);
                 assert.equal(resp.statusText, "OK");
                 assert.deepEqual(resp.headers.getOther("x-custom"), Some("xxx"));

@@ -41,7 +41,7 @@ export const regexp = {
                 return replaceResult;
             }
 
-            replaceResult.okThen(replacement => {
+            replaceResult.runThenOk(replacement => {
                 resultStr += str.slice(startSlice, match.index) + replacement;
                 startSlice = match.index + match[0].length;
             })

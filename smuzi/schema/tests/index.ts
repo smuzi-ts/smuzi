@@ -1,8 +1,8 @@
 import { TestRunner } from "@smuzi/tests";
-import {main} from "@smuzi/std";
+import {mainAndExit} from "@smuzi/std";
 export const testRunner = new TestRunner();
 
-main(async () => {
+mainAndExit(async () => {
      await testRunner.run();
 })
 

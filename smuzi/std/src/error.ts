@@ -19,6 +19,10 @@ export class StdError {
 }
 
 export function transformError(err: any): StdError {
+    if (err instanceof StdError) {
+        return err;
+    }
+
     if (asObject(err)) {
         return new StdError(
             asString(err.message) ? err.message : "",

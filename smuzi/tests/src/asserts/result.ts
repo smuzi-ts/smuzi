@@ -16,7 +16,7 @@ export const assertResult: TAssertResult = {
                 })
             },
             Err(err) {
-                assert.fail(asString(err) ? err : json.toString(err).errThen((e) => e.message))
+                assert.fail(asString(err) ? err : json.toString(err).runThenErr((e) => e.message))
             }
         })
 

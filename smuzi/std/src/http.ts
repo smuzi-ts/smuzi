@@ -6,6 +6,7 @@ import {dump} from "#lib/debug.js";
 import {Result} from "#lib/result.js";
 import {JsonFromStringError} from "#lib/json.js";
 import {StdError} from "#lib/error.js";
+import {QueryParams} from "#lib/querystring.js";
 
 export enum HttpMethod {
     GET = "GET",
@@ -40,8 +41,6 @@ function methodFromString(method: string): Option<HttpMethod> {
     );
 }
 
-type Body = ReadableStream<Uint8Array<ArrayBuffer>> | string;
-
 export class HttpResponse<B = unknown> {
     readonly status: number;
     readonly statusText: string;
@@ -64,22 +63,31 @@ export class HttpResponse<B = unknown> {
         this.body = body;
         this.headers = headers;
     }
+
+
+    static asJson(json: any, status = 200) {
+        return new HttpResponse({
+            status,
+            body: Some(json),
+            headers: new ResponseHttpHeaders([["content-type", "application/json; charset=utf-8"]])
+        })
+    }
 }
 
 export type HttpQuery = StdMap<string, string | string[]>
-export type HttpInputBody = () => Promise<Result<Buffer, Error>>;
+export type HttpInputBodyAsBuffer = () => Promise<Result<Buffer, Error>>;
 export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, JsonFromStringError | Error>>;
-export type HttpInputRawBody = <T = unknown>() => Promise<Result<string, StdError>>;
-export type HttpInputData = <T extends Record<string, unknown> = Record<string, unknown>>() => Promise<Result<StdRecord<T>, StdError>>;
+export type HttpInputRawBody = () => Promise<Result<string, StdError>>;
+export type HttpInputData = <T extends StdRecord<QueryParams> = StdRecord<QueryParams>>() => Promise<Result<T, StdError>>;
 
 export type HttpRequestOptions = {
     path: string;
     method: HttpMethod;
     query?: HttpQuery;
     headers?: RequestHttpHeaders;
-    body: HttpInputBody;
+    buffer: HttpInputBodyAsBuffer;
     json: HttpInputJson;
-    rawBody: HttpInputRawBody,
+    body: HttpInputRawBody,
     input: HttpInputData,
 }
 
@@ -88,19 +96,19 @@ export class HttpRequest{
     readonly method: HttpMethod;
     readonly query: HttpQuery
     readonly headers: RequestHttpHeaders;
-    readonly body: HttpInputBody;
+    readonly buffer: HttpInputBodyAsBuffer;
     readonly json: HttpInputJson;
-    readonly rawBody: HttpInputRawBody;
+    readonly body: HttpInputRawBody;
     readonly input: HttpInputData;
 
 
-    constructor({ method, path, body, json, rawBody, input, query = new StdMap, headers = new RequestHttpHeaders}: HttpRequestOptions) {
+    constructor({ method, path, buffer, json, body, input, query = new StdMap, headers = new RequestHttpHeaders}: HttpRequestOptions) {
         this.path = path;
         this.method = method;
         this.query = query;
         this.headers = headers;
         this.body = body;
-        this.rawBody = rawBody;
+        this.buffer = buffer;
         this.json = json;
         this.input = input;
     }

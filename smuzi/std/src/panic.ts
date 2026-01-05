@@ -4,7 +4,6 @@ import {dump} from "#lib/debug.js";
 import {asString} from "#lib/checker.js";
 
 export function panic(err: any): never {
-
     if ( err instanceof StdError) {
         throw err;
     }
@@ -24,5 +23,4 @@ export function panic(err: any): never {
     }
 
     throw new StdError("undefined", OptionFromNullable(errorForStack.stack), Some(err));
-
 }

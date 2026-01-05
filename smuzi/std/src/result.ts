@@ -70,14 +70,24 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         return this._val as E;
     }
 
-    okThen<R = unknown>(handler: (value: T) => void): void {
+    okThen<R extends Result>(handler: (value: T) => R): R | Result<T, E> {
+        if (this instanceof ResultOk) {
+            return handler(this._val);
+        }
+
+        return this;
+    }
+
+
+    runThenOk<R = unknown>(handler: (value: T) => void): void {
         if (this instanceof ResultOk) {
             handler(this._val);
         }
     }
 
 
-    errThen<R = unknown>(handler: (value: E) => void): void {
+
+    runThenErr<R = unknown>(handler: (value: E) => void): void {
         if (this instanceof ResultErr) {
             handler(this._val);
         }

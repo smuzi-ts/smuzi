@@ -1,3 +1,5 @@
+import {dump} from "#lib/debug.js";
+
 export * from "./checker.js";
 export * from "./option.js";
 export * from "./result.js";
@@ -23,13 +25,44 @@ export * from "./regexp.js";
 export * from "./querystring.js";
 
 import * as _scripts from "./scripts.js";
+import {None, Option} from "#lib/option.js";
 export const scripts = _scripts;
 
-export async function main(program: () => unknown) {
+export async function mainAndExit(program: () => unknown, errorHandler = dump) {
+    process.on('unhandledRejection', (reason, promise) => {
+        errorHandler(reason);
+    });
+
+    process.on('uncaughtException', (error) => {
+        errorHandler(error);
+    });
+
     try {
         await program();
-    } catch (e) {
-        console.log(e);
+    } catch (err) {
+        errorHandler(err);
     }
     process.exit();
 }
+
+type MainProgram = () => Promise<Option> | Promise<void>
+type MainErrorHandler = (err: unknown, setup: Option) => Promise<void>
+
+export async function main(program: MainProgram, errorHandler: MainErrorHandler = async (...args) => {dump(args)}) {
+    let setup: Option = None();
+
+    process.on('unhandledRejection', async (reason, promise) => {
+        await errorHandler(reason, setup);
+    });
+
+    process.on('uncaughtException', async (error) => {
+        await errorHandler(error, setup);
+    });
+
+    try {
+        setup = (await program()) ?? None();
+    } catch (err) {
+        await errorHandler(err, setup);
+    }
+}
+

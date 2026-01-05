@@ -32,7 +32,7 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
         for (const key in this.#config) {
             input.get(key).match({
                 Some(value) {
-                    self.#config[key].validate(value).errThen(err => {
+                    self.#config[key].validate(value).runThenErr(err => {
                         hasErrors = true;
                         errors.set(key, err);
                     })

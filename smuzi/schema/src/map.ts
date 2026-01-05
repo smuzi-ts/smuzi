@@ -36,7 +36,7 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
                 }, Ok() {
                     val.match({
                         Some(value) {
-                            self.#config.validate(value).errThen(err => {
+                            self.#config.validate(value).runThenErr(err => {
                                 hasErrors = true;
                                 errors.set(key, err);
                             })

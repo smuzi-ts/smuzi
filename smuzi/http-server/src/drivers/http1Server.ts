@@ -29,7 +29,7 @@ import {
     isOption,
     isResult,
     isIterable,
-    ResponseHttpHeaders, RequestHttpHeaders, JsonFromStringError, asList, asRecord, asMap, querystring
+    ResponseHttpHeaders, RequestHttpHeaders, JsonFromStringError, asList, asRecord, asMap, querystring, QueryParams
 } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
 
@@ -50,7 +50,7 @@ export class StdHttp1Server implements HttpServer {
     }
 }
 
-function readRequestBody(req: IncomingMessage): () => Promise<Result<Buffer, Error>> {
+function readRequestBodyAsBuffer(req: IncomingMessage): () => Promise<Result<Buffer, Error>> {
     return async () => {
         return new Promise((resolve, reject) => {
             const chunks: Buffer[] = [];
@@ -88,7 +88,7 @@ function readRequestJson(req: IncomingMessage): <T>() => Promise<Result<Option<T
     }
 }
 
-function readRequestInput(req: IncomingMessage): <T extends Record<string, unknown>>() => Promise<Result<StdRecord<T>, StdError>> {
+function readRequestInput(req: IncomingMessage): <T extends StdRecord<QueryParams>>() => Promise<Result<T, StdError>> {
     return async(encoding: BufferEncoding = "utf-8") => {
         return new Promise((resolve) => {
             let body = "";
@@ -150,8 +150,8 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
                     path: request.path,
                     query: new StdMap(urlObj.searchParams),
                     headers: new RequestHttpHeaders(nativeRequest.headers as any),
-                    body: readRequestBody(nativeRequest),
-                    rawBody: readRawBody(nativeRequest),
+                    buffer: readRequestBodyAsBuffer(nativeRequest),
+                    body: readRawBody(nativeRequest),
                     json: readRequestJson(nativeRequest),
                     input: readRequestInput(nativeRequest),
                 }),

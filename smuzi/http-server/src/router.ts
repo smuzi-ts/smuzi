@@ -18,12 +18,13 @@ import { ServerHttp2Stream } from "node:http2";
 
 
 type Request = { path: string, method: HttpMethod };
-type P = string | number | StdError | string[] | number[];
-type ActionPrimitiveResponse = P | StdMap<string> | StdRecord<any> | StdList | Record<string, P> | Record<string, P>[];
+type P = any;
+type ActionPrimitiveResponse = P | StdMap<string> | StdRecord<any> | StdList | Record<PropertyKey, P> | Record<PropertyKey, P>[];
 export type ActionResponse = void | ActionPrimitiveResponse | HttpResponse | Option<ActionPrimitiveResponse> | Result<ActionPrimitiveResponse, ActionPrimitiveResponse>;
 
 export type Action<Resp extends THttpResponse> = (context: Context<Resp>) => ActionResponse | Promise<ActionResponse>
 export type PathParam = string | RegExp;
+export type ActionErrorHandler<Resp extends THttpResponse> = (context: Context<Resp>, err: any) => ActionResponse | Promise<ActionResponse>
 
 type THttpResponse = ServerResponse | ServerHttp2Stream
 type Route = { path: PathParam, method: HttpMethod };
@@ -108,9 +109,13 @@ export function methodFromString(method: string): Option<HttpMethod> {
 }
 
 function http1NotFoundHandler(context: Context<ServerResponse>) {
-    context.response.writeHead(404, "Not Found");
-    context.response.end();
+    return HttpResponse.asJson({error:"Not Found"}, 404);
 }
+
+function http1ErrorHandler(context: Context<ServerResponse>, error) {
+    return HttpResponse.asJson({error:"Internal Server Error"}, 500);
+}
+
 
 function http2NotFoundHandler(context: Context<ServerHttp2Stream>) {
     context.response.respond({
@@ -185,7 +190,8 @@ function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<Resp>>(
 
 export function CreateHttp1Router(
     groupRoute: GroupRoute,
-    notFound: Action<ServerResponse> = http1NotFoundHandler
+    notFound: Action<ServerResponse> = http1NotFoundHandler,
+    errorHandler: ActionErrorHandler<ServerResponse> = http1ErrorHandler,
 ): Http1Router {
     return CreateHttpRouter<ServerResponse, Http1Router>(groupRoute, notFound);
 }

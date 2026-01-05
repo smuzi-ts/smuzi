@@ -35,7 +35,7 @@ export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implement
                 continue;
             }
 
-            this.#config[key].validate(input[key]).errThen(err => {
+            this.#config[key].validate(input[key]).runThenErr(err => {
                 hasErrors = true;
                 errors.set(key, err);
             })
