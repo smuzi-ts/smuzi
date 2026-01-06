@@ -1,5 +1,18 @@
-import {asMap, asRecord, dump, Err, None, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
-import { SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {
+    asMap,
+    asRecord,
+    dump,
+    Err,
+    None,
+    Ok,
+    Option,
+    OptionFromNullable,
+    Result,
+    Simplify,
+    StdMap,
+    StdRecord
+} from "@smuzi/std";
+import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaObject} from "#lib/obj.js";
 import {SchemaOption} from "#lib/option.js";
 
@@ -10,6 +23,7 @@ type InferSchema<C extends SchemaRecordConfig> = {
 
 type InferValidationSchema<C extends SchemaRecordConfig> = { [K in keyof C]: C[K]['__inferError'] }
 type SchemaRecordValidationError<C extends SchemaRecordConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
+
 export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
     #config: C;
     __infer: StdRecord<Simplify<InferSchema<C>>>
@@ -19,7 +33,7 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
         this.#config = config;
     }
 
-    validate(input: unknown): Result<true, SchemaRecordValidationError<C>> {
+    validate(input: unknown): Result<Simplify<InferSchema<C>>, SchemaRecordValidationError<C>> {
         const errors = new StdRecord<InferValidationSchema<C>>();
 
         if (!asRecord(input)) {
@@ -29,12 +43,19 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
         let hasErrors = false;
 
         const self = this;
+        const res: any = {};
+
         for (const key in this.#config) {
             input.get(key).match({
                 Some(value) {
-                    self.#config[key].validate(value).runThenErr(err => {
-                        hasErrors = true;
-                        errors.set(key, err);
+                    self.#config[key].validate(value).match({
+                        Err: err => {
+                            hasErrors = true;
+                            errors.set(key, err);
+                        },
+                        Ok: validValue => {
+                            res[key] = validValue;
+                        }
                     })
                 },
                 None() {
@@ -42,11 +63,12 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
                         hasErrors = true;
                         errors.set(key, {msg: "Required", data: new StdRecord()});
                     }
+                    res[key] = None();
                 }
             })
         }
 
-        return hasErrors ? Err({msg: "Invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "Invalid", data: errors}) : Ok(res);
     }
 
     fake() {

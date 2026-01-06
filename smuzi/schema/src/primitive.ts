@@ -1,4 +1,5 @@
 import {
+    asNumber,
     asString,
     dump,
     Err,
@@ -24,8 +25,8 @@ export class SchemaNumber implements SchemaRule {
         this.#msg = msg;
     }
 
-    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return  typeof input === "number" ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
+    validate(input: unknown): Result<number, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
+        return  asNumber(input) ? Ok(input) : Err({msg: this.#msg, data: new StdRecord()});
 
     }
 
@@ -43,8 +44,8 @@ export class SchemaString implements SchemaRule {
         this.#msg = msg;
     }
 
-    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
-        return  asString(input) ? Ok(true) : Err({msg: this.#msg, data: new StdRecord()});
+    validate(input: unknown): Result<string, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
+        return  asString(input) ? Ok(input) : Err({msg: this.#msg, data: new StdRecord()});
     }
 
     fake() {

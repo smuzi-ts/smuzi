@@ -1,4 +1,4 @@
-import {asObject, dump, Err, isNone, isNull, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
+import {asObject, dump, Err, isNone, isNull, None, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord} from "#lib/record.js";
 import {SchemaOption} from "#lib/option.js";
@@ -20,28 +20,38 @@ export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implement
         this.#config = config;
     }
 
-    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
+    validate(input: unknown): Result<typeof this.__infer, SchemaValidationError<StdRecord<InferValidationSchema<C>>>> {
         if (!asObject(input)) {
             return Err({msg: "Expected input as object", data: new StdRecord});
         }
 
         const errors = new StdRecord<InferValidationSchema<C>>();
         let hasErrors = false;
+        const res: any = {};
 
         for (const key in this.#config) {
-            if ((isNull(input[key]) || isNone(input[key])) && ! (this.#config[key] instanceof SchemaOption)) {
-                hasErrors = true;
-                errors.set(key,  {msg: "Required", data: new StdRecord() });
-                continue;
+            if (isNull(input[key]) || isNone(input[key])) {
+                if (!(this.#config[key] instanceof SchemaOption)) {
+                    hasErrors = true;
+                    errors.set(key, {msg: "Required", data: new StdRecord()});
+                    continue;
+                }
+
+                res[key] = None();
             }
 
-            this.#config[key].validate(input[key]).runThenErr(err => {
-                hasErrors = true;
-                errors.set(key, err);
+            this.#config[key].validate(input[key]).match({
+                Err: err => {
+                    hasErrors = true;
+                    errors.set(key, err);
+                },
+                Ok: validValue => {
+                    res[key] = validValue;
+                }
             })
         }
 
-        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(res);
     }
 
     getConfig() {

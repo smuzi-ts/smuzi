@@ -1,9 +1,10 @@
-import {asString, isSome, json, None, Option, Result} from "@smuzi/std";
+import {asString, isSome, None, Option, Result, StdJson, transformError} from "@smuzi/std";
 import {assert} from "#lib/assert.js";
 
 export type TAssertResult = {
     equalOk(result: Result, expectedOk?: Option),
     equalErr(result: Result, expectedErr?: Option),
+    fail(err: unknown),
 }
 
 export const assertResult: TAssertResult = {
@@ -16,7 +17,7 @@ export const assertResult: TAssertResult = {
                 })
             },
             Err(err) {
-                assert.fail(asString(err) ? err : StdJson.toString(err).runThenErr((e) => e.message))
+                assert.fail("Expected result as Ok, but get Err: " + transformError(err).message);
             }
         })
 
@@ -34,4 +35,7 @@ export const assertResult: TAssertResult = {
             }
         })
     },
+    fail(err: unknown) {
+        assert.fail("Expected result as Ok, but get Err: " + transformError(err).message);
+    }
 }

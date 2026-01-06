@@ -1,4 +1,4 @@
-import {asMap, dump, Err, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
+import {asMap, dump, Err, None, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaOption} from "#lib/option.js";
 
@@ -17,7 +17,7 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
         this.#config = config;
     }
 
-    validate<I = unknown>(input: I): Result<true, Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>> {
+    validate<I = unknown>(input: I): Result<Map<K['__infer'], C['__infer']>, Simplify<SchemaValidationError<StdMap<unknown, Simplify<InferValidationSchemaMap<C>>>>>> {
         const errors = new StdMap<unknown, InferValidationSchemaMap<C>>();
 
         if (! asMap(input)) {
@@ -28,24 +28,33 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
 
         const self = this;
 
+        const res = new Map;
+
         for (const [key, val] of input as StdMap) {
             self.#key.validate(key).match({
                 Err(errKey) {
                     hasErrors = true;
                     errors.set(key, {msg: "Invalid key: " + errKey.msg, data: errKey.data });
-                }, Ok() {
+                }, Ok(validKey) {
                     val.match({
                         Some(value) {
-                            self.#config.validate(value).runThenErr(err => {
-                                hasErrors = true;
-                                errors.set(key, err);
+                            self.#config.validate(value).match({
+                                Err: err => {
+                                    hasErrors = true;
+                                    errors.set(key, err);
+                                },
+                                Ok: validValue => {
+                                    res.set(validKey, validValue)
+                            }
                             })
+
                         },
                         None() {
                             if (! (self.#config instanceof SchemaOption)) {
                                 hasErrors = true;
                                 errors.set(key,  {msg: "Required", data: new StdRecord() });
                             }
+                            res.set(validKey, None())
                         }
                     })
                 }
@@ -53,7 +62,7 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
 
         }
 
-        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(true);
+        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(res);
     }
 
     fake() {

@@ -2,7 +2,7 @@ import {testRunner} from "./index.js";
 import {schema} from "#lib/index.js";
 import {assert, it} from "@smuzi/tests";
 import {faker} from "@smuzi/faker";
-import {StdMap, StdRecord} from "@smuzi/std";
+import {dump, None, StdMap, StdRecord} from "@smuzi/std";
 
 
 testRunner.describe("Std-Schema-Record", [
@@ -17,11 +17,15 @@ testRunner.describe("Std-Schema-Record", [
             name: faker.string()
         })
 
-        const validate = schemaVal.validate(input);
-
-        assert.result.equalOk(validate)
+        schemaVal.validate(input).match({
+            Err: assert.result.fail,
+            Ok: validInput => {
+                assert.equal(validInput.id, input.get("id").unwrap());
+                assert.equal(validInput.name, input.get("name").unwrap());
+            },
+        });
     }),
-    it("Record-empty field-Ok", () => {
+    it("Record-Option field is empty", () => {
         const schemaVal = schema.record({
             id: schema.number(),
             name: schema.option(schema.string())
@@ -31,7 +35,33 @@ testRunner.describe("Std-Schema-Record", [
             id: faker.number(),
         })
 
-        assert.result.equalOk(schemaVal.validate(input));
+        schemaVal.validate(input).match({
+            Err: assert.result.fail,
+            Ok: validInput => {
+                assert.equal(validInput.id, input.get("id").unwrap());
+                assert.equalNone(validInput.name);
+            },
+        });
+    }),
+
+    it("Record-Option field is some", () => {
+        const schemaVal = schema.record({
+            id: schema.number(),
+            name: schema.option(schema.string())
+        });
+
+        const input = new StdRecord({
+            id: faker.number(),
+            name: faker.string(),
+        })
+
+        schemaVal.validate(input).match({
+            Err: assert.result.fail,
+            Ok: validInput => {
+                assert.equal(validInput.id, input.get("id").unwrap());
+                assert.equalSome(validInput.name, input.get("name").unwrap());
+            },
+        });
     }),
 
     it("with Map-Ok", () => {
@@ -47,7 +77,7 @@ testRunner.describe("Std-Schema-Record", [
         type Post = typeof postSchema.__infer;
         type User = typeof userSchema.__infer;
 
-        const postsInput = faker.repeat.asMap(5, () => {
+        const postsInput = faker.repeat.asStdMap(5, () => {
             return new StdRecord({
                 id: faker.number(),
             });
@@ -58,9 +88,13 @@ testRunner.describe("Std-Schema-Record", [
             posts: postsInput,
         });
 
-        const validation = userSchema.validate(userInput);
-
-        assert.result.equalOk(validation);
+        userSchema.validate(userInput).match({
+            Err: assert.result.fail,
+            Ok: validInput => {
+                assert.equal(validInput.userName, userInput.get("userName").unwrap());
+                assert.equal(validInput.posts.get(0).id, postsInput.get(0).unwrap().get("id"));
+            },
+        });
     }),
 
     it("with Map-Err", () => {
@@ -73,7 +107,7 @@ testRunner.describe("Std-Schema-Record", [
             posts: schema.map(schema.number(), postSchema),
         });
 
-        const postsInput = faker.repeat.asMap(3, () => {
+        const postsInput = faker.repeat.asStdMap(3, () => {
             return new StdRecord({
                 id: faker.notNumber(),
             });
@@ -109,7 +143,7 @@ testRunner.describe("Std-Schema-Record", [
             posts: schema.list(postSchema),
         });
 
-        const postsInput = faker.repeat.asList(3, () => {
+        const postsInput = faker.repeat.asStdList(3, () => {
             return new StdRecord({
                 id: faker.number(),
             });
@@ -135,7 +169,7 @@ testRunner.describe("Std-Schema-Record", [
             posts: schema.list(postSchema),
         });
 
-        const postsInput = faker.repeat.asList(3, () => {
+        const postsInput = faker.repeat.asStdList(3, () => {
             return new StdRecord({
                 id: faker.notNumber(),
                 title: faker.notString(),

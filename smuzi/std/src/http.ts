@@ -84,35 +84,35 @@ export class HttpResponse<B = unknown> {
     }
 }
 
-export type HttpQuery = StdMap<string, string | string[]>
-export type HttpInputBodyAsBuffer = () => Promise<Result<Buffer, Error>>;
-export type HttpInputJson = <T = unknown>() => Promise<Result<Option<T>, StdError>>;
-export type HttpInputRawBody = () => Promise<Result<string, StdError>>;
-export type HttpInputData = <T extends StdRecord<QueryParams> = StdRecord<QueryParams>>() => Promise<Result<T, StdError>>;
+export type GetterHttpQuery = <T extends StdMap>() => StdMap<string, string | string[]>
+export type GetterHttpInputBodyAsBuffer = () => Promise<Result<Buffer, Error>>;
+export type GetterHttpInputJson = <T = unknown>() => Promise<Result<Option<T>, StdError>>;
+export type GetterHttpInputRawBody = () => Promise<Result<string, StdError>>;
+export type GetterHttpInputFormData = <T extends StdRecord<QueryParams> = StdRecord<QueryParams>>() => Promise<Result<T, StdError>>;
 
 export type HttpRequestOptions = {
     path: string;
     method: HttpMethod;
-    query?: HttpQuery;
-    headers?: RequestHttpHeaders;
-    buffer: HttpInputBodyAsBuffer;
-    json: HttpInputJson;
-    body: HttpInputRawBody,
-    input: HttpInputData,
+    query: GetterHttpQuery;
+    buffer: GetterHttpInputBodyAsBuffer;
+    json: GetterHttpInputJson;
+    body: GetterHttpInputRawBody,
+    form: GetterHttpInputFormData,
+    headers?: RequestHttpHeaders,
 }
 
 export class HttpRequest{
     readonly path: string;
     readonly method: HttpMethod;
-    readonly query: HttpQuery
+    readonly query: GetterHttpQuery
     readonly headers: RequestHttpHeaders;
-    readonly buffer: HttpInputBodyAsBuffer;
-    readonly json: HttpInputJson;
-    readonly body: HttpInputRawBody;
-    readonly input: HttpInputData;
+    readonly buffer: GetterHttpInputBodyAsBuffer;
+    readonly json: GetterHttpInputJson;
+    readonly body: GetterHttpInputRawBody;
+    readonly form: GetterHttpInputFormData;
 
 
-    constructor({ method, path, buffer, json, body, input, query = new StdMap, headers = new RequestHttpHeaders}: HttpRequestOptions) {
+    constructor({ method, path, buffer, json, body, form, query , headers = new RequestHttpHeaders}: HttpRequestOptions) {
         this.path = path;
         this.method = method;
         this.query = query;
@@ -120,7 +120,7 @@ export class HttpRequest{
         this.body = body;
         this.buffer = buffer;
         this.json = json;
-        this.input = input;
+        this.form = form;
     }
 }
 

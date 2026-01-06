@@ -18,10 +18,10 @@ export function asNativeSet<T extends unknown>(count: number, callback: () => T)
     return res;
 }
 
-export function asStdMap<T extends unknown>(count: number, callback: () => T): StdMap {
-    const res = new StdMap;
+export function asStdMap<T>(count: number, itemGenerator: () => T): StdMap<number, T> {
+    const res = new StdMap<number, T>;
     for (let i = 0; i < count; ++i) {
-        res.set(i, callback());
+        res.set(i, itemGenerator());
     }
 
     return res;

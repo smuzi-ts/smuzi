@@ -27,15 +27,18 @@ export class SchemaOption<C extends SchemaOptionConfig> implements SchemaRule {
         this.#config = config;
     }
 
-    validate(input: unknown): Result<true, C['__inferError']> {
+    validate(input: unknown): Result<Option<C['__infer']>, C['__inferError']> {
         if (isOption(input)) {
             return input.match({
-                None: () => Ok(true),
-                Some: (v) => this.#config.validate(v)
+                None: () => Ok(None()),
+                Some: (v) => this.#config.validate(v).mapOk(OptionFromNullable) as any,
             })
         }
 
-        return isNull(input) ? Ok(true) : this.#config.validate(input);
+        if (asNull(input)) {
+            return Ok(None())
+        }
+        return this.#config.validate(input).mapOk(OptionFromNullable) as any;
     }
 
     fake() {
