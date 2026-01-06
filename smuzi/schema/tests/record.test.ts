@@ -91,8 +91,15 @@ testRunner.describe("Std-Schema-Record", [
         userSchema.validate(userInput).match({
             Err: assert.result.fail,
             Ok: validInput => {
-                assert.equal(validInput.userName, userInput.get("userName").unwrap());
-                assert.equal(validInput.posts.get(0).id, postsInput.get(0).unwrap().get("id"));
+                assert.equal(
+                    validInput.userName,
+                    userInput.get("userName").unwrap()
+                );
+
+                assert.equal(
+                    validInput.posts.get(0).id,
+                    postsInput.get(0).unwrap().get("id").unwrap()
+                );
             },
         });
     }),
