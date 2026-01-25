@@ -23,6 +23,7 @@ export * from "./common.js";
 export * from "./uuid.js";
 export * from "./regexp.js";
 export * from "./querystring.js";
+export * from "./enum.js";
 
 import * as _scripts from "./scripts.js";
 import {None, Option} from "#lib/option.js";

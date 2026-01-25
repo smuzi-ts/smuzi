@@ -18,6 +18,12 @@ npm install @smuzi/std
 ## Patterns Matching
 
 ```ts
+
+const result = match("B", handlers, "isDefault")
+assert.equal(result, "isB")
+```
+
+```ts
 const handlers = new Map([
     ["A", "isA"],
     ["B", "isB"],

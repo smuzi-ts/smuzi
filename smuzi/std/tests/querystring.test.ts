@@ -1,8 +1,7 @@
 import { assert, it } from "@smuzi/tests";
-import { Pipe } from "#lib/pipeline.js";
-import {testRunner} from "./index.js";
-import {querystring} from "#lib/querystring.js";
-import {faker} from "@smuzi/faker";
+import { testRunner } from "./index.js";
+import { querystring } from "#lib/querystring.js";
+import { faker } from "@smuzi/faker";
 
 testRunner.describe("Std-querystring", [
     it("fromString - Cyrillic", () => {
@@ -63,11 +62,11 @@ testRunner.describe("Std-querystring", [
     }),
 
     it("fromString - obj instead of string", () => {
-        const obhInsteadOfString = {a: faker.string()}
+        const obhInsteadOfString = { a: faker.string() }
 
         const params = querystring.fromString(obhInsteadOfString as any);
         assert.result.equalErr(params)
     }),
 
-    ]
+]
 )

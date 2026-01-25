@@ -6,7 +6,7 @@ import {dump, None, StdMap, StdRecord} from "@smuzi/std";
 
 
 testRunner.describe("Std-Schema-Record", [
-    it("Record-Ok", () => {
+    it("Ok", () => {
         const schemaVal = schema.record({
             id: schema.number(),
             name: schema.string()
@@ -25,7 +25,7 @@ testRunner.describe("Std-Schema-Record", [
             },
         });
     }),
-    it("Record-Option field is empty", () => {
+    it("Option field is empty", () => {
         const schemaVal = schema.record({
             id: schema.number(),
             name: schema.option(schema.string())
@@ -44,7 +44,7 @@ testRunner.describe("Std-Schema-Record", [
         });
     }),
 
-    it("Record-Option field is some", () => {
+    it("Option field is some", () => {
         const schemaVal = schema.record({
             id: schema.number(),
             name: schema.option(schema.string())
@@ -64,7 +64,7 @@ testRunner.describe("Std-Schema-Record", [
         });
     }),
 
-    it("with Map-Ok", () => {
+    it("Map-Ok", () => {
         const postSchema = schema.record({
             id: schema.number(),
         });
@@ -93,18 +93,18 @@ testRunner.describe("Std-Schema-Record", [
             Ok: validInput => {
                 assert.equal(
                     validInput.userName,
-                    userInput.get("userName").unwrap()
+                    userInput.get("userName").unwrap(),
                 );
 
                 assert.equal(
                     validInput.posts.get(0).id,
-                    postsInput.get(0).unwrap().get("id").unwrap()
+                    postsInput.get(0).unwrap().get("id").unwrap(),
                 );
             },
         });
     }),
 
-    it("with Map-Err", () => {
+    it("Map-Err", () => {
         const postSchema = schema.record({
             id: schema.number(),
         });

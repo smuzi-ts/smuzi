@@ -1,0 +1,373 @@
+{
+    "data": {
+        "id": "l3zw3f311cc17697a4001b859831c5fda9c54",
+        "type": "files",
+        "attributes": {
+            "active_workflow_instance": {},
+            "modified_by_zuid": "800583634",
+            "is_locked": false,
+            "conv_engine_type": 0,
+            "is_fillable_resource": false,
+            "is_published": false,
+            "destination_id": "ck6ym76276024270b4ce780d87d7504f1f0b4",
+            "storage_info": {
+                "size": "0 byte",
+                "storage_used": "0 byte",
+                "files_count": 0,
+                "folders_count": 0,
+                "size_in_bytes": 0,
+                "storage_used_in_bytes": 0,
+                "storage_used_by_team_folders_in_bytes": 0,
+                "size_used_by_team_folders_in_bytes": 0,
+                "storage_used_by_workdrive_in_bytes": 0,
+                "storage_used_by_app_in_bytes": 0
+            },
+            "type": "folder",
+            "spam_info": {
+                "is_res_spam": false
+            },
+            "created_time_i18": "Jan 21, 10:30 PM",
+            "associated_data_templates": [],
+            "is_marked_final": false,
+            "modified_time_in_millisecond": 1769027420326,
+            "status_change_time": "Jan 21, 10:30 PM",
+            "role_id": 1,
+            "download_url": "https://workdrive.zoho.com/download/l3zw3f311cc17697a4001b859831c5fda9c54",
+            "comment_badge_count": 0,
+            "is_app_associated": false,
+            "created_time": "Jan 21, 10:30 PM",
+            "lock_status": 2,
+            "is_folder": true,
+            "is_parent_customized": false,
+            "resource_type": 1001,
+            "is_email_in_upload": false,
+            "res_scope": 0,
+            "display_attr_name": "Diana Test",
+            "created_by": "tonyputs",
+            "display_html_name": "Diana Test",
+            "labels": [],
+            "org_id": "79qp546d58cf333fc4a59bf42dab85a7144ca",
+            "parent_id": "ck6ym76276024270b4ce780d87d7504f1f0b4",
+            "name": "Diana Test",
+            "status_change_time_in_millisecond": 1769027420326,
+            "permalink": "https://workdrive.zoho.com/folder/l3zw3f311cc17697a4001b859831c5fda9c54",
+            "favorite": false,
+            "new_badge_count": 0,
+            "is_camera_upload_folder": false,
+            "status": 1,
+            "modified_time_i18": "Jan 21, 10:30 PM",
+            "extn": "",
+            "customized": false,
+            "view_pref": {
+                "sort_by": "last_modified",
+                "sort_order": "desc",
+                "filtered_by": "all",
+                "layout": "list",
+                "listing_columns": ""
+            },
+            "shortcut_link": "",
+            "status_change_time_i18": "Jan 21, 10:30 PM",
+            "description": "",
+            "uploaded_time_in_millisecond": 1769027420327,
+            "thumbnail_url": "",
+            "title": "",
+            "files_view_pref": {
+                "sort_by": "last_modified",
+                "sort_order": "desc",
+                "filtered_by": "all",
+                "layout": "list",
+                "listing_columns": ""
+            },
+            "modified_time": "Jan 21, 10:30 PM",
+            "library_id": "014gz72b63612fc7241e78094a9ad2314cbf0",
+            "icon_class": "folder",
+            "created_time_in_millisecond": 1769027420326,
+            "owner": "897682434",
+            "creator": "800583634",
+            "url_link": "",
+            "is_collection_associated": false,
+            "capabilities": {
+                "can_read": true,
+                "can_share": true,
+                "can_remove_share": false,
+                "can_delete": false,
+                "can_edit": true,
+                "can_partial_read": false,
+                "can_create_files": true,
+                "can_upload_files": true,
+                "can_trash": true,
+                "can_rename": true,
+                "can_restore": false,
+                "can_copy": true,
+                "can_move": true,
+                "can_zip": true,
+                "can_download": true,
+                "can_emailattach": true,
+                "can_publish": true,
+                "can_create_task": false,
+                "can_share_support": true,
+                "can_label": true,
+                "can_delist_file": false,
+                "can_associate_data_template": true,
+                "can_mandate_data_template": true,
+                "can_favorite": true,
+                "can_customize": false,
+                "can_configure_workflow": true,
+                "can_show_activity": true,
+                "can_show_access_stats": true,
+                "can_show_active_workflow_instance": false,
+                "can_mark_as_final": false,
+                "can_trash_files": true,
+                "can_open_with_addons": false,
+                "has_app_permission_alone": false
+            },
+            "uploaded_time_i18": "Jan 21, 10:30 PM",
+            "is_external_upload": false,
+            "watch_preference": {
+                "watch": false,
+                "notifyemail": false,
+                "notifybell": false
+            },
+            "opened_time_in_millisecond": 0,
+            "edit_badge_count": 0,
+            "share_data": [],
+            "data_template_id_to_mandate": "",
+            "uploaded_time": "Jan 21, 10:30 PM",
+            "has_folders": false,
+            "service_type": "upload",
+            "display_url_name": "Diana+Test",
+            "is_unread": false,
+            "modified_by": "tonyputs",
+            "creator_avatar_url": "https://contacts.zoho.com/file?t=user&ID=800583634&fs=thumb&nps=404",
+            "is_index_layout_file": false,
+            "embed_props": {}
+        },
+        "relationships": {
+            "linkfile": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/linkfile",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/linkfile"
+                }
+            },
+            "folders": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/folders",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/folders"
+                }
+            },
+            "filequery": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/filequery",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/filequery"
+                }
+            },
+            "dlpsensitivecontentidentifiers": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/dlpsensitivecontentidentifiers",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/dlpsensitivecontentidentifiers"
+                }
+            },
+            "records": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/records",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/records"
+                }
+            },
+            "instances": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/instances",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/instances"
+                }
+            },
+            "unzip": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/unzip",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/unzip"
+                }
+            },
+            "performtransition": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/performtransition",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/performtransition"
+                }
+            },
+            "accesschartdata": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/accesschartdata",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/accesschartdata"
+                }
+            },
+            "resourceproperty": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/resourceproperty",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/resourceproperty"
+                }
+            },
+            "shortcut": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/shortcut",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/shortcut"
+                }
+            },
+            "importfile": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/importfile",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/importfile"
+                }
+            },
+            "permissions": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/permissions",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/permissions"
+                }
+            },
+            "saveastemplate": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/saveastemplate",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/saveastemplate"
+                }
+            },
+            "links": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/links",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/links"
+                }
+            },
+            "copy": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/copy",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/copy"
+                }
+            },
+            "previewzip": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/previewzip",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/previewzip"
+                }
+            },
+            "tasks": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/tasks",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/tasks"
+                }
+            },
+            "custommetadata": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/custommetadata",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/custommetadata"
+                }
+            },
+            "deletedversions": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/deletedversions",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/deletedversions"
+                }
+            },
+            "comments": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/comments",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/comments"
+                }
+            },
+            "previewinfo": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/previewinfo",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/previewinfo"
+                }
+            },
+            "approvedversions": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/approvedversions",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/approvedversions"
+                }
+            },
+            "publiclink": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/publiclink",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/publiclink"
+                }
+            },
+            "parentfolders": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/parentfolders",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/parentfolders"
+                }
+            },
+            "versions": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/versions",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/versions"
+                }
+            },
+            "supportshare": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/supportshare",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/supportshare"
+                }
+            },
+            "startjourney": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/startjourney",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/startjourney"
+                }
+            },
+            "recordsuggestions": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/recordsuggestions",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/recordsuggestions"
+                }
+            },
+            "timeline": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/timeline",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/timeline"
+                }
+            },
+            "files": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/files",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/files"
+                }
+            },
+            "accessdata": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/accessdata",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/accessdata"
+                }
+            },
+            "dlppolicy": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/dlppolicy",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/dlppolicy"
+                }
+            },
+            "breadcrumbs": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/breadcrumbs",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/breadcrumbs"
+                }
+            },
+            "entity": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/entity",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/entity"
+                }
+            },
+            "statistics": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/statistics",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/statistics"
+                }
+            },
+            "appdata": {
+                "links": {
+                    "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/relationships/appdata",
+                    "related": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54/appdata"
+                }
+            }
+        },
+        "links": {
+            "self": "https://www.zohoapis.com/workdrive/api/v1/files/l3zw3f311cc17697a4001b859831c5fda9c54"
+        }
+    }
+}

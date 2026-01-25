@@ -1,5 +1,6 @@
 import { isRegExp, isArray, isString, isFunction, isNumber, isObject, asFunction } from "./checker.js";
 import { dump } from "./debug.js";
+import { EnumType } from "./enum.js";
 import { None, Option, Some } from "./option.js";
 
 export type ParamsMatchedData = Option<unknown | Record<string, Option<unknown>>>;
@@ -27,6 +28,12 @@ type NumberValueMapPatterns<R> = Map<NumberValuePatterns, Handler<number, R> | R
 //>>> Array
 type ArrayValuePatterns = any[];
 type ArrayValueMapPatterns<R> = Map<ArrayValuePatterns, Handler<any, R> | R>
+//<<<
+
+//>>> Enum
+export type EnumValuePatterns = string | string[] | RegExp | Checker<string>;
+type EnumValueMapPatterns<T, R> = Record<keyof Omit<T, 'STD_TYPE_PROPERTY'>, Handler<T, R> | R>
+
 //<<<
 
 
@@ -57,6 +64,14 @@ export function matchUnknown<R extends unknown, T extends unknown>(
 
     return matchFn(deflt, val, returnAsFn);
 }
+
+
+export function match<T extends EnumType<any>, R = unknown>(
+    val: T, 
+    handlers: EnumValueMapPatterns<T, R>,
+    deflt: Handler<T, R> | R, 
+    returnAsFn: true
+): R;
 
 
 export function match<T extends any[], R = unknown>(
