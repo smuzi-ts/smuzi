@@ -17,7 +17,8 @@ import {
     TEmpty, isArray,
     isSome,
     StdError,
-    asString, dump
+    asString, dump,
+    isImpl
 } from "@smuzi/std";
 import {assertObject, TAssertObject} from "#lib/asserts/object.js";
 import {assertArray, TAssertArray} from "#lib/asserts/array.js";
@@ -54,6 +55,7 @@ export type Assert = {
     equalNone(actual: unknown): asserts actual is Option;
 
     isObject(actual: unknown): asserts actual is Record<string, unknown>;
+    isImpl<Trait>(trait: new () => Trait, actual: unknown): asserts actual is Trait 
 
     result: TAssertResult
     array: TAssertArray
@@ -214,4 +216,15 @@ export const assert: Assert = {
             }
         })
     },
+    isImpl(trait, actual) {
+           if (! isImpl(trait, actual)) {
+            assertionError({
+                    message: `Expected actual implemented ${trait.name}`,
+                    actual,
+                    expected: trait.name,
+                    operator: 'isImpl'
+                }
+            )
+        }
+    }
 }

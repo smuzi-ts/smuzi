@@ -24,6 +24,7 @@ export * from "./uuid.js";
 export * from "./regexp.js";
 export * from "./querystring.js";
 export * from "./enum.js";
+export * from "./trait.js";
 
 import * as _scripts from "./scripts.js";
 import {None, Option} from "#lib/option.js";
