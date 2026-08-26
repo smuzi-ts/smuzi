@@ -1,6 +1,7 @@
 import { assert, it, okMsg } from "@smuzi/tests";
 import { match } from "#lib/match.js";
 import {testRunner} from "../index.js";
+import { Simplify } from "#lib/utilTypes.js";
 
 testRunner.describe("Std-match-Object", [
     it(okMsg("Matched all properties"), () => {
@@ -20,7 +21,7 @@ testRunner.describe("Std-match-Object", [
         const user = { name: "Richard Man", age: 18 }
         const patterns = new Map();
         patterns.set({ name: "Richard One", age: 18 }, 10);
-        patterns.set({ name: /^Richard\s+\w+$/, age: 20 }, 20);
+        patterns.set({ name: /^Richard\s+\w+$/, age: 20 }, 20); 
         patterns.set({ name: /^Richard\s+\w+$/, age: 18 }, 30); //<-- Matched
 
 

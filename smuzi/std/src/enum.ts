@@ -1,17 +1,23 @@
 const STD_TYPE_PROPERTY = Symbol("STD_TYPE_PROPERTY");
-const STD_TYPE_ENUM = "STD_TYPE_ENUM";
+const STD_TYPE_ENUM = "ENUM";
+const STD_ENUM_NAME = "STD_ENUM_NAME";
 
 type Constructor<T = unknown> = new (...args: any[]) => T;
 declare const Brand: unique symbol
 
-
-export type EnumType<Options  extends Record<string, Constructor>> = Options & {
-    STD_TYPE_PROPERTY: string
-    __infer: InstanceType<Options[keyof Options]> 
+type EnumVariant = {
+    [STD_TYPE_PROPERTY]: "ENUM_VARIANT",
 }
 
-export function Enum<Options extends Record<string, Constructor>>(options: Options): EnumType<Options> {
-    return Object.assign({
-        STD_TYPE_PROPERTY: STD_TYPE_ENUM
-    }, options) as EnumType<Options>;
+export type EnumType<Variants  extends Record<string, Constructor>> = Variants & {
+    [STD_TYPE_PROPERTY]: string
+    __variant: InstanceType<Variants[keyof Variants]> 
+}
+
+export function Enum<Variants extends Record<string, Constructor>>(enumName: string, variants: Variants): EnumType<Variants> {
+    return Object.assign(variants, {
+        [STD_TYPE_PROPERTY]: STD_TYPE_ENUM,
+        __variant: undefined as any,
+        [STD_ENUM_NAME]: Symbol(enumName)
+    })
 }

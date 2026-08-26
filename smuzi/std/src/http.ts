@@ -20,6 +20,20 @@ export enum HttpProtocol {
     HTTP = "http",
 }
 
+class User {
+    id: string
+}
+
+class Admin {
+    name: string
+}
+
+enum Role {
+    Admin,
+    User,
+}
+
+const t =  Role.Admin
 
 function buildUrl(protocol: HttpProtocol, host: string, port: Option<number> = None()) {
     return `${protocol}://${host}` + port.match({Some: v => ":" + v, None: () => ""});

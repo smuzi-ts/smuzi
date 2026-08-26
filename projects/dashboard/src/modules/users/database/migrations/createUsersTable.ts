@@ -1,9 +1,8 @@
 import {Migration} from "@smuzi/database";
 
-export default new Migration(
+export default Migration(
 {
-    up() {
-        return `
+    up: ()  => (`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
@@ -11,9 +10,7 @@ export default new Migration(
                 password VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP,
                 updated_at TIMESTAMP
-    );`
-    },
-   down() {
-       return 'DROP TABLE IF EXISTS users;';
-   }
+    );`),
+    
+   down: () => 'DROP TABLE IF EXISTS users;'
 })

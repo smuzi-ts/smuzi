@@ -1,0 +1,27 @@
+{
+  "name": "@smuzi/routine",
+  "version": "0.1",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "test": "tsx tests/index.ts"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": ["./src"],
+  "dependencies": {
+    "@smuzi/std": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@smuzi/tests": "workspace:*"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  }
+}
