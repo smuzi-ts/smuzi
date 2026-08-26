@@ -126,7 +126,7 @@ function http2NotFoundHandler(context: Context<ServerHttp2Stream>) {
 
 export function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<Resp>>(
     groupRoute: GroupRoute,
-    notFound: Action<Resp>
+    notFound: Action<Resp>,
 ): Router<Resp> {
     const routes = new Map()
 
@@ -187,12 +187,12 @@ export function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<R
 
 
 
-// export function CreateHttp1Router(
-//     groupRoute: GroupRoute,
-//     notFound: Action<ServerResponse> = http1NotFoundHandler,
-// ): Http1Router {
-//     return CreateHttpRouter<ServerResponse, Http1Router>(groupRoute, notFound);
-// }
+export function CreateHttp1Router(
+    groupRoute: GroupRoute,
+    notFound: Action<ServerResponse> = http1NotFoundHandler,
+): Http1Router {
+    return CreateHttpRouter<ServerResponse, Http1Router>(groupRoute, notFound);
+}
 
 // export function CreateHttp2Router(
 //     groupRoute: GroupRoute,

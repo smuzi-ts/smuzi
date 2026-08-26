@@ -5,6 +5,7 @@ import {isNone} from "#lib/option.js";
 import {StdRecord} from "#lib/record.js";
 import {StdList} from "#lib/list.js";
 import {dump} from "#lib/debug.js";
+import { log } from "node:console";
 
 export type QueryParams = Record<string, unknown>;
 
@@ -63,7 +64,7 @@ function fromString<T extends StdRecord<QueryParams>>(queryString: string): Resu
     pairs.forEach(pair => {
         const [key, value] = pair.split('=');
 
-        if (! key) return;
+        if (key == null || key == '' || ! key) return;
 
         const decodedKey = decodeURIComponent(key);
         const decodedValue = value ? decodeURIComponent(value) : '';
@@ -78,7 +79,9 @@ function fromString<T extends StdRecord<QueryParams>>(queryString: string): Resu
         } else {
             params[decodedKey] = decodedValue;
         }
+
     });
+
     return Ok(new StdRecord(params) as T);
 }
 

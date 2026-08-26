@@ -35,6 +35,7 @@ import {
     TOutputConsole,
     TThemaOutputConsole
 } from "@smuzi/console";
+import { log } from 'node:console';
 
 
 export const okMsg = (msg = ""): string => `${msg} - exp ok`;
@@ -206,7 +207,7 @@ export class TestRunner<GS extends Option> {
         {
             await loadDescribesFromDir(this.#folder);
         }
-
+        
         const filterByMsg = this.#inputParams.get("contains")
             .mapSome(strSearch => {
                 return (msg: string) => !msg.includes(strSearch)

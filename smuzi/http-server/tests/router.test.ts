@@ -36,10 +36,13 @@ postsRouter.get("/attachments/{id}", () => "posts list"); //<-- request5
 
 function makeRequest(path: string, method: HttpMethod = HttpMethod.GET) {
    return  new HttpRequest({
-        path: path,
-        method: method,
+        path,
+        method,
         json: {} as any,
-        body: {} as any
+        body: {} as any,
+        query: {} as any,
+        buffer: {} as any,
+        form: {} as any,
     });
 }
 

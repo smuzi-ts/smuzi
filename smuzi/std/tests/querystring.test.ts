@@ -2,6 +2,10 @@ import { assert, it } from "@smuzi/tests";
 import { testRunner } from "./index.js";
 import { querystring } from "#lib/querystring.js";
 import { faker } from "@smuzi/faker";
+import { StdRecord } from "#lib/record.js";
+import { StdList } from "#lib/list.js";
+
+import { log } from "console";
 
 testRunner.describe("Std-querystring", [
     it("fromString - Cyrillic", () => {
@@ -17,9 +21,9 @@ testRunner.describe("Std-querystring", [
         assert.equal(paramsUnwrap.get("age").unwrap(), age);
     }),
     it("fromString - Duplicate keys (arrays)", () => {
-        type CategoriesParams = {
-            categories: string[]
-        }
+        type CategoriesParams = StdRecord<{
+            categories: StdList<string> 
+        }>; //TODO: fix any
 
         const category1 = faker.string();
         const category2 = faker.string();
@@ -29,9 +33,9 @@ testRunner.describe("Std-querystring", [
 
         const paramsUnwrap = querystring.fromString<CategoriesParams>(queryString).unwrap();
         const categories = paramsUnwrap.get("categories").unwrap();
-        assert.equal(categories[0], category1);
-        assert.equal(categories[1], category2);
-        assert.equal(categories[2], category3);
+        assert.equal(categories.get(0).unwrap(), category1);
+        assert.equal(categories.get(1).unwrap(), category2);
+        assert.equal(categories.get(2).unwrap(), category3);
     }),
 
     it("fromString - Special characters and spaces", () => {

@@ -18,7 +18,6 @@
     "option"
   ],
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
-
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -32,15 +31,12 @@
   "imports": {
     "#lib/*": "./src/*"
   },
-  "dependencies": {
-  },
   "devDependencies": {
+    "@smuzi/faker": "workspace:*",
+    "@smuzi/schema": "workspace:*",
+    "@smuzi/tests": "workspace:*",
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
-    "@smuzi/faker": "workspace:*",
-    "@smuzi/tests": "workspace:*",
-    "@smuzi/schema": "workspace:*"
-
+    "typescript": "^7.0.2"
   }
-
 }
