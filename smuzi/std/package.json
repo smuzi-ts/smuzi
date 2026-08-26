@@ -1,9 +1,9 @@
 {
   "name": "@smuzi/std",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
-    "test": "tsx tests/index.ts",
+    "test": "tsx --conditions=development tests/index.ts",
     "build": "tsc --project tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },

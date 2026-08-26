@@ -9,8 +9,4 @@ export const httpServerConfig = buildHttp1ServerConfig({
     host: env("APP_HOST", Some("localhost")),
     port: parseInt(env("APP_PORT", Some('80'))),
     router,
-    cert: Some({
-        key: path.join('ssl/', 'server.key'),
-        cert: path.join('ssl/', 'server.crt'),
-    })
 });

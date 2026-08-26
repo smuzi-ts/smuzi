@@ -33,7 +33,6 @@ export async function commandHandler(
     }
 
     const matchedCommand = match(inputParsed.path, config.router.getMapRoutes(), () => notFoundHandler(inputParsed));
-
     await matchedCommand.action(config.output, inputParsed.params)
 }
 

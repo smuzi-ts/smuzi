@@ -33,23 +33,25 @@ export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): T
         },
         async getLastBranch(): Promise<Option<number>> {
             const res = (await client.query(`SELECT MAX(branch) as last_branch FROM ${table}`)).unwrap();
+            if (res.rowCount.isZero()) return None();
 
-            return isEmpty(res) || isEmpty(res[0]) || isEmpty(res[0].last_branch)
-                ? None()
-                : res[0].last_branch as Option<number>
+            return res.rows.get(0).unwrap().get("last_branch");
         },
         create(row) {
             return client.insertRow(table, migrationLogRowSchema, row);
         },
         async migrationLastAction(name: string) {
             const res = (await client.query(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, [name])).unwrap();
-            return isEmpty(res) || isEmpty(res[0]) || isEmpty(res[0].action)
-                ? None()
-                : res[0].action as Option<string>
+
+            if (res.rowCount.isZero()) return None();
+            
+            return res.rows.get(0).unwrap().get("action");
         },
         async migrationWillBeRuned(name: string)
         {
-            return (await this.migrationLastAction(name)).match({
+            const lastAction = await this.migrationLastAction(name);
+
+            return lastAction.match({
                 Some: (v) => v === TMigrationLogAction.up,
                 None: () => false,
             })

@@ -6,6 +6,7 @@ import {
     TQueryResult
 } from "@smuzi/database";
 import {
+    isEmpty,
     asArray,
     asObject, dump,
     Err,
@@ -87,27 +88,11 @@ export class PostgresClient implements TDatabaseClient {
         const values = Object.values(row).map(val => isOption(val) ? val.someOr(null) : val);
         const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
 
-        const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING ${returningColumns.join(',')}` ;
+        let sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
+        if (!isEmpty(returningColumns)) sql += ` RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query(sql, values, Some(schema)))
-            .errOr(result => {
-                return result.rows.get(0).match({
-                    Some(row) {
-                        return Ok(row) as TInsertRowResult<S, RC>;
-                    },
-                    None() {
-                        return Err(new DBQueryError(
-                            {
-                                sql,
-                                message: 'Result of query insert row not contain any rows',
-                                code: Some("SYSTEM:1000"),
-                                detail: None(),
-                                table: Some(table)
-                            })
-                        ) as TInsertRowResult<S, RC>
-                    },
-                })
-        });
+        return (await this.query(sql, values, Some(schema)))  as TInsertRowResult<S, RC>;
+            
     }
 
     async insertManyRows<S extends SchemaObject<any>, const RC extends string[]>(

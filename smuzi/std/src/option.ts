@@ -111,6 +111,10 @@ export class Option<T = unknown> {
         dump({innerVal: this._val});
         return this;
     }
+
+    isZero(): boolean {
+        return this._val == 0;
+    }
 }
 
 

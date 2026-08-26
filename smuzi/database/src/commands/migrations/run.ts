@@ -1,16 +1,11 @@
-import {TDatabaseConfig} from "#lib/types.js";
+import {TDatabaseService} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
 import {clearSQL} from "#lib/helpers.js";
 import {TMigrationLogAction} from "#lib/migration.js";
 
-export default function (config: TDatabaseConfig) {
+export default function (service: TDatabaseService) {
     return async (output: TOutputConsole, params) => {
-        const service = OptionFromNullable(params.service).match({
-            Some: (key) => OkOrNullableAsError(config.services[key], `Service "${key}" not exists`),
-            None: () => Ok(config.current),
-        })
-            .unwrap();
 
         const migrationsLogRepository = service.buildMigrationLogRepository(service.client);
 
@@ -33,13 +28,13 @@ export default function (config: TDatabaseConfig) {
 
             (await service.client.query(sql_source)).unwrap();
 
-            (await migrationsLogRepository.create({
+           (await migrationsLogRepository.create({
                 name,
                 branch,
                 action: TMigrationLogAction.up,
                 sql_source,
                 created_at: new Date(),
-            })).unwrap()
+            })).unwrap();
         }
     }
 }

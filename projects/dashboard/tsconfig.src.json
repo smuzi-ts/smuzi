@@ -7,10 +7,9 @@
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
     "rootDir": "src",
     "composite": true,
-    "baseUrl": "./src",
     "paths": {
-      "#configs/*": ["configs/*"],
-      "#users/*": ["modules/users/*"]
+      "#configs/*": ["./src/configs/*"],
+      "#users/*": ["./src/modules/users/*"]
     }
   }
 }

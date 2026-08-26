@@ -1,10 +1,10 @@
-import {DatabaseConfig, Migrations} from "@smuzi/database";
-import {buildPostgresEntityRepository, buildPostgresMigrationsLogRepository, postgresClient} from "@smuzi/db-postgres";
-import {usersMigrations} from "#users/database/migrations/index.js";
-import {env} from "@smuzi/std";
+import { DatabaseConfig, Migrations } from "@smuzi/database";
+import { buildPostgresEntityRepository, buildPostgresMigrationsLogRepository, postgresClient } from "@smuzi/db-postgres";
+import { usersMigrations } from "#users/database/migrations/index.js";
+import { env } from "@smuzi/std";
 
 const services = {
-    default: {
+    core: {
         client: postgresClient({
             host: env("DB_HOST"),
             port: parseInt(env("DB_PORT")),
@@ -22,5 +22,9 @@ const services = {
     }
 }
 
+export const databaseConfig = {
+    services,
+    default: services.core,
+}
 
 

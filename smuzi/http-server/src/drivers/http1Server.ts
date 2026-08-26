@@ -32,6 +32,7 @@ import {
     StdJson, uuid
 } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
+import { log } from 'node:console';
 
 type NativeServer = any
 
@@ -241,6 +242,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
 
 
         server.once('error', (nativeError: any) => {
+            log("Server started on", nativeError);
             resolve(Err({
                 errno: OptionFromNullable(nativeError.errno),
                 code: OptionFromNullable(nativeError.code),
@@ -252,6 +254,8 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
         });
 
         server.listen(config.port, () => {
+            log("Server started on " + config.protocol + "://" + config.host + ":" + config.port)
+
             resolve(Ok(new StdHttp1Server(server)));
         });
 

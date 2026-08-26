@@ -34,8 +34,6 @@ export enum TMigrationLogAction {
 }
 
 
-
-
 export type TMigrationsLogRepository = {
     getTable(): string,
     createTableIfNotExists(): Promise<TQueryResult<never>>,

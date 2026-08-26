@@ -1,16 +1,11 @@
-import {TDatabaseConfig} from "#lib/types.js";
+import {TDatabaseService} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
 import {clearSQL} from "#lib/helpers.js";
 import {TMigrationLogAction} from "#lib/migration.js";
 
-export default function (config: TDatabaseConfig) {
+export default function (service: TDatabaseService) {
     return async (output: TOutputConsole, params) => {
-        const service = OptionFromNullable(params.service).match({
-            Some: (key) => OkOrNullableAsError(config.services[key], `Service "${key}" not exists`),
-            None: () => Ok(config.current),
-        })
-            .unwrap();
 
         const migrationsLogRepository = service.buildMigrationLogRepository(service.client);
 
@@ -21,12 +16,16 @@ export default function (config: TDatabaseConfig) {
 
         output.info("Branch for rollback - " + branch)
 
-
         const logMigrations = (await migrationsLogRepository.listRunedByBranch(branch)).unwrap();
         const migrations = service.buildMigrations();
 
-        for (const [key, rowLog] of logMigrations) {
-            const name = rowLog.name;
+       if (logMigrations.rowCount.isZero()) {
+            return;
+        }
+        
+        for (const [key, rowLog] of logMigrations.rows) {
+            const name = rowLog.get("name").unwrap();
+
             const migration = migrations.getByName(name)
 
             output.success('Down migration - ' + name)

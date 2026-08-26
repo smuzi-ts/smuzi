@@ -11,9 +11,8 @@
     "types": ["node"],
     "rootDir": "src",
     "composite": true,
-    "baseUrl": "./src",
     "paths": {
-      "#lib/*": ["*"]
+      "#lib/*": ["./src/*"]
   }
   }
 }

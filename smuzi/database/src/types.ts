@@ -63,7 +63,7 @@ export type TInsertManyRowResult<S extends SchemaObject, Columns extends readonl
 
 export class TableRows<
     Schema extends SchemaObject,
-    TableRow extends Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"] = Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"],
+    TableRow extends Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"] = Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> :  StdRecord<Schema["__infer"]>,
    Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>
 > {
     #rows: Rows
@@ -172,12 +172,6 @@ export type TDatabaseService = {
     buildMigrations: () => TMigrations,
     buildMigrationLogRepository:  (client: TDatabaseClient) => TMigrationsLogRepository,
 }
-
-export type TDatabaseConfig = {
-    services: Record<string, TDatabaseService>,
-    current: TDatabaseService
-};
-
 
 export type IsExcludeSaving<T> = T extends SchemaStorageAutoNumber ? true : false;
 

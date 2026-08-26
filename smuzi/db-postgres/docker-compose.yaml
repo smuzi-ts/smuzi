@@ -4,9 +4,9 @@ services:
     ports:
       - '${DB_PORT:-5432}:5432'
     environment:
-      POSTGRES_DB: '${DB_DATABASE}'
-      POSTGRES_USER: '${DB_USER}'
-      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      DB_DATABASE: '${DB_DATABASE}'
+      DB_USER: '${DB_USER}'
+      DB_PASSWORD: '${DB_PASSWORD}'
     volumes:
       - 'smuzi-db-pg-test:/var/lib/postgresql/data'
     networks:
