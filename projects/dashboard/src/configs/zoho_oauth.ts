@@ -3,6 +3,7 @@ import { OAuthConfig , scopes, domains, PostgresOAuthRepository } from "@crmoz/z
 import { databaseConfig } from "./database.js";
 
 export const zohoOAuthConfig: OAuthConfig = {
+    connection: Some("zoho"),
     protocol: HttpProtocol.HTTP,
     host: env("APP_HOST", Some("localhost")),
     port: parseInt(env("APP_PORT", Some('81'))),

@@ -25,9 +25,9 @@ export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements Schem
 
 type SchemaTemporalDateTimeConfig = { msg: string };
 
-export class SchemaTemporalDateTimeeDate<C extends SchemaTemporalDateTimeConfig> implements SchemaRule {
+export class SchemaTemporalDateTimeDate<C extends SchemaTemporalDateTimeConfig> implements SchemaRule {
     #config: C;
-    __infer: Temporal.DateTimeLikeObject;
+    __infer: Temporal.Instant;
     __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
 
     constructor(config: C) {
@@ -46,5 +46,5 @@ export class SchemaTemporalDateTimeeDate<C extends SchemaTemporalDateTimeConfig>
 
 export const datetime = {
     native: ({msg = "Expected instance of Date"}: Partial<SchemaNativeDateConfig> = {}) => (new SchemaNativeDate({msg})),
-    temporal: ({msg = "Expected instance of Temporal"}: Partial<SchemaTemporalDateTimeConfig> = {}) => (new SchemaNativeDate({msg})),
+    temporal: ({msg = "Expected instance of Temporal"}: Partial<SchemaTemporalDateTimeConfig> = {}) => (new SchemaTemporalDateTimeDate({msg})),
 }

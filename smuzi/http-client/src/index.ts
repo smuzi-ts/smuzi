@@ -43,6 +43,7 @@ export type PostRequestConfig = {
     rawResponse?: boolean
 };
 
+
 function buildUrl(baseUrl: string = "", url: string, query: Record<string, string | number | boolean>) {
     const fullUrl = baseUrl + url;
     let qs = "";

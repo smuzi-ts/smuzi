@@ -7,7 +7,7 @@ import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
 import {SchemaMapConfig, SchemaMap} from "#lib/map.js";
 import {SchemaListConfig, SchemaList} from "#lib/list.js";
 import {SchemaOption, SchemaOptionConfig} from "#lib/option.js";
-export {SchemaNativeDate} from "#lib/datetime.js";
+export {SchemaNativeDate, SchemaTemporalDateTimeDate} from "#lib/datetime.js";
 export {type SchemaValidationError} from "#lib/types.js";
 export {SchemaObject} from "#lib/obj.js";
 export {SchemaOption} from "#lib/option.js";
