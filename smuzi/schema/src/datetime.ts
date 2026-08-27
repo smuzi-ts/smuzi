@@ -23,6 +23,28 @@ export class SchemaNativeDate<C extends SchemaNativeDateConfig> implements Schem
     }
 }
 
+type SchemaTemporalDateTimeConfig = { msg: string };
+
+export class SchemaTemporalDateTimeeDate<C extends SchemaTemporalDateTimeConfig> implements SchemaRule {
+    #config: C;
+    __infer: Temporal.DateTimeLikeObject;
+    __inferError: Simplify<SchemaValidationError<StdRecord<{}>>>;
+
+    constructor(config: C) {
+        this.#config = config;
+    }
+
+    validate(input: unknown): Result<true, SchemaValidationError<StdRecord<Record<PropertyKey, unknown>>>> {
+        return  input instanceof Temporal.Instant ? Ok(true) : Err({msg: this.#config.msg, data: new StdRecord()});
+
+    }
+
+    fake() {
+        return faker.datetime.native();
+    }
+}
+
 export const datetime = {
     native: ({msg = "Expected instance of Date"}: Partial<SchemaNativeDateConfig> = {}) => (new SchemaNativeDate({msg})),
+    temporal: ({msg = "Expected instance of Temporal"}: Partial<SchemaTemporalDateTimeConfig> = {}) => (new SchemaNativeDate({msg})),
 }

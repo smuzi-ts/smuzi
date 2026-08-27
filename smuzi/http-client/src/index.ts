@@ -16,8 +16,11 @@ import {
     StdError,
     isNone,
     asString,
-    StdJson
+    StdJson,
+    querystring,
+    StdFormData
 } from "@smuzi/std";
+import { log } from "console";
 
 export type BaseRequestConfig = {
     method: HttpMethod;
@@ -80,20 +83,30 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {} }: HttpClientCo
                 contentType: string
             }>;
 
-            bodyParsed = body.mapSome((body) => {
-                if (isObject(body) && !(body instanceof FormData)) {
+            bodyParsed = body.mapSome((bodyValue) => {
+                //TODO: Handle bodyValue instanceof FormData 
+
+                if (bodyValue instanceof StdFormData) {
                     return {
-                        body: StdJson.toString(body).unwrap(),
+                        body: bodyValue.toString().unwrap(),
+                        contentType: "application/x-www-form-urlencoded"
+                    }
+                }
+
+                if (isObject(bodyValue) && !(bodyValue instanceof FormData)) {
+                    return {
+                        body: StdJson.toString(bodyValue).unwrap(),
                         contentType: "application/json; charset=utf-8"
                     }
                 }
 
                 //TODO SAFE: "body as string", need to added any chekers
                 return {
-                        body: asNull(body) ? "" : body as string,
+                        body: asNull(bodyValue) ? "" : bodyValue as string,
                         contentType: "text/plain; charset=utf-8"
                 }
             });
+
 
             if (! bodyParsed.isNone()) {
                 requestInit.body = bodyParsed.unwrapByKey("body");

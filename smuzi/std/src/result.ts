@@ -43,10 +43,10 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         return this._val;
     }
 
-    unwrap(): T | never {
+    unwrap(msg: string | null = null): T | never {
         return this.match({
             Ok: (v) => v,
-            Err: unwrapErrorPanic,
+            Err: (err) => unwrapErrorPanic(msg || err),
         });
     }
 

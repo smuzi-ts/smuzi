@@ -150,7 +150,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
                 request: new HttpRequest({
                     method: request.method,
                     path: request.path,
-                    query: () => new StdMap(urlObj.searchParams),
+                    query: () => new StdRecord<QueryParams>(Object.fromEntries(urlObj.searchParams.entries())),
                     headers: new RequestHttpHeaders(nativeRequest.headers as any),
                     buffer: readRequestBodyAsBuffer(nativeRequest),
                     body: readRawBody(nativeRequest),

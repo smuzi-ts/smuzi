@@ -1,10 +1,10 @@
-import {testRunner} from "./index.js";
-import {it, assert} from "@smuzi/tests";
-import {ssrEngine} from "#lib/index.js";
-import {faker} from "@smuzi/faker";
-import {dump} from "@smuzi/std";
+import { testRunner } from "./index.js";
+import { it, assert } from "@smuzi/tests";
+import { ssrEngine } from "#lib/index.js";
+import { faker } from "@smuzi/faker";
+import { dump } from "@smuzi/std";
 
-const ssr = ssrEngine({pathDir: "./tests/templates"});
+const ssr = ssrEngine({ pathDir: "./tests/templates" });
 
 testRunner.describe("Template", [
     it("variable", async () => {
@@ -26,14 +26,14 @@ testRunner.describe("Template", [
 
     it("for of - Array", async () => {
         const users =
-                faker.repeat.asArray(3, () => ({
-                    name: "user_" + faker.string(),
-                    email: faker.string() + "@gmail.com",
-                }))
+            faker.repeat.asArray(3, () => ({
+                name: "user_" + faker.string(),
+                email: faker.string() + "@gmail.com",
+            }))
 
         const posts = faker.repeat.asArray(3, () => "post_" + faker.string())
 
-        const html = (await ssr.render("for_of", {users, posts})).unwrap();
+        const html = (await ssr.render("for_of", { users, posts })).unwrap();
         assert.string.contains(html, "<html")
         assert.string.contains(html, "</html>")
         assert.string.containsOnce(html, users[0].name);
@@ -54,7 +54,7 @@ testRunner.describe("Template", [
         const posts = faker.repeat.asNativeSet(3, () => "post_" + faker.string())
 
 
-        const html = (await ssr.render("for_of", {users, posts})).unwrap();
+        const html = (await ssr.render("for_of", { users, posts })).unwrap();
         assert.string.contains(html, "<html")
         assert.string.contains(html, "</html>")
 
@@ -68,6 +68,25 @@ testRunner.describe("Template", [
             assert.string.contains(html, post)
             assert.string.contains(html, post)
             assert.string.contains(html, post)
+        }
+    }),
+
+    it("for of - Recursive", async () => {
+
+        const users = [
+            faker.repeat.asArray(3, () => "post_1_" + faker.string()),
+            faker.repeat.asArray(3, () => "post_2_" + faker.string()),
+            faker.repeat.asArray(3, () => "post_3_" + faker.string()),
+        ];
+
+        const html = (await ssr.render("for_of_recursive", { users })).unwrap();
+        assert.string.contains(html, "<html")
+        assert.string.contains(html, "</html>")
+        for (const posts of users) {
+            for (const post of posts) {
+                assert.string.contains(html, post)
+            }
+
         }
     }),
 

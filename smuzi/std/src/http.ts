@@ -6,7 +6,7 @@ import {dump} from "#lib/debug.js";
 import {Result} from "#lib/result.js";
 import {StdJson} from "#lib/json.js";
 import {StdError} from "#lib/error.js";
-import {QueryParams} from "#lib/querystring.js";
+import {QueryParams, querystring} from "#lib/querystring.js";
 
 export enum HttpMethod {
     GET = "GET",
@@ -98,7 +98,7 @@ export class HttpResponse<B = unknown> {
     }
 }
 
-export type GetterHttpQuery = <T extends StdMap>() => StdMap<string, string | string[]>
+export type GetterHttpQuery = <T extends StdRecord<QueryParams> = StdRecord<QueryParams>>() => StdRecord<QueryParams>;
 export type GetterHttpInputBodyAsBuffer = () => Promise<Result<Buffer, Error>>;
 export type GetterHttpInputJson = <T = unknown>() => Promise<Result<Option<T>, StdError>>;
 export type GetterHttpInputRawBody = () => Promise<Result<string, StdError>>;
@@ -304,4 +304,16 @@ export class ResponseHttpHeaders extends StdMap<ResponseHeaderKeys, string> {
 export const http = {
     methodFromString,
     buildUrl,
+}
+
+export class StdFormData<T extends Record<PropertyKey, unknown>> {
+    #entity: T;
+
+    constructor(entity?: T) {
+        this.#entity = entity ?? Object() as T;
+    }
+
+    toString(): Result<string, StdError> {
+        return querystring.toString(this.#entity);
+    }
 }

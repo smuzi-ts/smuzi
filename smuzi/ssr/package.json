@@ -12,9 +12,11 @@
   "keywords": [
     "ssr",
     "ssg",
+    "server side rendering",
     "template",
     "html",
-    "render"
+    "render",
+    "view"
   ],
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
 

@@ -99,6 +99,13 @@ export class Option<T = unknown> {
         }
     }
 
+    async asyncSomeThen(handler: (value: T) => Promise<void>): Promise<void> {
+        if (isSome(this)) {
+            await handler(this._val);
+        }
+    }
+
+
     async asyncMapSome<R extends NonNullable<unknown>>(argumentsForSome: Option = None()): Promise<Option<R | never>> {
         if (isSome(this)) {
             return asFunction(this._val) ? OptionFromNullable(await this._val(argumentsForSome)) : this as unknown as Option<R>;

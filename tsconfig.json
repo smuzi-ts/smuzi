@@ -4,7 +4,6 @@
   "references": [
     { "path": "smuzi/std" },
     { "path": "smuzi/schema" },
-    { "path": "smuzi/server" },
     { "path": "smuzi/console" },
     { "path": "smuzi/database" },
     { "path": "smuzi/faker" },
@@ -14,6 +13,7 @@
     { "path": "smuzi/http-client" },
     { "path": "smuzi/ssr" },
     { "path": "smuzi/zoho-oauth" },
-    { "path": "project/dashboard" }
+    { "path": "projects/dashboard" },
+    { "path": "crmoz/zoho-oauth" }
   ]
 }

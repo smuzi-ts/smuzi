@@ -6,7 +6,7 @@ import migrationsFresh from "#lib/commands/migrations/fresh.js";
 
 
 export const databaseConsole = (config) => {
-    const router = CreateConsoleRouter('database:');
+    const router = CreateConsoleRouter('db:');
     const routerMigrations = CreateConsoleRouter('migrations:');
 
     routerMigrations.add('run', migrationsRun(config))

@@ -23,12 +23,15 @@
     "access": "public"
   },
   "files": [
-    "./build"
+    "src/**/*.ts",
+    "build/**/*.js"
   ],
-  "exports": {
-    ".": "./src/index.js"
+   "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
-  "imports": {
+ "imports": {
     "#lib/*": "./src/*"
   },
   "devDependencies": {

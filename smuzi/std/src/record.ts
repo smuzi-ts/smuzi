@@ -6,7 +6,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
     constructor(entity?: T) {
         this.#entity = entity ?? Object() as T;
     }
-
+    
     set<K extends keyof T>(key: K, value: T[K]): void {
         this.#entity[key] = value;
     }

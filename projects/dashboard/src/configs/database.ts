@@ -1,7 +1,7 @@
 import { DatabaseConfig, Migrations } from "@smuzi/database";
 import { buildPostgresEntityRepository, buildPostgresMigrationsLogRepository, postgresClient } from "@smuzi/db-postgres";
-import { usersMigrations } from "#users/database/migrations/index.js";
 import { env } from "@smuzi/std";
+import { postgresMigrations } from "@crmoz/zoho-oauth";
 
 const services = {
     core: {
@@ -12,12 +12,15 @@ const services = {
             user: env("DB_USER"),
             password: env("DB_PASSWORD"),
         }),
+
+        //Migrations
         buildMigrations: () => {
             const migrations = Migrations();
-            migrations.group(usersMigrations);
+            migrations.group(postgresMigrations('zoho_oauth_credentials'));
 
             return migrations;
         },
+
         buildMigrationLogRepository: buildPostgresMigrationsLogRepository
     }
 }

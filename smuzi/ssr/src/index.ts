@@ -47,30 +47,86 @@ async function runSSRCode(context, code: string): Promise<Result<string, StdErro
     return Ok(result !== undefined ? String(result) : '');
 }
 
+type ForBlock = {
+    start: number,
+    end: number,
+    item: string,
+    iterable: string,
+    body: string,
+}
+
+function findForBlock(templateCode: string): ForBlock | undefined {
+    const openingDirective = /@for\s*\(\s*([A-Za-z_$][\w$]*)\s+of\s+([^)]+?)\s*\)/g;
+    const openingMatch = openingDirective.exec(templateCode);
+
+    if (openingMatch === null || openingMatch.index === undefined) {
+        return undefined;
+    }
+
+    const bodyStart = openingMatch.index + openingMatch[0].length;
+    const directive = /@for\s*\(\s*[A-Za-z_$][\w$]*\s+of\s+[^)]*?\s*\)|@end\b/g;
+    directive.lastIndex = bodyStart;
+
+    let depth = 1;
+    for (const match of templateCode.matchAll(directive)) {
+        if (match[0].startsWith("@for")) {
+            depth += 1;
+            continue;
+        }
+
+        depth -= 1;
+        if (depth === 0 && match.index !== undefined) {
+            return {
+                start: openingMatch.index,
+                end: match.index + match[0].length,
+                item: openingMatch[1],
+                iterable: openingMatch[2],
+                body: templateCode.slice(bodyStart, match.index),
+            };
+        }
+    }
+
+    return undefined;
+}
+
 async function parseCode(context: any, templateCode: string) {
     try {
-        let result = (await regexp.asyncReplace(
-            templateCode,
-            /@for\s*\(\s*(\w+)\s+of\s+([^)]+)\s*\)([\s\S]*?)@end/g,
-            async (match, item, iterable, body) => {
-                const code = `
-                            for (const ${item} of ${iterable}) {
-                                const res = await _ssrEngine.parseCode({${item}}, \`${body}\`);
-                                _output += res.unwrap();
-                            }`;
+        let renderedTemplate = '';
+        let cursor = 0;
+        let forBlock: ForBlock | undefined;
 
-                return await runSSRCode(context, code);
+        while ((forBlock = findForBlock(templateCode.slice(cursor))) !== undefined) {
+            const block = {
+                ...forBlock,
+                start: forBlock.start + cursor,
+                end: forBlock.end + cursor,
+            };
+
+            renderedTemplate += templateCode.slice(cursor, block.start);
+
+            const code = `
+                for (const ${block.item} of (${block.iterable})) {
+                    const res = await _ssrEngine.parseCode(
+                        { [${JSON.stringify(block.item)}]: ${block.item} },
+                        ${JSON.stringify(block.body)}
+                    );
+                    _output += res.unwrap();
+                }`;
+            const renderedBlock = await runSSRCode(context, code);
+
+            if (renderedBlock.isErr()) {
+                return renderedBlock;
             }
-            ));
 
-        return result.match({
-            Err: err => Err(err),
-            Ok: async templateCode => {
-                return await regexp.asyncReplace(templateCode, /{{([\s\S]*?)}}/g, async (match, code) => {
+            renderedBlock.runThenOk(html => renderedTemplate += html);
+            cursor = block.end;
+        }
+
+        renderedTemplate += templateCode.slice(cursor);
+
+        return await regexp.asyncReplace(renderedTemplate, /{{([\s\S]*?)}}/g, async (match, code) => {
                     return await runSSRCode(context, `_print(${code})`)
                 });
-            }
-        })
 
 
         // const res1 = Ok(
@@ -154,4 +210,3 @@ export function ssrEngine({pathDir = "./src/templates", extension = "html"}: Par
         response,
     }
 }
-

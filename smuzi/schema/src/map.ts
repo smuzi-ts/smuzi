@@ -1,6 +1,7 @@
 import {asMap, dump, Err, None, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaOption} from "#lib/option.js";
+import { error } from "console";
 
 export type SchemaMapConfig = SchemaRule;
 type InferMapSchema<K extends SchemaRule, C extends SchemaMapConfig> = StdMap<K['__infer'], C['__infer']>;
@@ -62,7 +63,7 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
 
         }
 
-        return hasErrors ? Err({msg: "invalid", data: errors}) : Ok(res);
+        return hasErrors ? Err({msg: "invalid schema map", data: errors}) : Ok(res);
     }
 
     fake() {

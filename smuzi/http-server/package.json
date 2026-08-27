@@ -8,6 +8,7 @@
     "prepublishOnly": "npm run build"
   },
   "type": "module",
+  "types": "./build/index.d.ts",
   "keywords": [
     "http",
     "router",
@@ -22,18 +23,23 @@
     "access": "public"
   },
   "files": [
-    "./build"
+    "src/**/*.ts",
+    "build/**/*.js"
   ],
-  "exports": {
-    ".": "./src/index.js"
+   "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
-  "imports": {
+ "imports": {
     "#lib/*": "./src/*"
   },
-  "devDependencies": {
+  "dependencies": {
     "@smuzi/std": "workspace:*",
+    "@smuzi/schema": "workspace:*"
+  },
+  "devDependencies": {
     "@smuzi/faker": "workspace:*",
-    "@smuzi/schema": "workspace:*",
     "@smuzi/tests": "workspace:*",
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",

@@ -1,5 +1,7 @@
 packages:
   - 'smuzi/*'
   - 'projects/*'
+  - 'crmoz/*'
+
 allowBuilds:
   esbuild: false

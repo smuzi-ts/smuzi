@@ -1,0 +1,56 @@
+{
+  "name": "@smuzi/zoho-oauth",
+  "version": "0.0.1",
+  "description": "Standard library for JavaScript and TypeScript",
+  "scripts": {
+    "test": "tsx tests/index.ts",
+    "dev": "tsx --watch --env-file=tests/.env tests/server.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "type": "module",
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "std",
+    "standard library",
+    "match",
+    "pattern matching",
+    "result",
+    "option"
+  ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
+
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "./build"
+  ],
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "development": "./src/index.js",
+      "default": "./build/index.js"
+    }
+  },
+  "imports": {
+    "#lib/*": {
+      "development": "./src/*",
+      "default": "./build/*"
+    }
+  },
+  "dependencies": {
+    "@smuzi/schema": "workspace:*",
+    "@smuzi/http-client": "workspace:*",
+    "@smuzi/http-server": "workspace:*",
+    "@smuzi/std": "workspace:*",
+    "@smuzi/ssr": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "tsx": "^4.20.6",
+    "@smuzi/tests": "workspace:*"
+  }
+
+}
