@@ -10,7 +10,7 @@ export function Some<T>(value: NonNullable<T>): Option<T> {
     return new OptionSome<NonNullable<T>>(value);
 }
 
-export function None(): Option<never> {
+export function None<T = unknown>(): Option<never> | Option<T> {
     return new OptionNone();
 }
 

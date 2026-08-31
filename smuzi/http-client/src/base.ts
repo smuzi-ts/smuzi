@@ -61,13 +61,21 @@ export type HttpClientConfig = {
     connector?: Option<Connector>,
 }
 
-export type HttpClient = any;
+export type HttpClient = {
+    get<Body = unknown, E = unknown>(url, config?: GetRequestConfig): Promise<Result<HttpResponse<Body>, HttpResponse<E> | StdError>>,
+    post<Body = unknown, E = unknown>(url, config?: PostRequestConfig):  Promise<Result<HttpResponse<Body>, HttpResponse<E> | StdError>>
+};
 
 export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = None() }: HttpClientConfig): HttpClient {
 
     async function request<B = unknown, E = unknown>(
         url: string, config: BaseRequestConfig
     ): Promise<Result<HttpResponse<B>, HttpResponse<E> | StdError>> {
+        connector.asyncSomeThen(async(connector_fn) => {
+            config = (await connector_fn(config)).unwrap();
+        })
+
+        console.log({headers: config.headers.unsafeSource()})
 
         const finalUrl = buildUrl(baseUrl, url, config.query);
 
@@ -122,6 +130,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = No
 
             try {
                 const text  = await response.text();
+                console.log({text});
                 const body = OptionFromNullable(text)
                     .mapSome((rawData) => {
                         if (config.rawResponse) {
@@ -161,11 +170,11 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = No
     }
 
     return {
-        get<T = unknown>(url, { query = {}, headers = new RequestHttpHeaders, rawResponse = false }: GetRequestConfig = {}) {
-            return request<T>(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
+        get(url, { query = {}, headers = new RequestHttpHeaders, rawResponse = false }: GetRequestConfig = {}) {
+            return request(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
         },
-        post<T = unknown>(url, { query = {}, headers = new RequestHttpHeaders, body = None(), rawResponse = false }: PostRequestConfig = {}) {
-            return request<T>(url, { query, headers, rawResponse, method: HttpMethod.POST, body });
+        post(url, { query = {}, headers = new RequestHttpHeaders, body = None(), rawResponse = false }: PostRequestConfig = {}) {
+            return request(url, { query, headers, rawResponse, method: HttpMethod.POST, body });
         },
     }
 }
