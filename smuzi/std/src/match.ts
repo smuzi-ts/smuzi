@@ -174,6 +174,7 @@ function matchObj(
 
         const params = {};
 
+  
         if (isFunction(patternsList)) {
             if (patternsList(val)) {
                 return matchFn(handler, {val, patterns: None(), params: None()}, returnAsFn);
@@ -191,7 +192,13 @@ function matchObj(
 
             const checker = matchChecherForPattern(patternsList[patternIndex])
             let res = checker(val[patternIndex], patternsList[patternIndex]);
+    //   console.log({
 
+    //         val,
+    //         patternsList,
+    //         checker,
+    //         res,
+    //     })
             if (! res.res) {
                 matched = false;
                 break;

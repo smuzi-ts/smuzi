@@ -94,12 +94,12 @@ export class Result<T = unknown, E = unknown> implements IMatched {
         }
     }
 
-    mapOk<RO>(handler: (value: T) => RO): Result<RO | T, E> {
+    mapOk<RO>(handler: (value: T) => RO): Result<RO, E> {
         if (this instanceof ResultOk) {
             return Ok(handler(this._val));
         }
 
-        return this;
+        return this as unknown as Result<never, E>;
     }
 
     mapErr<RE>(handler: (value: E) => RE): Result<T, RE> {

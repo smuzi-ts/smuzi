@@ -4,7 +4,6 @@ import {schema, SchemaObject} from "@smuzi/schema";
 
 
 export const migrationLogRowSchema = schema.obj({
-    id: schema.storage.autoNumber(),
     name: schema.string(),
     branch: schema.number(),
     action: schema.string(),

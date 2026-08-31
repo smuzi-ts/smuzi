@@ -7,6 +7,6 @@
   "compilerOptions": {
     "types": ["node"],
     "rootDir": "tests",
-    "noEmit": true,
+    "noEmit": true
   }
 }

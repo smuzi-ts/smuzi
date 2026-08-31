@@ -54,19 +54,25 @@ importers:
       '@smuzi/db-postgres':
         specifier: workspace:*
         version: link:../../smuzi/db-postgres
-      '@smuzi/faker':
+      '@smuzi/http-client':
         specifier: workspace:*
-        version: link:../../smuzi/faker
+        version: link:../../smuzi/http-client
       '@smuzi/http-server':
         specifier: workspace:*
         version: link:../../smuzi/http-server
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../../smuzi/schema
       '@smuzi/std':
         specifier: workspace:*
         version: link:../../smuzi/std
+    devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../../smuzi/faker
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../../smuzi/tests
-    devDependencies:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0

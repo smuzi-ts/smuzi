@@ -28,11 +28,16 @@ routerTest.group(booksRouter)
 booksRouter.get("/any", () => "books list");
 booksRouter.get("/{id}", actionBooksFind)  //<-- request4
 
+const postsRouter = CreateHttp1Router({ path: "posts/" })
 
-const postsRouter = CreateHttp1Router({ path: "posts/{post_id}" })
+postsRouter.get("{post_id}/attachments/{id}", () => "posts list"); //<-- request5
 
-postsRouter.get("/attachments/{id}", () => "posts list");
-postsRouter.get("/attachments/{id}", () => "posts list"); //<-- request5
+const commentsRouter = CreateHttp1Router({path: 'comments/'});
+postsRouter.group(commentsRouter); //<-- request6
+routerTest.group(postsRouter)
+
+commentsRouter.get("find", () => "user comment find");
+
 
 function makeRequest(path: string, method: HttpMethod = HttpMethod.GET) {
    return  new HttpRequest({
@@ -112,5 +117,18 @@ testRunner.describe("std-Router", [
         })
 
         assert.equal(actualResponse, "not found");
+    }),
+
+    it(okMsg("recursive groups"), async () => {
+        const request = makeRequest("posts/comments/find");
+        const route = routerTest.match(request);
+
+        const actualResponse = route.action({
+            request,
+            response: new ServerResponse(new IncomingMessage(new Socket)),
+            pathParams: route.pathParams
+        })
+
+        assert.equal(actualResponse, "user comment find");
     }),
 ])

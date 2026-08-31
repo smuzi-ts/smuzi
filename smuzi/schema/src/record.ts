@@ -24,7 +24,7 @@ type InferSchema<C extends SchemaRecordConfig> = {
 type InferValidationSchema<C extends SchemaRecordConfig> = { [K in keyof C]: C[K]['__inferError'] }
 type SchemaRecordValidationError<C extends SchemaRecordConfig> = SchemaValidationError<StdRecord<Simplify<InferValidationSchema<C>>>>;
 
-export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
+export class SchemaRecord<C extends SchemaRecordConfig = SchemaRecordConfig> implements SchemaRule {
     #config: C;
     __infer: StdRecord<Simplify<InferSchema<C>>>
     __inferError: Simplify<SchemaRecordValidationError<C>>
@@ -69,6 +69,10 @@ export class SchemaRecord<C extends SchemaRecordConfig> implements SchemaRule {
         }
 
         return hasErrors ? Err({msg: "Invalid", data: errors}) : Ok(res);
+    }
+
+     getConfig() {
+        return this.#config;
     }
 
     fake() {

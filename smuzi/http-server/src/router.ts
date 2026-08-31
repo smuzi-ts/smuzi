@@ -69,7 +69,17 @@ export function contactPaths(path1: PathParam, path2: PathParam): PathParam | ne
     const path2AsRegExp = asRegExp(path2);
 
     if (path1AsRegExp || path2AsRegExp) {
-        return new RegExp((path1AsRegExp ? path1.source : path1) + (path2AsRegExp ? path2.source : path2));
+ const source1 = path1AsRegExp
+            ? path1.source
+            : path1;
+
+        const source2 = path2AsRegExp
+            ? path2.source
+            : path2;
+
+        return new RegExp(
+            "^"+(source1 + source2).replaceAll('^', '')
+        );    
     }
 
     return path1 + path2;
@@ -124,14 +134,32 @@ function http2NotFoundHandler(context: Context<ServerHttp2Stream>) {
 
 
 
+// Internal-only surface: lets a parent router recompute a child router's
+// (and, recursively, its own nested groups') absolute paths after nesting.
+// Not part of the public `Router` type — accessed via a narrow cast.
+type Rebasable = { __rebase: (newBase: PathParam) => void };
+
 export function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<Resp>>(
     groupRoute: GroupRoute,
     notFound: Action<Resp>,
 ): Router<Resp> {
     const routes = new Map()
 
+    // Every own route/subgroup is registered ONCE at startup. We additionally
+    // remember each one's path *relative to this router* so that, if this
+    // router later gets attached to a parent via `.group()`, we can recompute
+    // every already-registered absolute path exactly once at that moment —
+    // never again on every match()/request.
+    const ownRoutes: { route: Route; localPath: PathParam }[] = [];
+    const ownGroups: { route: GroupRoute; localGroupPath: PathParam; childRouter: Router<any> }[] = [];
+
+    const computeAbsolute = (localPath: PathParam) =>
+        processPath(contactPaths(groupRoute.path, localPath));
+
     const add = (route: Route, action: any) => {
-        route.path = processPath(contactPaths(groupRoute.path, route.path));
+        const localPath = route.path;
+        route.path = computeAbsolute(localPath);
+        ownRoutes.push({ route, localPath });
 
         routes.set(route, (routeData: RouteMatched) => {
             return {
@@ -141,13 +169,32 @@ export function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<R
         })
     };
 
-    const addGroup = (route: GroupRoute, action: any) => {
-        route.path = processPath(contactPaths(groupRoute.path, route.path));
-
+    const addGroup = (localGroupPath: PathParam, childRouter: Router<any>, action: any) => {
+        const route: GroupRoute = { path: computeAbsolute(toStartWithPattern(localGroupPath)) };
+        ownGroups.push({ route, localGroupPath, childRouter });
         routes.set(route, action)
     };
 
-    return {
+    // Recomputes this router's own base plus every route/subgroup registered
+    // on it so far, then recurses into any already-nested group routers so
+    // the whole subtree stays consistent — called once, when this router is
+    // attached to a parent via `.group()`.
+    const rebase = (newBase: PathParam) => {
+        groupRoute.path = newBase;
+
+        for (const entry of ownRoutes) {
+            entry.route.path = computeAbsolute(entry.localPath);
+        }
+
+        for (const entry of ownGroups) {
+            entry.route.path = computeAbsolute(toStartWithPattern(entry.localGroupPath));
+            (entry.childRouter as unknown as Rebasable).__rebase(
+                contactPaths(newBase, entry.localGroupPath)
+            );
+        }
+    };
+
+    const router: Router<Resp> & Rebasable = {
         get(path, action) {
             add({ path, method: HttpMethod.GET }, action)
         },
@@ -161,12 +208,17 @@ export function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<R
             add({ path, method: HttpMethod.DELETE }, action)
         },
         group(groupRouter: GR) {
-            const groupPath = groupRouter.getGroupRoute().path;
-            const startWithPattern = toStartWithPattern(groupPath);
+            const localGroupPath = groupRouter.getGroupRoute().path;
 
-            addGroup({ path: startWithPattern }, (routeData: RouteMatched) => {
+            addGroup(localGroupPath, groupRouter, (routeData: RouteMatched) => {
                 return groupRouter.match(routeData.val);
             });
+
+            // Re-derive every path already registered on the nested router
+            // (and anything nested under IT) against our current absolute base.
+            (groupRouter as unknown as Rebasable).__rebase(
+                contactPaths(groupRoute.path, localGroupPath)
+            );
         },
         getMapRoutes() {
             return routes;
@@ -181,8 +233,11 @@ export function CreateHttpRouter<Resp extends THttpResponse, GR extends Router<R
                     pathParams: routeData.params.flatByKey("path"),
                 } as RouteMatchResult<Resp>;
             })
-        }
-    }
+        },
+        __rebase: rebase,
+    };
+
+    return router;
 }
 
 

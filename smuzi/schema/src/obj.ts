@@ -1,4 +1,4 @@
-import {asObject, dump, Err, isNone, isNull, None, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
+import {asObject, dump, Err, isNone, isNull, keysOfObject, None, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
 import {SchemaRule, SchemaValidationError} from "#lib/types.js";
 import {SchemaRecord} from "#lib/record.js";
 import {SchemaOption} from "#lib/option.js";
@@ -66,5 +66,13 @@ export class SchemaObject<C extends SchemaObjConfig = SchemaObjConfig> implement
         }
 
         return output;
+    }
+
+    onlyFields<K extends keyof C>(keys: readonly K[]): SchemaObject<Pick<C, K>> {
+        return new SchemaObject(
+            Object.fromEntries(
+                keys.map(key => [key, this.#config[key]])
+            ) as Pick<C, K>
+        );
     }
 }

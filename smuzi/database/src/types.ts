@@ -139,7 +139,7 @@ export interface TDatabaseClient {
         params?: TQueryParams,
         schema?: Option<S>
     ): Promise<TQueryResult<S>>;
-
+  
     insertRow<S extends SchemaObject<any>, const RC extends string[]>(
         table: string,
         schema: S,

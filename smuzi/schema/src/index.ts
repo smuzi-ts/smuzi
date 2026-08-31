@@ -1,6 +1,6 @@
 import {datetime} from "#lib/datetime.js";
 import {storage} from "#lib/storage.js";
-import {SchemaNumber, SchemaString} from "#lib/primitive.js";
+import {SchemaBoolean, SchemaNumber, SchemaString} from "#lib/primitive.js";
 import {SchemaObjConfig, SchemaObject} from "#lib/obj.js";
 import {SchemaRule as _SchemaRule} from "#lib/types.js";
 import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
@@ -15,12 +15,13 @@ export {SchemaStorageAutoNumber} from "#lib/storage.js";
 export { SchemaRecord } from "#lib/record.js";
 export { SchemaList } from "#lib/list.js";
 
-export {SchemaNumber, SchemaString} from "#lib/primitive.js";
+export {SchemaNumber, SchemaString, SchemaBoolean} from "#lib/primitive.js";
 
 export type SchemaRule = _SchemaRule;
 
 export const schema = {
     option: <C extends SchemaOptionConfig>(config: C) => (new SchemaOption(config)),
+    boolean: (msg: string = "Expected boolean") => (new SchemaBoolean(msg)),
     number: (msg: string = "Expected number") => (new SchemaNumber(msg)),
     string: (msg: string = "Expected string") => (new SchemaString(msg)),
     obj: <C extends SchemaObjConfig>(config: C) => new SchemaObject<C>(config),
