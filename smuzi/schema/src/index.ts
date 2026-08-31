@@ -1,4 +1,5 @@
 import {datetime} from "#lib/datetime.js";
+import {_enum} from "./_enum.js";
 import {storage} from "#lib/storage.js";
 import {SchemaBoolean, SchemaNumber, SchemaString} from "#lib/primitive.js";
 import {SchemaObjConfig, SchemaObject} from "#lib/obj.js";
@@ -11,6 +12,7 @@ export {SchemaNativeDate, SchemaTemporalDateTimeDate} from "#lib/datetime.js";
 export {type SchemaValidationError} from "#lib/types.js";
 export {SchemaObject} from "#lib/obj.js";
 export {SchemaOption} from "#lib/option.js";
+export {SchemaEnumStrings} from "#lib/_enum.js";
 export {SchemaStorageAutoNumber} from "#lib/storage.js";
 export { SchemaRecord } from "#lib/record.js";
 export { SchemaList } from "#lib/list.js";
@@ -30,4 +32,5 @@ export const schema = {
     list: <C extends SchemaListConfig>(config: C) => (new SchemaList<C>(config)),
     datetime,
     storage,
+    enum: _enum,
 }
