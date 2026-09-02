@@ -14,8 +14,8 @@ export function None<T = unknown>(): Option<never> | Option<T> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T>(value: Option<T> | T): Option<T extends null | undefined ? never : T> {
-    return asNull(value) ? None()  : (isOption(value) ? value  : Some(value as NonNullable<T>)) as any;
+export function OptionFromNullable<T, I = T extends null | undefined ? never : T>(value: Option<T> | T): I extends Option<infer U> ? I : Option<I> {
+    return asNull(value) ? None() : (isOption(value) ? value  : Some(value as NonNullable<T>)) as any;
 }
 
 export class Option<T = unknown> {
@@ -33,6 +33,15 @@ export class Option<T = unknown> {
         return handlers.None();
     }
 
+
+    async asyncMatch<R>(handlers: OptionPatterns<T, R>): Promise<R> {
+        if (this instanceof OptionSome) {
+            return await handlers.Some(this._val as T);
+        }
+
+        return await handlers.None();
+    }
+
     someOrNone<R>(some: ((value: T) => R) | R, none: (() => R) | R): R {
         if (this instanceof OptionSome) {
             return asFunction(some) ? some(this._val as T) : some;
@@ -43,6 +52,10 @@ export class Option<T = unknown> {
 
     isNone(): this is OptionNone {
         return this instanceof OptionNone;
+    }
+
+    isSome(): this is OptionSome {
+        return this instanceof OptionSome;
     }
 
     unwrap(msg: string = "Unwrapped None variant"): T | never {
@@ -90,7 +103,15 @@ export class Option<T = unknown> {
             return Some(handler(this._val));
         }
 
-        return None();
+        return this;
+    }
+
+    mapNone<R extends NonNullable<unknown>>(handler: () => R): Option<R | T> {
+        if (isNone(this)) {
+            return Some(handler());
+        }
+
+        return this;
     }
 
     someThen(handler: (value: T) => void): void {

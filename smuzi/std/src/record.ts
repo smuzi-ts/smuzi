@@ -11,7 +11,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
         this.#entity[key] = value;
     }
 
-    get<K extends keyof T>(key: K): Option<T[K]> {
+    get<K extends keyof T>(key: K): T[K] extends Option<infer U> ? T[K] : Option<T[K]> {
         return OptionFromNullable(this.#entity[key]);
     }
 
@@ -19,7 +19,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
         this.#entity[key as K] = value;
     }
 
-    getOther<K extends keyof T>(key: unknown): Option<T[K]> {
+    getOther<K extends keyof T>(key: unknown): T[K] extends Option<infer U> ? T[K] : Option<T[K]>  {
         return OptionFromNullable(this.#entity[key as K]);
     }
 
