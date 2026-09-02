@@ -130,6 +130,10 @@ export class TableRows<
     [Symbol.iterator](): IterableIterator<[number, TableRow]> {
         return this.entries();
     }
+
+    unsafeSource() {
+        return this.#rows;
+    }
 }
 
 
