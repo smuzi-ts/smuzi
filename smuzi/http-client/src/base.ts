@@ -71,11 +71,9 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = No
     async function request<B = unknown, E = unknown>(
         url: string, config: BaseRequestConfig
     ): Promise<Result<HttpResponse<B>, HttpResponse<E> | StdError>> {
-        connector.asyncSomeThen(async(connector_fn) => {
+        await connector.asyncSomeThen(async (connector_fn) => {
             config = (await connector_fn(config)).unwrap();
         })
-
-        console.log({headers: config.headers.unsafeSource()})
 
         const finalUrl = buildUrl(baseUrl, url, config.query);
 
@@ -130,7 +128,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = No
 
             try {
                 const text  = await response.text();
-                console.log({text});
+
                 const body = OptionFromNullable(text)
                     .mapSome((rawData) => {
                         if (config.rawResponse) {
