@@ -73,6 +73,9 @@ importers:
 
   projects/oeuf:
     dependencies:
+      '@crmoz/zoho-inventory':
+        specifier: workspace:*
+        version: link:../../crmoz/zoho-inventory
       '@crmoz/zoho-oauth':
         specifier: workspace:*
         version: link:../../crmoz/zoho-oauth
