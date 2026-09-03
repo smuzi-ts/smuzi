@@ -57,7 +57,7 @@ export type TQueryRawResult<S extends SchemaObject> = {
     rowCount: Option<number>
 }
 export type TQueryResult<S extends SchemaObject> = Result<TQueryRawResult<S>, DBQueryError>
-export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Simplify<RecordFromKeys<S["__infer"], Columns>>, DBQueryError>
+export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Option<Simplify<RecordFromKeys<S["__infer"], Columns>>>, DBQueryError>
 export type TInsertManyRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[], Prepared extends SchemaObject = SchemaObject<RecordFromKeys<ReturnType<S["getConfig"]>, Columns>>> = Result<TableRows<Prepared>, DBQueryError>
 
 
