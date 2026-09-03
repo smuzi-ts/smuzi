@@ -121,6 +121,17 @@ export class Result<T = unknown, E = unknown> implements IMatched {
 
         return this as unknown as Result<T, never>;
     }
+
+    log(msg: string = "") {
+        this.match({
+            Ok(ok) {
+                console.log(msg, {ok})
+            },
+            Err(error) {
+                console.log(msg, {error})
+            },
+        })
+    }
 }
 
 

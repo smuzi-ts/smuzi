@@ -22,7 +22,7 @@ type InputHttp1ServerConfig = Partial<Http1ServerConfig> & {
 
 function http1ErrorHandler(context: Context<ServerResponse>, error) {
     //TODO: write error to log and remove dump()
-    dump(error)
+    dump({msg: "http1ErrorHandler", error})
     return HttpResponse.asJson({error:"Internal Server Error"}, 500);
 }
 

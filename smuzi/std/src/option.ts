@@ -143,6 +143,21 @@ export class Option<T = unknown> {
     isZero(): boolean {
         return this._val == 0;
     }
+
+    equal(val: unknown): boolean {
+        if (isNone(this)) {
+            return isNone(val) || val == null || val == undefined;
+        }
+        
+        if(isOption(val)) {
+            return val.match({
+                Some: val_inner => val_inner == this._val,
+                None: () => isNone(this)
+            })
+        }
+
+        return val == this._val;
+    }
 }
 
 

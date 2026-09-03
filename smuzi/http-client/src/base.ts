@@ -64,6 +64,8 @@ export type HttpClientConfig = {
 export type HttpClient = {
     get<Body = unknown, E = unknown>(url, config?: GetRequestConfig): Promise<Result<HttpResponse<Body>, HttpResponse<E> | StdError>>,
     post<Body = unknown, E = unknown>(url, config?: PostRequestConfig):  Promise<Result<HttpResponse<Body>, HttpResponse<E> | StdError>>
+    put<Body = unknown, E = unknown>(url, config?: PostRequestConfig):  Promise<Result<HttpResponse<Body>, HttpResponse<E> | StdError>>
+    delete<Body = unknown, E = unknown>(url, config?: GetRequestConfig): Promise<Result<HttpResponse<Body>, HttpResponse<E> | StdError>>,
 };
 
 export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = None() }: HttpClientConfig): HttpClient {
@@ -173,6 +175,12 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = No
         },
         post(url, { query = {}, headers = new RequestHttpHeaders, body = None(), rawResponse = false }: PostRequestConfig = {}) {
             return request(url, { query, headers, rawResponse, method: HttpMethod.POST, body });
+        },
+        put(url, { query = {}, headers = new RequestHttpHeaders, body = None(), rawResponse = false }: PostRequestConfig = {}) {
+            return request(url, { query, headers, rawResponse, method: HttpMethod.PUT, body });
+        },
+        delete(url, { query = {}, headers = new RequestHttpHeaders, rawResponse = false }: GetRequestConfig = {}) {
+            return request(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
         },
     }
 }

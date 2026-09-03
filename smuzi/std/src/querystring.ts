@@ -22,7 +22,6 @@ function toString(params: QueryParams): Result<string, StdError> {
 
             if (asList(value)) {
                 for (const [key, item] of value) {
-                    dump({item})
                     pairs.push(
                         encodeURIComponent(field) + '=' + encodeURIComponent(String(item.someOr('')))
                     );

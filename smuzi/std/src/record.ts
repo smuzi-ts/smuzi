@@ -1,4 +1,4 @@
-import { Option, OptionFromNullable } from "#lib/option.js";
+import { isOption, Option, OptionFromNullable } from "#lib/option.js";
 
 export class StdRecord<T extends Record<PropertyKey, unknown>> {
     #entity: T;
@@ -41,7 +41,19 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
 
     isEmpty(): boolean {
         return Object.keys(this.#entity).length === 0
+    }
 
+    toUnsafeObj(): T {
+        const res = {} as any;
+        for (const [key, val] of this.entries()) {
+            if (isOption(val)) {
+                res[key] = val.unsafeSource();
+            } else {
+                res[key] = val; 
+            }
+
+        }
+        return res as T;
     }
 }
 
