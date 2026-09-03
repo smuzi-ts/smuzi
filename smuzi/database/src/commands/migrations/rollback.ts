@@ -9,8 +9,8 @@ export default function (service: TDatabaseService) {
 
         const migrationsLogRepository = service.buildMigrationLogRepository(service.client);
 
-        const branch = await OptionFromNullable(params.branch).match({
-            Some: async (param) => param as number,
+        const branch = await params.get("branch").match({
+            Some: async (val) => val as number,
             None: async () => (await migrationsLogRepository.getLastBranch()).unwrap(`Last branch not founded in ${migrationsLogRepository.getTable()} table`)
         });
 
