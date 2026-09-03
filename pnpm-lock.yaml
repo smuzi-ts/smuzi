@@ -97,6 +97,9 @@ importers:
       '@smuzi/schema':
         specifier: workspace:*
         version: link:../../smuzi/schema
+      '@smuzi/shopify-sdk':
+        specifier: workspace:*
+        version: link:../../smuzi/shopify-sdk
       '@smuzi/std':
         specifier: workspace:*
         version: link:../../smuzi/std
@@ -237,6 +240,34 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  smuzi/oauth:
+    dependencies:
+      '@smuzi/database':
+        specifier: workspace:*
+        version: link:../database
+      '@smuzi/http-client':
+        specifier: workspace:*
+        version: link:../http-client
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+    devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+
   smuzi/routine:
     dependencies:
       '@smuzi/std':
@@ -259,6 +290,40 @@ importers:
         specifier: workspace:*
         version: link:../std
     devDependencies:
+      '@smuzi/tests':
+        specifier: workspace:*
+        version: link:../tests
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+
+  smuzi/shopify-sdk:
+    dependencies:
+      '@smuzi/database':
+        specifier: workspace:*
+        version: link:../database
+      '@smuzi/http-client':
+        specifier: workspace:*
+        version: link:../http-client
+      '@smuzi/http-server':
+        specifier: workspace:*
+        version: link:../http-server
+      '@smuzi/schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@smuzi/std':
+        specifier: workspace:*
+        version: link:../std
+    devDependencies:
+      '@smuzi/db-postgres':
+        specifier: workspace:*
+        version: link:../db-postgres
+      '@smuzi/faker':
+        specifier: workspace:*
+        version: link:../faker
       '@smuzi/tests':
         specifier: workspace:*
         version: link:../tests
@@ -337,34 +402,6 @@ importers:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0
-
-  smuzi/zoho-oauth:
-    dependencies:
-      '@smuzi/http-client':
-        specifier: workspace:*
-        version: link:../http-client
-      '@smuzi/http-server':
-        specifier: workspace:*
-        version: link:../http-server
-      '@smuzi/schema':
-        specifier: workspace:*
-        version: link:../schema
-      '@smuzi/ssr':
-        specifier: workspace:*
-        version: link:../ssr
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-    devDependencies:
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
-      tsx:
-        specifier: ^4.20.6
-        version: 4.20.6
 
 packages:
 
