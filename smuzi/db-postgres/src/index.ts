@@ -91,7 +91,7 @@ export class PostgresClient implements TDatabaseClient {
         let sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
         if (!isEmpty(returningColumns)) sql += ` RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query(sql, values, Some(schema)))  as TInsertRowResult<S, RC>;
+        return (await this.query(sql, values, Some(schema))).mapOk(res => res.rows.get(0)) as TInsertRowResult<S, RC>;
             
     }
 
