@@ -131,6 +131,8 @@ export class Result<T = unknown, E = unknown> implements IMatched {
                 console.log(msg, {error})
             },
         })
+
+        return this;
     }
 }
 

@@ -114,9 +114,9 @@ export class Option<T = unknown> {
         return this;
     }
 
-    someThen(handler: (value: T) => void): void {
+    someThen<R extends NonNullable<unknown>>(handler: (value: T) => R | void): R | void {
         if (isSome(this)) {
-            handler(this._val);
+            return handler(this._val);
         }
     }
 
