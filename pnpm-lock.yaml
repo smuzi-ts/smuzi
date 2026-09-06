@@ -79,6 +79,9 @@ importers:
       '@crmoz/zoho-oauth':
         specifier: workspace:*
         version: link:../../crmoz/zoho-oauth
+      '@shopify/shopify-api':
+        specifier: ^14.0.1
+        version: 14.0.1
       '@smuzi/console':
         specifier: workspace:*
         version: link:../../smuzi/console
@@ -97,9 +100,6 @@ importers:
       '@smuzi/schema':
         specifier: workspace:*
         version: link:../../smuzi/schema
-      '@smuzi/shopify-sdk':
-        specifier: workspace:*
-        version: link:../../smuzi/shopify-sdk
       '@smuzi/std':
         specifier: workspace:*
         version: link:../../smuzi/std
@@ -561,6 +561,19 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@shopify/admin-api-client@2.0.0':
+    resolution: {integrity: sha512-ivvOKq08S4xdETu3R7ZxIGTX2Q//dKef7jLY7Ne9HSlg+UJzk7PqdY+h61pqQzvZ3AeNN8AJG2eV20ycuJowfg==}
+
+  '@shopify/graphql-client@2.0.0':
+    resolution: {integrity: sha512-SfIZa6J9Px4ZSMIVdPLNupeSyqznovV6pDVxwC1rmbi0JTVj2q/CCsOf9hLQvsMdBiyJDHVnoVHGpBzlhpwO2Q==}
+
+  '@shopify/shopify-api@14.0.1':
+    resolution: {integrity: sha512-wWSd6rSaNlUUmj0ECz2s2wQ+B6gTuzcPrbeOhwGlw1I35gHt2q88muCMZn5gS1Hq6pG/1ybOKiDf5bvhao+ypw==}
+    engines: {node: '>=22.0.0'}
+
+  '@shopify/storefront-api-client@2.0.0':
+    resolution: {integrity: sha512-rWmPqZ+ZqsxdePpH/4sPdd+jUWHiSUeEWolJNQpqb+1KLlx79khdfJO1M9z9HfG2H0aHkmS+fnx2jr46q7NCGQ==}
+
   '@types/node@22.19.0':
     resolution: {integrity: sha512-xpr/lmLPQEj+TUnHmR+Ab91/glhJvsqcjB+yY0Ix9GO70H6Lb4FHH5GeqdOE5btAx7eIMwuHkp4H2MSkLcqWbA==}
 
@@ -684,6 +697,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  compare-versions@6.1.1:
+    resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
+
   esbuild@0.25.12:
     resolution: {integrity: sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==}
     engines: {node: '>=18'}
@@ -697,10 +713,20 @@ packages:
   get-tsconfig@4.13.0:
     resolution: {integrity: sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==}
 
+  isbot@5.2.2:
+    resolution: {integrity: sha512-iQcBXcd+Rv/pkubRyGh2utW2j1oPG5hZY6TUhVPpqK4G+o3IbxpJNx04hgksjc/N7GK5pEorUxDeg31cFgEk/w==}
+    engines: {node: '>=18'}
+
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
   json5@2.2.3:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  lossless-json@4.3.1:
+    resolution: {integrity: sha512-SqD/Bg3ZfltBJ2Z14hJ/BihnvtV553WO4g9/ePtlp4lrnl9jF3AdIJt53A/Wkg/0Li+LMfxaBqgx1MiFZdQlpQ==}
 
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
@@ -773,6 +799,9 @@ packages:
   tsconfig-paths@4.2.0:
     resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
     engines: {node: '>=6'}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   tsx@4.20.6:
     resolution: {integrity: sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==}
@@ -871,6 +900,27 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
+  '@shopify/admin-api-client@2.0.0':
+    dependencies:
+      '@shopify/graphql-client': 2.0.0
+
+  '@shopify/graphql-client@2.0.0': {}
+
+  '@shopify/shopify-api@14.0.1':
+    dependencies:
+      '@shopify/admin-api-client': 2.0.0
+      '@shopify/graphql-client': 2.0.0
+      '@shopify/storefront-api-client': 2.0.0
+      compare-versions: 6.1.1
+      isbot: 5.2.2
+      jose: 5.10.0
+      lossless-json: 4.3.1
+      tslib: 2.8.1
+
+  '@shopify/storefront-api-client@2.0.0':
+    dependencies:
+      '@shopify/graphql-client': 2.0.0
+
   '@types/node@22.19.0':
     dependencies:
       undici-types: 6.21.0
@@ -935,6 +985,8 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
+  compare-versions@6.1.1: {}
+
   esbuild@0.25.12:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.25.12
@@ -971,7 +1023,13 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
+  isbot@5.2.2: {}
+
+  jose@5.10.0: {}
+
   json5@2.2.3: {}
+
+  lossless-json@4.3.1: {}
 
   minimist@1.2.8: {}
 
@@ -1033,6 +1091,8 @@ snapshots:
       json5: 2.2.3
       minimist: 1.2.8
       strip-bom: 3.0.0
+
+  tslib@2.8.1: {}
 
   tsx@4.20.6:
     dependencies:
