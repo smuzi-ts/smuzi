@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/faker",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Fake data generator for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
