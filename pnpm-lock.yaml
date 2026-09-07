@@ -185,9 +185,6 @@ importers:
 
   smuzi/faker:
     dependencies:
-      '@smuzi/schema':
-        specifier: workspace:*
-        version: link:../schema
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
