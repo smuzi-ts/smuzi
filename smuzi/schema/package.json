@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/schema",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Schema validation library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
