@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/console",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Console router and input/output toolkit for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
