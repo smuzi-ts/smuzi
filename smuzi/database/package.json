@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/database",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Database access layer and migrations toolkit for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -24,8 +24,14 @@
   ],
   "exports": {
     "./package.json": "./package.json",
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./*": {
+      "types": "./build/*.d.ts",
+      "default": "./build/*.js"
+    }
   },
   "imports": {
     "#lib/*": "./src/*"

@@ -1,6 +1,6 @@
-import {TInputParser} from "#lib/input-parsers/types.js";
-import {ConsoleRouter} from "#lib/router.js";
-import {TOutputConsole} from "#lib/output/types.js";
+import {TInputParser} from "./input-parsers/types.js";
+import {ConsoleRouter} from "./router.js";
+import {TOutputConsole} from "./output/types.js";
 
 export type TConsoleConfig = {
     inputParser: TInputParser,

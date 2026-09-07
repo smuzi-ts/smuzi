@@ -1,4 +1,4 @@
-import {StdRecord} from "#lib/record.js";
+import {StdRecord} from "./record.js";
 
 export type Simplify<T> = {[K in keyof T]: T[K]} & {};
 

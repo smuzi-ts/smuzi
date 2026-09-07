@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/http-server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "HTTP server and routing for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --conditions=development tests/index.ts",
@@ -26,12 +26,18 @@
     "./src",
     "./build"
   ],
-   "exports": {
+  "exports": {
     "./package.json": "./package.json",
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./*": {
+      "types": "./build/*.d.ts",
+      "default": "./build/*.js"
+    }
   },
- "imports": {
+  "imports": {
     "#lib/*": "./src/*"
   },
   "dependencies": {

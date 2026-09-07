@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/schema",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Schema validation library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -27,7 +27,15 @@
     "./tests"
   ],
   "exports": {
-    ".": "./src/index.js"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./*": {
+      "types": "./build/*.d.ts",
+      "default": "./build/*.js"
+    }
   },
   "imports": {
     "#lib/*": "./src/*"

@@ -31,7 +31,7 @@ export class SchemaMap<K extends SchemaRule, C extends SchemaMapConfig> implemen
 
         const res = new Map;
 
-        for (const [key, val] of input as StdMap) {
+        for (const [key, val] of input as unknown as StdMap) {
             self.#key.validate(key).match({
                 Err(errKey) {
                     hasErrors = true;

@@ -30,7 +30,7 @@ import * as _url from "./url.js";
 export const url = _url;
 
 import * as _scripts from "./scripts.js";
-import {None, Option} from "#lib/option.js";
+import {None, Option} from "./option.js";
 export const scripts = _scripts;
 
 export async function mainAndExit(program: () => unknown, errorHandler = dump) {

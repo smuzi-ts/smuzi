@@ -1,5 +1,5 @@
-import {Err, Ok, Result} from "#lib/result.js";
-import {StdError, transformError} from "#lib/error.js";
+import {Err, Ok, Result} from "./result.js";
+import {StdError, transformError} from "./error.js";
 
 
 export const promise = {

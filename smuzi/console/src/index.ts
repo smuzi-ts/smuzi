@@ -1,15 +1,15 @@
 import {dump, isEmpty, match, panic} from "@smuzi/std";
-import {ConsoleRouter, TInputCommand} from "#lib/router.js";
-import {TConsoleConfig} from "#lib/config.js";
+import {ConsoleRouter, TInputCommand} from "./router.js";
+import {TConsoleConfig} from "./config.js";
 
-export * from "#lib/output/themes/StandardThema.js";
-export * from "#lib/input-parsers/SystemInputParser.js"
-export * from "#lib/input-parsers/types.js"
-export * from "#lib/router.js"
-export * from "#lib/output/types.js"
-export * from "#lib/output/printers/StandardOutput.js"
-export * from "#lib/config.js"
-export * from "#lib/command.js"
+export * from "./output/themes/StandardThema.js";
+export * from "./input-parsers/SystemInputParser.js"
+export * from "./input-parsers/types.js"
+export * from "./router.js"
+export * from "./output/types.js"
+export * from "./output/printers/StandardOutput.js"
+export * from "./config.js"
+export * from "./command.js"
 
 export type TNotFoundHandle = (input: TInputCommand) => never
 

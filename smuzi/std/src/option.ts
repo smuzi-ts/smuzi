@@ -1,6 +1,6 @@
 import { asFunction, asNull, asObject } from "./checker.js";
 import { panic } from "./panic.js";
-import {dump} from "#lib/debug.js";
+import {dump} from "./debug.js";
 
 type Val<T = unknown> = NonNullable<T>;
 

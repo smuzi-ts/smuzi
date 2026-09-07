@@ -3,7 +3,7 @@ import https from 'node:https';
 import { TLSSocket } from 'node:tls';
 import fs from 'node:fs';
 
-import { methodFromString } from "#lib/router.js";
+import { methodFromString } from "../router.js";
 import {
     isArray,
     isObject,
@@ -31,7 +31,7 @@ import {
     ResponseHttpHeaders, RequestHttpHeaders, asList, asRecord, asMap, querystring, QueryParams,
     StdJson, uuid
 } from '@smuzi/std';
-import { HttpServer, HttpServerRunError, Http1ServerConfig } from "#lib/index.js";
+import { HttpServer, HttpServerRunError, Http1ServerConfig } from "../index.js";
 import { log } from 'node:console';
 
 type NativeServer = any

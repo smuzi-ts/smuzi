@@ -1,7 +1,7 @@
 import { StdError } from "./error.js";
-import {OptionFromNullable, Some} from "#lib/option.js";
-import {dump} from "#lib/debug.js";
-import {asString} from "#lib/checker.js";
+import {OptionFromNullable, Some} from "./option.js";
+import {dump} from "./debug.js";
+import {asString} from "./checker.js";
 
 export function panic(err: any): never {
     if ( err instanceof StdError) {

@@ -1,5 +1,5 @@
 import {dump, Err, isEmpty, isOption, Ok, Result} from "@smuzi/std";
-import {TQueryParams} from "#lib/types.js";
+import {TQueryParams} from "./types.js";
 
 export function clearSQL(sql: string): string
 {

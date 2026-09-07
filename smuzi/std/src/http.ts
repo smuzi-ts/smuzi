@@ -1,12 +1,12 @@
-import { Option, None, Some, OptionFromNullable } from "#lib/option.js";
-import { match } from "#lib/match.js";
+import { Option, None, Some, OptionFromNullable } from "./option.js";
+import { match } from "./match.js";
 import { StdRecord } from "./record.js";
 import { StdMap } from "./map.js";
-import {dump} from "#lib/debug.js";
-import {Result} from "#lib/result.js";
-import {StdJson} from "#lib/json.js";
-import {StdError} from "#lib/error.js";
-import {QueryParams, querystring} from "#lib/querystring.js";
+import {dump} from "./debug.js";
+import {Result} from "./result.js";
+import {StdJson} from "./json.js";
+import {StdError} from "./error.js";
+import {QueryParams, querystring} from "./querystring.js";
 
 export enum HttpMethod {
     GET = "GET",
