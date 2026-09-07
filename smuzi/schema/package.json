@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
+    "typescript": "^7.0.2",
     "@smuzi/tests": "workspace:*"
   }
 
