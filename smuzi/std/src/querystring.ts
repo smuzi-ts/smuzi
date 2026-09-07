@@ -1,10 +1,10 @@
-import {Err, Ok, Result} from "#lib/result.js";
-import {StdError, transformError} from "#lib/error.js";
-import {asArray, asList, asMap, asNull, asRecord, asString, isEmpty} from "#lib/checker.js";
-import {isNone} from "#lib/option.js";
-import {StdRecord} from "#lib/record.js";
-import {StdList} from "#lib/list.js";
-import {dump} from "#lib/debug.js";
+import {Err, Ok, Result} from "./result.js";
+import {StdError, transformError} from "./error.js";
+import {asArray, asList, asMap, asNull, asRecord, asString, isEmpty} from "./checker.js";
+import {isNone} from "./option.js";
+import {StdRecord} from "./record.js";
+import {StdList} from "./list.js";
+import {dump} from "./debug.js";
 import { log } from "node:console";
 
 export type QueryParams = Record<string, unknown>;

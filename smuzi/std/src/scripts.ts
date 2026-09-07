@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
-import {Ok, Result} from "#lib/result.js";
+import {Ok, Result} from "./result.js";
 
 export async function runFromDir(
     dir: string,
