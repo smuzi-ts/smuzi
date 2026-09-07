@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/std",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --conditions=development tests/index.ts",
@@ -35,9 +35,9 @@
     "#lib/*": "./src/*"
   },
   "devDependencies": {
-    "@smuzi/faker": "workspace:*",
-    "@smuzi/schema": "workspace:*",
-    "@smuzi/tests": "workspace:*",
+    "@smuzi/faker": "0.0.2",
+    "@smuzi/schema": "0.0.2",
+    "@smuzi/tests": "0.0.2",
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
     "typescript": "^7.0.2"
