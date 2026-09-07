@@ -138,13 +138,13 @@ importers:
       '@smuzi/std':
         specifier: workspace:*
         version: link:../std
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
     devDependencies:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   smuzi/db-postgres:
     dependencies:
@@ -243,34 +243,6 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
-  smuzi/oauth:
-    dependencies:
-      '@smuzi/database':
-        specifier: workspace:*
-        version: link:../database
-      '@smuzi/http-client':
-        specifier: workspace:*
-        version: link:../http-client
-      '@smuzi/schema':
-        specifier: workspace:*
-        version: link:../schema
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-    devDependencies:
-      '@smuzi/faker':
-        specifier: workspace:*
-        version: link:../faker
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
-      tsx:
-        specifier: ^4.20.6
-        version: 4.20.6
-
   smuzi/routine:
     dependencies:
       '@smuzi/std':
@@ -305,40 +277,6 @@ importers:
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
-
-  smuzi/shopify-sdk:
-    dependencies:
-      '@smuzi/database':
-        specifier: workspace:*
-        version: link:../database
-      '@smuzi/http-client':
-        specifier: workspace:*
-        version: link:../http-client
-      '@smuzi/http-server':
-        specifier: workspace:*
-        version: link:../http-server
-      '@smuzi/schema':
-        specifier: workspace:*
-        version: link:../schema
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-    devDependencies:
-      '@smuzi/db-postgres':
-        specifier: workspace:*
-        version: link:../db-postgres
-      '@smuzi/faker':
-        specifier: workspace:*
-        version: link:../faker
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
-      tsx:
-        specifier: ^4.20.6
-        version: 4.20.6
 
   smuzi/ssr:
     dependencies:

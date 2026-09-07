@@ -33,12 +33,12 @@
     "#lib/*": "./src/*"
   },
   "dependencies": {
-    "@smuzi/std": "0.0.23",
-    "@smuzi/schema": "0.0.2"
+    "@smuzi/std": "workspace:*",
+    "@smuzi/schema": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "typescript": "^7.0.2",
-    "@smuzi/tests": "0.0.2"
+    "@smuzi/tests": "workspace:*"
   }
 }

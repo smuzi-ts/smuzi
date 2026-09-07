@@ -63,7 +63,7 @@ export type TInsertManyRowResult<S extends SchemaObject, Columns extends readonl
 
 export class TableRows<
     Schema extends SchemaObject,
-    TableRow extends Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : Schema["__infer"] = Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> :  StdRecord<Schema["__infer"]>,
+    TableRow extends Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : StdRecord<Schema["__infer"]> = Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : StdRecord<Schema["__infer"]>,
    Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>
 > {
     #rows: Rows
@@ -76,7 +76,7 @@ export class TableRows<
 
     #prepareRow(row: Record<string, unknown>): TableRow {
         return this.#schema.match({
-            None: () => new StdRecord(row),
+            None: () => new StdRecord(row) as TableRow,
             Some: (schema) => {
 
                 const config = schema.getConfig();
@@ -103,7 +103,7 @@ export class TableRows<
                     }
                 }
 
-                return prepare;
+                return new StdRecord(prepare) as TableRow;
             }
         })
 
