@@ -184,6 +184,6 @@ export type ExcludeExcludeSaveKeys<T> = {
 }[keyof T];
 
 export type TInsertRow<S extends SchemaObject> = S extends SchemaObject<infer U> ? {
-     [K in ExcludeExcludeSaveKeys<U>]: S["__infer"][K]
+     [K in ExcludeExcludeSaveKeys<U>]: S["__infer"][K] 
 } : {};
 

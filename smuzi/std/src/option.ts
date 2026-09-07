@@ -19,8 +19,8 @@ export function OptionFromNullable<T, I = T extends null | undefined ? never : T
 }
 
 export class Option<T = unknown> {
-    unsafeSource() {
-        return this._val ?? null;
+    unsafeSource(): T {
+        return this._val;
     }
 
     protected _val: T;
