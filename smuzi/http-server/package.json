@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/http-server",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "HTTP server and routing for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --conditions=development tests/index.ts",
