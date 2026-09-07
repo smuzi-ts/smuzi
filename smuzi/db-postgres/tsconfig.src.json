@@ -10,10 +10,6 @@
     "emitDecoratorMetadata": false,
     "types": ["node"],
     "rootDir": "src",
-    "composite": true,
-    "baseUrl": "./src",
-    "paths": {
-      "#lib/*": ["*"]
-    }
+    "composite": true
   }
 }

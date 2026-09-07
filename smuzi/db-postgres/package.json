@@ -1,18 +1,37 @@
 {
   "name": "@smuzi/db-postgres",
   "version": "0.0.1",
-  "private": true,
-  "description": "",
+  "description": "PostgreSQL driver for @smuzi/database",
   "scripts": {
-    "test": "tsx  --env-file=.env tests/index.ts"
+    "test": "tsx  --env-file=.env tests/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build"
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "files": [
-    "./tests"
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "database",
+    "postgres",
+    "postgresql",
+    "pg"
   ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "./src",
+    "./build"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  },
   "dependencies": {
     "@smuzi/database": "workspace:*",
     "@smuzi/std": "workspace:*",
@@ -23,12 +42,7 @@
     "@smuzi/faker": "workspace:*",
     "@smuzi/tests": "workspace:*",
     "@types/node": "^22.15.21",
-    "tsconfig-paths": "^4.2.0"
-  },
-  "imports": {
-    "#lib/*": "./src/*"
-  },
-  "exports": {
-    ".": "./src/index.js"
+    "@types/pg": "^8.11.10",
+    "typescript": "^7.0.2"
   }
 }

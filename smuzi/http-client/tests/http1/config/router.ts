@@ -16,7 +16,7 @@ usersRouter.get("list", () => {
 })
 
 usersRouter.get("auth", (context) => {
-    const token = context.request.query.get("token").someOr("");
+    const token = context.request.query().get("token").someOr("");
 
     if (token != apiConfig.key) {
         context.response.writeHead(401, "Unauthorized");
@@ -43,7 +43,7 @@ usersRouter.get("authHeader", (context) => {
 
 router.get("echoQuery", (context) => {
     const resp = {};
-    for(const [key, val] of context.request.query) {
+    for(const [key, val] of context.request.query()) {
         resp[key] = val.someOr("");
     }
     return resp;

@@ -48,17 +48,18 @@ export class PostgresClient implements TDatabaseClient {
 
     async query<S extends SchemaObject>( sql: string, params: TQueryParams = [], schema: Option<S> = None()): Promise<TQueryResult<S>> {
         let preparedSql = sql;
+        let preparedParams: unknown[] = asArray(params) ? params : [];
 
         if (asObject(params)) {
             const preparedRes = preparedSqlFromObjectToArrayParams(preparedSql, params).unwrap();
             preparedSql = preparedRes.sql;
-            params = preparedRes.params;
+            preparedParams = preparedRes.params;
         }
 
         try {
             const res = await this.#pool.query({
                     text: preparedSql,
-                    values: params,
+                    values: preparedParams,
                 },
             );
 

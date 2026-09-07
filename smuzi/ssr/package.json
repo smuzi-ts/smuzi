@@ -25,11 +25,15 @@
     "access": "public"
   },
   "files": [
+    "./src",
     "./build",
     "globals.d.ts"
   ],
   "exports": {
-    ".": "./src/index.js"
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./globals.d.ts": "./globals.d.ts",
+    "./*": "./src/*.ts"
   },
   "imports": {
     "#lib/*": "./src/*"
@@ -40,6 +44,7 @@
   "devDependencies": {
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
+    "typescript": "^7.0.2",
     "@smuzi/tests": "workspace:*",
     "@smuzi/faker": "workspace:*"
   }

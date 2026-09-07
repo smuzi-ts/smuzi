@@ -23,8 +23,8 @@
     "access": "public"
   },
   "files": [
-    "src/**/*.ts",
-    "build/**/*.js"
+    "./src",
+    "./build"
   ],
    "exports": {
     "./package.json": "./package.json",

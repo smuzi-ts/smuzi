@@ -170,9 +170,12 @@ importers:
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0
-      tsconfig-paths:
-        specifier: ^4.2.0
-        version: 4.2.0
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.23.1
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   smuzi/faker:
     dependencies:
@@ -217,6 +220,9 @@ importers:
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   smuzi/http-server:
     dependencies:
@@ -296,6 +302,9 @@ importers:
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   smuzi/std:
     devDependencies:
@@ -524,6 +533,9 @@ packages:
   '@types/node@22.19.0':
     resolution: {integrity: sha512-xpr/lmLPQEj+TUnHmR+Ab91/glhJvsqcjB+yY0Ix9GO70H6Lb4FHH5GeqdOE5btAx7eIMwuHkp4H2MSkLcqWbA==}
 
+  '@types/pg@8.23.1':
+    resolution: {integrity: sha512-fKVHpikPdg4GKks3JuLEhvwSyvwzF23hnabPy6DD8ljVbC7+6J5dQzdv4arV6jqq57djnMgs1HKBxX4P8aBI3A==}
+
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
     engines: {node: '>=16.20.0'}
@@ -667,16 +679,8 @@ packages:
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
-  json5@2.2.3:
-    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
-    engines: {node: '>=6'}
-    hasBin: true
-
   lossless-json@4.3.1:
     resolution: {integrity: sha512-SqD/Bg3ZfltBJ2Z14hJ/BihnvtV553WO4g9/ePtlp4lrnl9jF3AdIJt53A/Wkg/0Li+LMfxaBqgx1MiFZdQlpQ==}
-
-  minimist@1.2.8:
-    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
   noroutine@0.0.7:
     resolution: {integrity: sha512-SEMONrCWGWDPpaVZf4DeRZEgKiUcP+Ih6ktVmZgm1glDmlO1VXHwToMH8Vj25bYzdbDD4Sjj5jSq4neMxmwqJg==}
@@ -738,14 +742,6 @@ packages:
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
-
-  strip-bom@3.0.0:
-    resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
-    engines: {node: '>=4'}
-
-  tsconfig-paths@4.2.0:
-    resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
-    engines: {node: '>=6'}
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
@@ -872,6 +868,12 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/pg@8.23.1':
+    dependencies:
+      '@types/node': 22.19.0
+      pg-protocol: 1.10.3
+      pg-types: 2.2.0
+
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
 
@@ -974,11 +976,7 @@ snapshots:
 
   jose@5.10.0: {}
 
-  json5@2.2.3: {}
-
   lossless-json@4.3.1: {}
-
-  minimist@1.2.8: {}
 
   noroutine@0.0.7: {}
 
@@ -1030,14 +1028,6 @@ snapshots:
   resolve-pkg-maps@1.0.0: {}
 
   split2@4.2.0: {}
-
-  strip-bom@3.0.0: {}
-
-  tsconfig-paths@4.2.0:
-    dependencies:
-      json5: 2.2.3
-      minimist: 1.2.8
-      strip-bom: 3.0.0
 
   tslib@2.8.1: {}
 
