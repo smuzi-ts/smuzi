@@ -1,5 +1,5 @@
 import {isEmpty, None, panic} from "@smuzi/std";
-import {faker} from "#lib/index.js";
+import {faker} from "./index.js";
 
 export function string({min = 5, max = 10, prefix = '', suffix = ''} = {}): string {
     if (min > max) panic('min must be less than or equal to max');
