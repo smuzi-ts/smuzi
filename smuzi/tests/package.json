@@ -32,9 +32,9 @@
     "#lib/*": "./src/*"
   },
   "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/schema": "workspace:*",
-    "@smuzi/console": "workspace:*"
+   "@smuzi/std": "0.0.23",
+    "@smuzi/schema": "0.0.2",
+    "@smuzi/console": "0.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
