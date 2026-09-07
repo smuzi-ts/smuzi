@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/ssr",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple template engine for generation HTML pages with advanced syntaxes",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -22,11 +22,25 @@
 
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./globals.d.ts": "./globals.d.ts",
+      "./*": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      }
+    }
   },
   "files": [
-    "./src",
-    "./build",
+    "build/**/*.js",
+    "build/**/*.d.ts",
     "globals.d.ts"
   ],
   "exports": {

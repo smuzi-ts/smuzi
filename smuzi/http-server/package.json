@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/http-server",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "HTTP server and routing for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --conditions=development tests/index.ts",
@@ -20,11 +20,24 @@
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./*": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      }
+    }
   },
   "files": [
-    "./src",
-    "./build"
+    "build/**/*.js",
+    "build/**/*.d.ts"
   ],
    "exports": {
     "./package.json": "./package.json",

@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/http-client",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "HTTP client for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --env-file=./tests/.env tests/index.ts",
@@ -19,23 +19,29 @@
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
   "license": "ISC",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./*": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      }
+    }
   },
   "files": [
-    "./src",
-    "./build",
-    "./tests"
+    "build/**/*.js",
+    "build/**/*.d.ts"
   ],
   "exports": {
     "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "default": "./build/index.js"
-    },
-    "./*": {
-      "types": "./build/*.d.ts",
-      "default": "./build/*.js"
-    }
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "imports": {
     "#lib/*": "./src/*"

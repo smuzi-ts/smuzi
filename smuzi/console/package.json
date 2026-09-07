@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/console",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Console router and input/output toolkit for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -17,11 +17,24 @@
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
   "license": "ISC",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./*": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      }
+    }
   },
   "files": [
-    "./src",
-    "./build"
+    "build/**/*.js",
+    "build/**/*.d.ts"
   ],
   "exports": {
     "./package.json": "./package.json",
