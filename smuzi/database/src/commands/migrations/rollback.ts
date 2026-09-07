@@ -1,8 +1,8 @@
-import {TDatabaseService} from "../../types.js";
+import {TDatabaseService} from "#lib/types.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 import {TOutputConsole} from "@smuzi/console";
-import {clearSQL} from "../../helpers.js";
-import {TMigrationLogAction} from "../../migration.js";
+import {clearSQL} from "#lib/helpers.js";
+import {TMigrationLogAction} from "#lib/migration.js";
 
 export default function (service: TDatabaseService) {
     return async (output: TOutputConsole, params) => {

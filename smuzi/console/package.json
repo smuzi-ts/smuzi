@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/console",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "description": "Console router and input/output toolkit for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -25,14 +25,8 @@
   ],
   "exports": {
     "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "default": "./build/index.js"
-    },
-    "./*": {
-      "types": "./build/*.d.ts",
-      "default": "./build/*.js"
-    }
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "imports": {
     "#lib/*": "./src/*"

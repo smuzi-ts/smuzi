@@ -1,6 +1,7 @@
 import { it, assert } from "@smuzi/tests";
 import { httpClient } from "./config/config.js";
 import {dump, Some, StdRecord} from "@smuzi/std";
+import { faker } from "@smuzi/faker";
 import {schema} from "@smuzi/schema";
 import {http1TestRunner} from "./index.js";
 
@@ -15,7 +16,7 @@ http1TestRunner.describe("http-client-http1-POST-", [
             }))
         })
 
-        const createUser = userSchema.fake();
+        const createUser = faker.schema.make(userSchema);
 
         const response = await httpClient.post<typeof createUser>('/echoBodyString', {
             body: Some(createUser)

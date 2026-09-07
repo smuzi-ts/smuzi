@@ -4,6 +4,7 @@ import * as array from "./array.js";
 import * as datetime from "./datetime.js";
 import * as repeat from "./repeat.js";
 import * as stringModule from "./string.js";
+import * as schema from "./schema.js";
 import { email } from "./email.js";
 
 export const faker = Object.freeze({
@@ -14,4 +15,5 @@ export const faker = Object.freeze({
     array,
     repeat,
     datetime,
+    schema,
 })

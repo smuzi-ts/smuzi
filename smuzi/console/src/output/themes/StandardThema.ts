@@ -1,4 +1,4 @@
-import {TThemaOutputConsole} from "../types.js";
+import {TThemaOutputConsole} from "#lib/output/types.js";
 
 export const StandardThema: TThemaOutputConsole = {
     default: "\x1b[0m",

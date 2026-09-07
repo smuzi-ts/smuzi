@@ -1,5 +1,5 @@
 import {Option, HttpProtocol, None, HttpResponse, transformError, dump} from "@smuzi/std";
-import {ActionErrorHandler, Context, Http1Router} from "./router.js";
+import {ActionErrorHandler, Context, Http1Router} from "#lib/router.js";
 import {ServerResponse} from "node:http";
 
 type Cert = Option<{

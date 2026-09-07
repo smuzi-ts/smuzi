@@ -3,7 +3,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {argv} from 'node:process';
 
-export {assert} from "./assert.js"
+export {assert} from "#lib/assert.js"
 import {
     asString,
     dump,

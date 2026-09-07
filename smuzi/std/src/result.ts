@@ -1,11 +1,11 @@
 import {asFunction, asString, isNull} from "./checker.js";
 import {type IMatched } from "./match.js";
 import { panic } from "./panic.js";
-import {StdJson} from "./json.js";
+import {StdJson} from "#lib/json.js";
 
 import { None } from "./option.js";
 import { StdError } from "./error.js";
-import {dump} from "./debug.js";
+import {dump} from "#lib/debug.js";
 
 type Val = unknown;
 

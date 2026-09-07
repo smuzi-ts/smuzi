@@ -1,6 +1,6 @@
-import {StdRecord} from "./record.js";
-import {StdMap} from "./map.js";
-import {StdList} from "./list.js";
+import {StdRecord} from "#lib/record.js";
+import {StdMap} from "#lib/map.js";
+import {StdList} from "#lib/list.js";
 
 export type TEmpty = null | undefined | '' | never[];
 

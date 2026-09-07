@@ -30,7 +30,7 @@ export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
 
         const self = this;
 
-        for (const [key, val] of input as unknown as StdList) {
+        for (const [key, val] of input as StdList) {
             val.match({
                 Some(value) {
                     self.#config.validate(value).runThenErr(err => {

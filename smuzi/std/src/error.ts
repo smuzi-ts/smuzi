@@ -1,6 +1,6 @@
-import { Option, OptionFromNullable, None, Some } from "./option.js";
-import { asNumber, asObject, asString, isNull } from "./checker.js";
-import {dump} from "./debug.js";
+import { Option, OptionFromNullable, None, Some } from "#lib/option.js";
+import { asNumber, asObject, asString, isNull } from "#lib/checker.js";
+import {dump} from "#lib/debug.js";
 
 export class StdError {
     message: string

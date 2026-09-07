@@ -19,8 +19,8 @@ import {
     Some, StdList, StdRecord
 } from "@smuzi/std";
 import {SchemaObject} from "@smuzi/schema";
-export * from "./migrationsLogRepository.js"
-export * from "./entityRepository.js"
+export * from "#lib/migrationsLogRepository.js"
+export * from "#lib/entityRepository.js"
 
 export type Config = {
     user: string,

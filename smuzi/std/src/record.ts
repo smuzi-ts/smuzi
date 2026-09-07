@@ -1,4 +1,4 @@
-import { isOption, Option, OptionFromNullable } from "./option.js";
+import { isOption, Option, OptionFromNullable } from "#lib/option.js";
 
 export class StdRecord<T extends Record<PropertyKey, unknown>> {
     #entity: T;

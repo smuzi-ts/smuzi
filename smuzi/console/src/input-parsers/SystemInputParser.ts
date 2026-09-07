@@ -1,4 +1,4 @@
-import {TInputCommand, TInputParams} from "../router.js";
+import {TInputCommand, TInputParams} from "#lib/router.js";
 import {StdMap} from "@smuzi/std";
 
 export function SystemInputParser<K extends string = string>(processArgv: string[]): TInputCommand<K> {

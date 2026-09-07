@@ -20,13 +20,13 @@ import {
     asString, dump,
     isImpl
 } from "@smuzi/std";
-import {assertObject, TAssertObject} from "./asserts/object.js";
-import {assertArray, TAssertArray} from "./asserts/array.js";
-import {assertionError} from "./index.js";
-import {assertResult, TAssertResult} from "./asserts/result.js";
-import {assertString, TAssertString} from "./asserts/string.js";
-import {AssertDatetime, assertDatetime} from "./asserts/datetime.js";
-import {assertSchema, AssertSchema} from "./asserts/schema.js";
+import {assertObject, TAssertObject} from "#lib/asserts/object.js";
+import {assertArray, TAssertArray} from "#lib/asserts/array.js";
+import {assertionError} from "#lib/index.js";
+import {assertResult, TAssertResult} from "#lib/asserts/result.js";
+import {assertString, TAssertString} from "#lib/asserts/string.js";
+import {AssertDatetime, assertDatetime} from "#lib/asserts/datetime.js";
+import {assertSchema, AssertSchema} from "#lib/asserts/schema.js";
 
 
 export type Assert = {

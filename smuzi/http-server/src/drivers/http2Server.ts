@@ -1,9 +1,9 @@
 import http2, { Http2SecureServer, Http2Server, IncomingHttpHeaders, ServerHttp2Stream } from 'node:http2';
 import fs from 'node:fs';
 
-import { methodFromString } from "../router.js";
+import { methodFromString } from "#lib/router.js";
 import { isArray, isObject, isString, match, matchUnknown, OptionFromNullable, Some, Result, Option, Err, Ok, isNull, transformError, StdError, dump, HttpResponse, StdJson } from '@smuzi/std';
-import { HttpServer, HttpServerRunError, Http2ServerConfig } from "../index.js";
+import { HttpServer, HttpServerRunError, Http2ServerConfig } from "#lib/index.js";
 
 type NativeServer = Http2SecureServer | Http2Server;
 

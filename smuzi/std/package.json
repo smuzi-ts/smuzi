@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/std",
-  "version": "0.2.6",
+  "version": "0.2.5",
   "description": "Standard library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --conditions=development tests/index.ts",
@@ -23,19 +23,13 @@
     "access": "public"
   },
   "files": [
-    "./src",
-    "./build"
+    "src/**/*.ts",
+    "build/**/*.js"
   ],
    "exports": {
     "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "default": "./build/index.js"
-    },
-    "./*": {
-      "types": "./build/*.d.ts",
-      "default": "./build/*.js"
-    }
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
  "imports": {
     "#lib/*": "./src/*"

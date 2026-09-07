@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/database",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "description": "Database access layer and migrations toolkit for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",

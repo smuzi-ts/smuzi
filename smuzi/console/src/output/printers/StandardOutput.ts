@@ -1,5 +1,5 @@
-import { TOutputConsole, TThemaOutputConsole} from "../types.js";
-import { StandardThema } from "../themes/StandardThema.js";
+import { TOutputConsole, TThemaOutputConsole} from "#lib/output/types.js";
+import { StandardThema } from "#lib/output/themes/StandardThema.js";
 
 export const StandardOutput = (thema: TThemaOutputConsole = StandardThema): TOutputConsole => ({
     info(...vars) {

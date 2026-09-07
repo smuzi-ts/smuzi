@@ -1,6 +1,6 @@
 import {AssertionError} from "node:assert";
 import {isArray, isNumber} from "@smuzi/std";
-import {assertionError} from "../index.js";
+import {assertionError} from "#lib/index.js";
 
 export type AssertDatetime = {
     isNative(actual: unknown): asserts actual is Date

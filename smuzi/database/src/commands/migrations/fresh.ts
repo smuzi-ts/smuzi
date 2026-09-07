@@ -1,6 +1,6 @@
-import {TDatabaseService} from "../../types.js";
+import {TDatabaseService} from "#lib/types.js";
 import {TOutputConsole} from "@smuzi/console";
-import run from "./run.js";
+import run from "#lib/commands/migrations/run.js";
 import {Ok, OkOrNullableAsError, OptionFromNullable} from "@smuzi/std";
 
 export default function (service: TDatabaseService) {

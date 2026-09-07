@@ -1,5 +1,5 @@
-import { Option, OptionFromNullable } from "./option.js";
-import {dump} from "./debug.js";
+import { Option, OptionFromNullable } from "#lib/option.js";
+import {dump} from "#lib/debug.js";
 
 export class StdList<T = unknown> {
     #list: Array<T>;

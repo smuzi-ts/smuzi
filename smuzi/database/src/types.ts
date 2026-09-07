@@ -17,7 +17,7 @@ import {
     SchemaRule,
     SchemaStorageAutoNumber,
 } from "@smuzi/schema"
-import {TMigrations, TMigrationsLogRepository} from "./migration.js";
+import {TMigrations, TMigrationsLogRepository} from "#lib/migration.js";
 
 export type TQueryParams = unknown[] | Record<string, unknown>
 

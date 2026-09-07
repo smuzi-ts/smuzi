@@ -1,7 +1,7 @@
-import {Ok, Result} from "./result.js";
-import {StdError} from "./error.js";
-import {promise} from "./promise.js";
-import {dump} from "./debug.js";
+import {Ok, Result} from "#lib/result.js";
+import {StdError} from "#lib/error.js";
+import {promise} from "#lib/promise.js";
+import {dump} from "#lib/debug.js";
 
 export const regexp = {
     // async asyncReplace<E extends StdError>(

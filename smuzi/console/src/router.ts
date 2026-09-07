@@ -1,5 +1,5 @@
 import {asString, None, Option, StdMap} from "@smuzi/std";
-import {TOutputConsole} from "./output/types.js";
+import {TOutputConsole} from "#lib/output/types.js";
 
 export type TInputParams<K extends string = string> = StdMap<K, string>;
 

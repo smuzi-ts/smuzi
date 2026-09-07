@@ -1,6 +1,6 @@
 import {AssertionError} from "node:assert";
 import {None, Option} from "@smuzi/std";
-import {assert} from "../assert.js";
+import {assert} from "#lib/assert.js";
 
 export type TAssertObject = {
     hasProperty<T>(obj: T, property: string | number | symbol, value?: Option): asserts property is keyof T;

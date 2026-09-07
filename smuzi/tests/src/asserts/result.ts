@@ -1,5 +1,5 @@
 import {asString, isSome, None, Option, Result, StdJson, transformError} from "@smuzi/std";
-import {assert} from "../assert.js";
+import {assert} from "#lib/assert.js";
 
 export type TAssertResult = {
     equalOk(result: Result, expectedOk?: Option),
