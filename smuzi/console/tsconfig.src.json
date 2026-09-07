@@ -3,13 +3,7 @@
   "include": ["./src"],
   "compilerOptions": {
     "types": ["node"],
-    "outDir": "build/src",
-    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
     "rootDir": "src",
-    "composite": true,
-    "baseUrl": "./src",
-    "paths": {
-      "#lib/*": ["*"]
-  },
+    "composite": true
   }
 }
