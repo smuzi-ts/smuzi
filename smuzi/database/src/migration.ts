@@ -1,4 +1,4 @@
-import {TInsertRow, TInsertRowResult, TQueryResult,} from "#lib/types.js";
+import {TInsertRow, TInsertRowResult, TQueryResult,} from "./types.js";
 import {Option, panic} from "@smuzi/std";
 import {schema, SchemaObject} from "@smuzi/schema";
 

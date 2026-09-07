@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/tests",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Test runner and assertion library for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
