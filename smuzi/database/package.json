@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/database",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "description": "Database access layer and migrations toolkit for JavaScript and TypeScript",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -43,10 +43,10 @@
   "imports": {
     "#lib/*": "./src/*"
   },
-  "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/schema": "workspace:*",
-    "@smuzi/console": "workspace:*"
+  "peerDependencies": {
+    "@smuzi/std": "workspace:^",
+    "@smuzi/schema": "workspace:^",
+    "@smuzi/console": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",

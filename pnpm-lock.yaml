@@ -9,26 +9,26 @@ importers:
   crmoz/zoho-inventory:
     dependencies:
       '@crmoz/zoho-oauth':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../zoho-oauth
       '@smuzi/http-client':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/http-client
       '@smuzi/http-server':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/http-server
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/schema
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/std
     devDependencies:
       '@smuzi/faker':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/faker
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/tests
       '@types/node':
         specifier: ^22.15.21
@@ -43,29 +43,29 @@ importers:
   crmoz/zoho-oauth:
     dependencies:
       '@smuzi/database':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/database
       '@smuzi/http-client':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/http-client
       '@smuzi/http-server':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/http-server
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/schema
       '@smuzi/ssr':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/ssr
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/std
     devDependencies:
       '@smuzi/db-postgres':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/db-postgres
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../smuzi/tests
       '@types/node':
         specifier: ^22.15.21
@@ -80,7 +80,7 @@ importers:
   smuzi/console:
     dependencies:
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@types/node':
@@ -93,13 +93,13 @@ importers:
   smuzi/database:
     dependencies:
       '@smuzi/console':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../console
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@types/node':
@@ -112,23 +112,23 @@ importers:
   smuzi/db-postgres:
     dependencies:
       '@smuzi/database':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../database
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
       pg:
         specifier: ^8.16.3
         version: 8.16.3
     devDependencies:
       '@smuzi/faker':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../faker
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -142,15 +142,12 @@ importers:
 
   smuzi/faker:
     dependencies:
-      '@smuzi/schema':
-        specifier: workspace:*
-        version: link:../schema
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -162,20 +159,20 @@ importers:
   smuzi/http-client:
     dependencies:
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@smuzi/faker':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../faker
       '@smuzi/http-server':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../http-server
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -190,17 +187,17 @@ importers:
   smuzi/http-server:
     dependencies:
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@smuzi/faker':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../faker
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -212,30 +209,17 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
-  smuzi/routine:
-    dependencies:
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-    devDependencies:
-      '@smuzi/tests':
-        specifier: workspace:*
-        version: link:../tests
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
-
   smuzi/schema:
     dependencies:
-      '@smuzi/faker':
-        specifier: workspace:*
-        version: link:../faker
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
+      '@smuzi/faker':
+        specifier: workspace:^
+        version: link:../faker
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -250,14 +234,14 @@ importers:
   smuzi/ssr:
     dependencies:
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@smuzi/faker':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../faker
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -272,13 +256,13 @@ importers:
   smuzi/std:
     devDependencies:
       '@smuzi/faker':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../faker
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@smuzi/tests':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../tests
       '@types/node':
         specifier: ^22.15.21
@@ -293,13 +277,13 @@ importers:
   smuzi/tests:
     dependencies:
       '@smuzi/console':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../console
       '@smuzi/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@smuzi/std':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../std
     devDependencies:
       '@types/node':
@@ -308,19 +292,6 @@ importers:
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
-
-  smuzi/threads:
-    dependencies:
-      '@smuzi/std':
-        specifier: workspace:*
-        version: link:../std
-      noroutine:
-        specifier: ^0.0.7
-        version: 0.0.7
-    devDependencies:
-      '@types/node':
-        specifier: ^22.15.21
-        version: 22.19.0
 
 packages:
 
@@ -619,10 +590,6 @@ packages:
   get-tsconfig@4.13.0:
     resolution: {integrity: sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==}
 
-  noroutine@0.0.7:
-    resolution: {integrity: sha512-SEMONrCWGWDPpaVZf4DeRZEgKiUcP+Ih6ktVmZgm1glDmlO1VXHwToMH8Vj25bYzdbDD4Sjj5jSq4neMxmwqJg==}
-    engines: {node: ^12.22 || ^14.17 || 16 || 18}
-
   pg-cloudflare@1.2.7:
     resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
 
@@ -882,8 +849,6 @@ snapshots:
   get-tsconfig@4.13.0:
     dependencies:
       resolve-pkg-maps: 1.0.0
-
-  noroutine@0.0.7: {}
 
   pg-cloudflare@1.2.7:
     optional: true

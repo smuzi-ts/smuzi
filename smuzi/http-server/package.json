@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/http-server",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "HTTP server and routing for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --conditions=development tests/index.ts",
@@ -47,13 +47,13 @@
  "imports": {
     "#lib/*": "./src/*"
   },
-  "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/schema": "workspace:*"
+  "peerDependencies": {
+    "@smuzi/std": "workspace:^",
+    "@smuzi/schema": "workspace:^"
   },
   "devDependencies": {
-    "@smuzi/faker": "workspace:*",
-    "@smuzi/tests": "workspace:*",
+    "@smuzi/faker": "workspace:^",
+    "@smuzi/tests": "workspace:^",
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
     "typescript": "^7.0.2"

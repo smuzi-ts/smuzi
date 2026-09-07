@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/schema",
-  "version": "0.0.11",
+  "version": "0.0.15",
   "description": "Schema validation library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -47,15 +47,16 @@
   "imports": {
     "#lib/*": "./src/*"
   },
-  "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/faker": "workspace:*"
+  "peerDependencies": {
+    "@smuzi/std": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
     "typescript": "^7.0.2",
-    "@smuzi/tests": "workspace:*"
+    "@smuzi/tests": "workspace:^",
+        "@smuzi/faker": "workspace:^"
+
   }
 
 }

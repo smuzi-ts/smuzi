@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/http-client",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "HTTP client for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx --env-file=./tests/.env tests/index.ts",
@@ -46,16 +46,16 @@
   "imports": {
     "#lib/*": "./src/*"
   },
-  "dependencies": {
-    "@smuzi/std": "workspace:*"
+  "peerDependencies": {
+    "@smuzi/std": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "tsx": "^4.20.6",
     "typescript": "^7.0.2",
-    "@smuzi/faker": "workspace:*",
-    "@smuzi/tests": "workspace:*",
-    "@smuzi/schema": "workspace:*",
-    "@smuzi/http-server": "workspace:*"
+    "@smuzi/faker": "workspace:^",
+    "@smuzi/tests": "workspace:^",
+    "@smuzi/schema": "workspace:^",
+    "@smuzi/http-server": "workspace:^"
   }
 }

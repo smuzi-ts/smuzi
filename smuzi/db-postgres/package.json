@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/db-postgres",
-  "version": "0.0.5",
+  "version": "0.0.8",
   "description": "PostgreSQL driver for @smuzi/database",
   "scripts": {
     "test": "tsx  --env-file=.env tests/index.ts",
@@ -45,15 +45,15 @@
   "imports": {
     "#lib/*": "./src/*"
   },
-  "dependencies": {
-    "@smuzi/database": "workspace:*",
-    "@smuzi/std": "workspace:*",
-    "@smuzi/schema": "workspace:*",
+  "peerDependencies": {
+    "@smuzi/database": "workspace:^",
+    "@smuzi/std": "workspace:^",
+    "@smuzi/schema": "workspace:^",
     "pg": "^8.16.3"
   },
   "devDependencies": {
-    "@smuzi/faker": "workspace:*",
-    "@smuzi/tests": "workspace:*",
+    "@smuzi/faker": "workspace:^",
+    "@smuzi/tests": "workspace:^",
     "@types/node": "^22.15.21",
     "@types/pg": "^8.11.10",
     "typescript": "^7.0.2"
