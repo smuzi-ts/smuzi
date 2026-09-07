@@ -1,6 +1,6 @@
 import {asMap, dump, Err, None, Ok, Option, Result, Simplify, StdMap, StdRecord} from "@smuzi/std";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaOption} from "#lib/option.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
+import {SchemaOption} from "./option.js";
 import { error } from "console";
 
 export type SchemaMapConfig = SchemaRule;

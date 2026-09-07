@@ -1,23 +1,23 @@
-import {datetime} from "#lib/datetime.js";
+import {datetime} from "./datetime.js";
 import {_enum} from "./_enum.js";
-import {storage} from "#lib/storage.js";
-import {SchemaBoolean, SchemaNumber, SchemaString} from "#lib/primitive.js";
-import {SchemaObjConfig, SchemaObject} from "#lib/obj.js";
-import {SchemaRule as _SchemaRule} from "#lib/types.js";
-import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
-import {SchemaMapConfig, SchemaMap} from "#lib/map.js";
-import {SchemaListConfig, SchemaList} from "#lib/list.js";
-import {SchemaOption, SchemaOptionConfig} from "#lib/option.js";
-export {SchemaNativeDate, SchemaTemporalDateTimeDate} from "#lib/datetime.js";
-export {type SchemaValidationError} from "#lib/types.js";
-export {SchemaObject} from "#lib/obj.js";
-export {SchemaOption} from "#lib/option.js";
-export {SchemaEnumStrings} from "#lib/_enum.js";
-export {SchemaStorageAutoNumber} from "#lib/storage.js";
-export { SchemaRecord } from "#lib/record.js";
-export { SchemaList } from "#lib/list.js";
+import {storage} from "./storage.js";
+import {SchemaBoolean, SchemaNumber, SchemaString} from "./primitive.js";
+import {SchemaObjConfig, SchemaObject} from "./obj.js";
+import {SchemaRule as _SchemaRule} from "./types.js";
+import {SchemaRecord, SchemaRecordConfig} from "./record.js";
+import {SchemaMapConfig, SchemaMap} from "./map.js";
+import {SchemaListConfig, SchemaList} from "./list.js";
+import {SchemaOption, SchemaOptionConfig} from "./option.js";
+export {SchemaNativeDate, SchemaTemporalDateTimeDate} from "./datetime.js";
+export {type SchemaValidationError} from "./types.js";
+export {SchemaObject} from "./obj.js";
+export {SchemaOption} from "./option.js";
+export {SchemaEnumStrings} from "./_enum.js";
+export {SchemaStorageAutoNumber} from "./storage.js";
+export { SchemaRecord } from "./record.js";
+export { SchemaList } from "./list.js";
 
-export {SchemaNumber, SchemaString, SchemaBoolean} from "#lib/primitive.js";
+export {SchemaNumber, SchemaString, SchemaBoolean} from "./primitive.js";
 
 export type SchemaRule = _SchemaRule;
 

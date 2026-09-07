@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/schema",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Schema validation library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -19,15 +19,30 @@
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
 
   "license": "ISC",
-  "publishConfig": {
-    "access": "public"
+"publishConfig": {
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./*": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      }
+    }
   },
   "files": [
-    "./build",
-    "./tests"
+    "build/**/*.js",
+    "build/**/*.d.ts"
   ],
-  "exports": {
-    ".": "./src/index.js"
+   "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "imports": {
     "#lib/*": "./src/*"

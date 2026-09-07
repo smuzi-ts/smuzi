@@ -12,9 +12,9 @@ import {
     StdMap,
     StdRecord
 } from "@smuzi/std";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaObject} from "#lib/obj.js";
-import {SchemaOption} from "#lib/option.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
+import {SchemaObject} from "./obj.js";
+import {SchemaOption} from "./option.js";
 
 export type SchemaRecordConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
 type InferSchema<C extends SchemaRecordConfig> = {

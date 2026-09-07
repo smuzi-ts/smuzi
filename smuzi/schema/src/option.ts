@@ -1,6 +1,6 @@
-import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaObject} from "#lib/obj.js";
+import {SchemaRecord, SchemaRecordConfig} from "./record.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
+import {SchemaObject} from "./obj.js";
 import {
     asNull,
     dump,

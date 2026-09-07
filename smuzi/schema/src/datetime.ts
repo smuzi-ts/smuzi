@@ -1,6 +1,6 @@
 import {Err, Ok, Option, OptionFromNullable, Result, Simplify, StdRecord} from "@smuzi/std";
 import {faker} from "@smuzi/faker";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
 
 type SchemaNativeDateConfig = { msg: string };
 

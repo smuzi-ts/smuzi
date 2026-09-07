@@ -1,8 +1,8 @@
 import {asList, Err, Ok, Option, Result, Simplify, StdList, StdMap, StdRecord} from "@smuzi/std";
-import {SchemaObject} from "#lib/obj.js";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaRecord, SchemaRecordConfig} from "#lib/record.js";
-import {SchemaOption} from "#lib/option.js";
+import {SchemaObject} from "./obj.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
+import {SchemaRecord, SchemaRecordConfig} from "./record.js";
+import {SchemaOption} from "./option.js";
 
 export type SchemaListConfig<C extends SchemaRecordConfig = SchemaRecordConfig> = SchemaRule | SchemaObject<C> | SchemaRecord<C>;
 

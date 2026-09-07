@@ -1,7 +1,7 @@
 import {asObject, dump, Err, isNone, isNull, keysOfObject, None, Ok, Option, Result, Simplify, StdRecord} from "@smuzi/std";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
-import {SchemaRecord} from "#lib/record.js";
-import {SchemaOption} from "#lib/option.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
+import {SchemaRecord} from "./record.js";
+import {SchemaOption} from "./option.js";
 
 export type SchemaObjConfig = Record<PropertyKey, SchemaRule | SchemaObject | SchemaRecord<any>>;
 

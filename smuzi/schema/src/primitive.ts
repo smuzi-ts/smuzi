@@ -14,7 +14,7 @@ import {
     StdRecord
 } from "@smuzi/std";
 import {faker} from "@smuzi/faker";
-import {SchemaRule, SchemaValidationError} from "#lib/types.js";
+import {SchemaRule, SchemaValidationError} from "./types.js";
 
 
 export class SchemaNumber implements SchemaRule {
