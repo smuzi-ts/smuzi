@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/faker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fake data generator for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -33,12 +33,12 @@
     "#lib/*": "./src/*"
   },
   "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/schema": "workspace:*"
+    "@smuzi/std": "0.0.23",
+    "@smuzi/schema": "0.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
     "typescript": "^7.0.2",
-    "@smuzi/tests": "workspace:*"
+    "@smuzi/tests": "0.0.2"
   }
 }
