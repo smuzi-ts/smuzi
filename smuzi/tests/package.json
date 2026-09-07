@@ -1,29 +1,43 @@
 {
   "name": "@smuzi/tests",
   "version": "0.0.1",
-  "private": true,
-  "description": "",
+  "description": "Test runner and assertion library for JavaScript and TypeScript",
   "scripts": {
-
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build"
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "test",
+    "test runner",
+    "assert",
+    "assertion"
+  ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
   "license": "ISC",
-  "files": ["./src"],
-  "dependencies": {
-    "@smuzi/std": "workspace:*",
-    "@smuzi/schema": "workspace:*"
-
+  "publishConfig": {
+    "access": "public"
   },
-  "devDependencies": {
-    "@types/node": "^22.15.21",
-    "@smuzi/console": "workspace:*"
+  "files": [
+    "./src",
+    "./build"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "imports": {
     "#lib/*": "./src/*"
   },
-  "exports": {
-    ".": "./src/index.js"
+  "dependencies": {
+    "@smuzi/std": "workspace:*",
+    "@smuzi/schema": "workspace:*",
+    "@smuzi/console": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^7.0.2"
   }
 }

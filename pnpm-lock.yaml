@@ -382,6 +382,9 @@ importers:
 
   smuzi/tests:
     dependencies:
+      '@smuzi/console':
+        specifier: workspace:*
+        version: link:../console
       '@smuzi/schema':
         specifier: workspace:*
         version: link:../schema
@@ -389,12 +392,12 @@ importers:
         specifier: workspace:*
         version: link:../std
     devDependencies:
-      '@smuzi/console':
-        specifier: workspace:*
-        version: link:../console
       '@types/node':
         specifier: ^22.15.21
         version: 22.19.0
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   smuzi/threads:
     dependencies:
