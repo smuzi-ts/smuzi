@@ -8,3 +8,4 @@ all variables names in snake case style
 variables for arrowed function names in camel case style
 all functions names in camel case style
 all types, classes, interfaces on pascal case style
+Do not use generic type "any"

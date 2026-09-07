@@ -256,22 +256,22 @@ export interface IMatched {
     );
  }
 
- function checkPatternAsString(v, p)
+ function checkPatternAsString(v, p): MatchResult
  {
    return { res: p === v, params: None() }
  }
 
-function checkPatternAsNumber(v, p)
+function checkPatternAsNumber(v, p): MatchResult
  {
    return { res: p === v, params: None() }
  }
 
- function checkPatternAsFunction(v, p)
+ function checkPatternAsFunction(v, p): MatchResult
  {
    return { res: p(v), params: None() }
  }
 
-function checkPatternAsArray(v, p)
+function checkPatternAsArray(v, p): MatchResult
  {
    return { res: p.includes(v), params: None() }
 

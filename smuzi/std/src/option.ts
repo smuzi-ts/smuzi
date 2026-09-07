@@ -14,8 +14,8 @@ export function None<T = unknown>(): Option<never> | Option<T> {
     return new OptionNone();
 }
 
-export function OptionFromNullable<T, I = T extends null | undefined ? never : T>(value: Option<T> | T): I extends Option<infer U> ? I : Option<I> {
-    return asNull(value) ? None() : (isOption(value) ? value  : Some(value as NonNullable<T>)) as any;
+export function OptionFromNullable<T>(value: Option<T> | T): Option<NonNullable<T>> {
+    return (asNull(value) ? None() : (isOption(value) ? value : Some(value as NonNullable<T>))) as Option<NonNullable<T>>;
 }
 
 export class Option<T = unknown> {
@@ -54,7 +54,7 @@ export class Option<T = unknown> {
         return this instanceof OptionNone;
     }
 
-    isSome(): this is OptionSome {
+    isSome(): this is Option<T> {
         return this instanceof OptionSome;
     }
 
@@ -174,7 +174,7 @@ class OptionNone extends Option<never>{
     }
 }
 
-export function isOption(value: unknown): value is Option {
+export function isOption<T>(value: Option<T> | unknown): value is Option<T> {
     return value instanceof Option;
 }
 

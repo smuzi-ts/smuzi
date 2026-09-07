@@ -15,7 +15,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
     }
 
     get<K extends keyof T>(key: K): T[K] extends Option<infer U> ? T[K] : Option<T[K]> {
-        return OptionFromNullable(this.#entity[key]);
+        return OptionFromNullable(this.#entity[key]) as any;
     }
 
     setOther<K extends keyof T>(key: unknown, value: NonNullable<any>) {
@@ -23,7 +23,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
     }
 
     getOther<K extends keyof T>(key: unknown): T[K] extends Option<infer U> ? T[K] : Option<T[K]>  {
-        return OptionFromNullable(this.#entity[key as K]);
+        return OptionFromNullable(this.#entity[key as K]) as any;
     }
 
     *entries<K extends keyof T>(): IterableIterator<[K, Option<T[K]>]> {
@@ -60,7 +60,7 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
     }
 
     getUnasfe<K extends keyof T>(key: K): (T[K] extends Option<infer U> ? U : T[K]) | null {
-        return isOption(this.#entity[key]) ? this.#entity[key].unsafeSource() : this.#entity[key];
+        return (isOption(this.#entity[key]) ? this.#entity[key].unsafeSource() : this.#entity[key]) as any;
     }
 }
 
