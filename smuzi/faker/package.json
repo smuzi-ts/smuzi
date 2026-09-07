@@ -1,33 +1,44 @@
 {
   "name": "@smuzi/faker",
   "version": "0.0.1",
-  "private": true,
-  "description": "",
+  "description": "Fake data generator for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
     "build": "tsc --project tsconfig.build.json",
-    "prepublishOnly": "npm run build"  },
+    "prepublishOnly": "npm run build"
+  },
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "faker",
+    "fake data",
+    "test data",
+    "generator"
+  ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "./src",
-    "./tests"
+    "./build"
   ],
   "exports": {
-    ".": "./src/index.js"
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
-  "devDependencies": {
-    "@types/node": "^22.15.21",
-    "@smuzi/tests": "workspace:*"
+  "imports": {
+    "#lib/*": "./src/*"
   },
   "dependencies": {
     "@smuzi/std": "workspace:*",
     "@smuzi/schema": "workspace:*"
-
   },
-  "imports": {
-    "#lib/*": "./src/*"
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^7.0.2",
+    "@smuzi/tests": "workspace:*"
   }
 }
