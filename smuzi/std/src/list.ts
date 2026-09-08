@@ -34,4 +34,8 @@ export class StdList<T = unknown> {
     unsafeSource(): Array<T> {
         return this.#list;
     }
+
+    count(): number {
+        return this.#list?.length ?? 0;
+    }
 }

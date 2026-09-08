@@ -24,6 +24,9 @@ importers:
         specifier: workspace:^
         version: link:../../smuzi/std
     devDependencies:
+      '@smuzi/db-postgres':
+        specifier: workspace:^
+        version: link:../../smuzi/db-postgres
       '@smuzi/faker':
         specifier: workspace:^
         version: link:../../smuzi/faker
