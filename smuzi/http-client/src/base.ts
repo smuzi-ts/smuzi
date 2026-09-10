@@ -180,7 +180,7 @@ export function buildHttpClient({ baseUrl = "", baseHeaders = {}, connector = No
             return request(url, { query, headers, rawResponse, method: HttpMethod.PUT, body });
         },
         delete(url, { query = {}, headers = new RequestHttpHeaders, rawResponse = false }: GetRequestConfig = {}) {
-            return request(url, { query, headers, rawResponse, method: HttpMethod.GET, body: None() });
+            return request(url, { query, headers, rawResponse, method: HttpMethod.DELETE, body: None() });
         },
     }
 }
