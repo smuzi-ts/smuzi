@@ -57,10 +57,14 @@ function publishPackage(package_dir) {
 }
 
 function main() {
-  const { old_version, new_version } = bumpStdVersion();
-  console.log(`@smuzi/std: ${old_version} -> ${new_version}`);
+  const publish_only = process.argv.includes('--publish-only');
 
-  commitStdVersionBump();
+  if (!publish_only) {
+    const { old_version, new_version } = bumpStdVersion();
+    console.log(`@smuzi/std: ${old_version} -> ${new_version}`);
+
+    commitStdVersionBump();
+  }
 
   const published_packages = getPublishablePackageDirs().map(publishPackage);
 
