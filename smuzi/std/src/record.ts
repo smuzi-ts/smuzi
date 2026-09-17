@@ -10,8 +10,9 @@ export class StdRecord<T extends Record<PropertyKey, unknown>> {
     set<K extends keyof T>(key: K, value: T[K]): void {
         if (isOption(value)) {
             this.#entity[key] = value.unsafeSource() as T[K];
+        } else {
+            this.#entity[key] = value;
         }
-        this.#entity[key] = value;
     }
 
     get<K extends keyof T>(key: K): T[K] extends Option<infer U> ? T[K] : Option<T[K]> {
