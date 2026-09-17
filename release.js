@@ -1,10 +1,23 @@
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
-const root_dir = __dirname;
+const root_dir = path.dirname(fileURLToPath(import.meta.url));
 const smuzi_dir = path.join(root_dir, 'smuzi');
 const std_dir = path.join(smuzi_dir, 'std');
+
+const publish_order = [
+  'faker',
+  'tests',
+  'schema',
+  'console',
+  'database',
+  'db-postgres',
+  'http-client',
+  'http-server',
+  'ssr',
+];
 
 function readPackageJson(package_dir) {
   const file_path = path.join(package_dir, 'package.json');
@@ -22,11 +35,7 @@ function bumpPatchVersion(version) {
 }
 
 function getPublishablePackageDirs() {
-  return fs
-    .readdirSync(smuzi_dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && entry.name !== 'std')
-    .map((entry) => path.join(smuzi_dir, entry.name))
-    .filter((package_dir) => fs.existsSync(path.join(package_dir, 'package.json')));
+  return publish_order.map((package_name) => path.join(smuzi_dir, package_name));
 }
 
 function bumpStdVersion() {
