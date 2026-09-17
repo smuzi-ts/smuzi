@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/schema",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Schema validation library for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -17,9 +17,8 @@
     "pattern matching"
   ],
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
-
   "license": "ISC",
-"publishConfig": {
+  "publishConfig": {
     "access": "public",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
@@ -39,7 +38,7 @@
     "build/**/*.js",
     "build/**/*.d.ts"
   ],
-   "exports": {
+  "exports": {
     "./package.json": "./package.json",
     ".": "./src/index.ts",
     "./*": "./src/*.ts"
@@ -56,8 +55,6 @@
     "tsx": "^4.20.6",
     "typescript": "^7.0.2",
     "@smuzi/tests": "workspace:^",
-        "@smuzi/faker": "workspace:^"
-
+    "@smuzi/faker": "workspace:^"
   }
-
 }
