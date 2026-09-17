@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/faker",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Fake data generator for JavaScript and TypeScript",
   "scripts": {
     "test": "tsx tests/index.ts",
@@ -17,7 +17,7 @@
   ],
   "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
   "license": "ISC",
- "publishConfig": {
+  "publishConfig": {
     "access": "public",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
@@ -37,7 +37,7 @@
     "build/**/*.js",
     "build/**/*.d.ts"
   ],
-   "exports": {
+  "exports": {
     "./package.json": "./package.json",
     ".": "./src/index.ts",
     "./*": "./src/*.ts"
