@@ -65,13 +65,13 @@ export class Option<T = unknown> {
         });
     }
 
-    flat(): this | T {
+    flat<R = T extends Option<infer U> ? Option<U> : Option<T>>(): R {
         if (isOption(this._val)) {
-            return this._val;
+            return this._val as R;
         }
 
-        return this;
-    }
+        return this as unknown as R;
+    } 
 
     get<K extends Extract<keyof T, string>>(property: K): Option<T[K] | never> {
         return this.match({
