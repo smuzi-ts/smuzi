@@ -1,0 +1,30 @@
+services:
+  smuzi-db-pg-test:
+    image: postgres:16
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    environment:
+      DB_DATABASE: '${DB_DATABASE}'
+      DB_USER: '${DB_USER}'
+      DB_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - 'smuzi-db-pg-test:/var/lib/postgresql/data'
+    networks:
+      - smuzi
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  smuzi:
+    driver: bridge
+
+volumes:
+  smuzi-db-pg-test:
+    driver: local
