@@ -1,12 +1,12 @@
 import {assert, it} from "@smuzi/tests";
-import {userSchema, usersTable} from "./entities/User.js";
+import {UserInsert, UserRow, usersTable} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
 import {Some} from "@smuzi/std";
 import {testRunner} from "./index.js";
 
 testRunner.describe("db-postgres-insert", [
     it("one row", async (globalSetup) => {
-        const insert = {
+        const insert: UserInsert = {
             name: Some(faker.string()),
             email: faker.string(),
             password: faker.string(),
@@ -16,9 +16,8 @@ testRunner.describe("db-postgres-insert", [
         const result =
             (await globalSetup.unwrap()
                 .dbClient
-                .insertRow(
+                .insertRow<UserInsert, UserRow>(
                     usersTable,
-                    userSchema,
                     insert,
                     ['id', 'name']
                 ));
@@ -26,8 +25,9 @@ testRunner.describe("db-postgres-insert", [
         result.match({
             Err: (error) => assert.fail(error.message),
             Ok: (row) => {
-                assert.isNumber(row.id);
-                assert.isString(row.name.unwrap());
+                const user = row.unwrap();
+                assert.isNumber(user.get('id').unwrap());
+                assert.isString(user.get('name').unwrap());
             },
         })
 
@@ -35,7 +35,7 @@ testRunner.describe("db-postgres-insert", [
     }),
 
     it("many rows", async (globalSetup) => {
-        const inserts = faker.repeat.asArray(3, () => ({
+        const inserts: UserInsert[] = faker.repeat.asArray(3, () => ({
             name: Some(faker.string()),
             email: faker.string(),
             password: faker.string(),
@@ -45,9 +45,8 @@ testRunner.describe("db-postgres-insert", [
         const result =
             (await globalSetup.unwrap()
                 .dbClient
-                .insertManyRows(
+                .insertManyRows<UserInsert, UserRow>(
                     usersTable,
-                    userSchema,
                     inserts,
                     ['id', 'name']
                 ));
@@ -56,8 +55,8 @@ testRunner.describe("db-postgres-insert", [
             Err: (error) => assert.fail(error.message),
             Ok: (rows) => {
                 const firstInsertRow = rows.get(0).unwrap();
-                assert.isNumber(firstInsertRow.id);
-                assert.isString(firstInsertRow.name.unwrap());
+                assert.isNumber(firstInsertRow.get('id').unwrap());
+                assert.isString(firstInsertRow.get('name').unwrap());
             },
         })
     }),

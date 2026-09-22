@@ -1,18 +1,16 @@
-import {TInsertRow, TInsertRowResult, TQueryResult,} from "./types.js";
+import {TInsertRowResult, TQueryResult,} from "./types.js";
 import {Option, panic} from "@smuzi/std";
-import {schema, SchemaObject} from "@smuzi/schema";
 
+export type TMigrationLogRow = {
+    id: number,
+    name: string,
+    branch: number,
+    action: string,
+    sql_source: string,
+    created_at: Date,
+}
 
-export const migrationLogRowSchema = schema.obj({
-    name: schema.string(),
-    branch: schema.number(),
-    action: schema.string(),
-    sql_source: schema.string(),
-    created_at: schema.datetime.native(),
-})
-
-export type TMigrationLogRowSchema = typeof migrationLogRowSchema;
-export type TMigrationLogSave = TMigrationLogRowSchema["__infer"]
+export type TMigrationLogInsert = Omit<TMigrationLogRow, "id">;
 
 export type TMigration = {
     up: () => string,
@@ -35,14 +33,14 @@ export enum TMigrationLogAction {
 
 export type TMigrationsLogRepository = {
     getTable(): string,
-    createTableIfNotExists(): Promise<TQueryResult<never>>,
-    listRuned(): Promise<TQueryResult<TMigrationLogRowSchema>>,
-    listRunedByBranch(branch: number): Promise<TQueryResult<TMigrationLogRowSchema>>,
+    createTableIfNotExists(): Promise<TQueryResult>,
+    listRuned(): Promise<TQueryResult<TMigrationLogRow>>,
+    listRunedByBranch(branch: number): Promise<TQueryResult<TMigrationLogRow>>,
     getLastBranch(): Promise<Option<number>>,
-    create<const RC extends (keyof TMigrationLogSave)[]>(row: TInsertRow<TMigrationLogRowSchema>, returningColumns?: RC): Promise<TInsertRowResult<TMigrationLogRowSchema, RC>>,
+    create(row: TMigrationLogInsert, returningColumns?: readonly (keyof TMigrationLogRow)[]): Promise<TInsertRowResult<TMigrationLogRow>>,
     migrationLastAction(name: string): Promise<Option<string>>,
     migrationWillBeRuned(name: string): Promise<boolean>,
-    freshSchema(): Promise<TQueryResult<SchemaObject<any>>>
+    freshSchema(): Promise<TQueryResult>
 };
 
 

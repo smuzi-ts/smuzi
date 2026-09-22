@@ -48,7 +48,6 @@
   "peerDependencies": {
     "@smuzi/database": "workspace:^",
     "@smuzi/std": "workspace:^",
-    "@smuzi/schema": "workspace:^",
     "pg": "^8.16.3"
   },
   "devDependencies": {

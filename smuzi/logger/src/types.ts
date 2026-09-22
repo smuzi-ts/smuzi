@@ -1,6 +1,12 @@
+export enum LogLevel {
+    info = 'info',
+    error = 'error'
+}
+
 export type LogDetails = {
-    stream: Record<string, string|boolean|number>,
-    value: string,
+    message: unknown,
+    tags?: Record<string, string|boolean|number>,
+    trace_id?: string,
 }
 
 export interface Logger {

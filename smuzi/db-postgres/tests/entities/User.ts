@@ -1,14 +1,13 @@
-import {schema} from "@smuzi/schema";
+import {Option} from "@smuzi/std";
 
 export const usersTable = 'users';
 
-export const userSchema =
-    schema.obj({
-        id: schema.storage.autoNumber(),
-        name: schema.option(schema.string()),
-        email: schema.string(),
-        password: schema.string(),
-        created_at: schema.datetime.native(),
-    });
+export type UserRow = {
+    id: number,
+    name: Option<string>,
+    email: string,
+    password: string,
+    created_at: Date,
+};
 
-export type UserEntity = typeof userSchema.__infer;
+export type UserInsert = Omit<UserRow, 'id'>;

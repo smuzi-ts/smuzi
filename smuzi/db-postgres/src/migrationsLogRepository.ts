@@ -1,9 +1,9 @@
-import {isEmpty, None, Option, Some} from "@smuzi/std";
+import {None, Option} from "@smuzi/std";
 import {
-    migrationLogRowSchema,
     TDatabaseClient,
     TMigrationLogAction,
-    TMigrationLogRowSchema,
+    TMigrationLogInsert,
+    TMigrationLogRow,
     TMigrationsLogRepository
 } from "@smuzi/database";
 
@@ -26,25 +26,26 @@ export const buildPostgresMigrationsLogRepository = (client: TDatabaseClient): T
 `)
         },
         listRuned() {
-            return client.query<TMigrationLogRowSchema>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
+            return client.query<TMigrationLogRow>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
         },
         listRunedByBranch(branch: number) {
-            return client.query<TMigrationLogRowSchema>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} WHERE branch = ${branch} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
+            return client.query<TMigrationLogRow>(`SELECT * FROM ( SELECT DISTINCT ON (name) * FROM ${table} WHERE branch = ${branch} ORDER BY name, created_at DESC ) last_records WHERE action = '${TMigrationLogAction.up}'`);
         },
         async getLastBranch(): Promise<Option<number>> {
-            const res = (await client.query(`SELECT MAX(branch) as last_branch FROM ${table}`)).unwrap();
+            const res = (await client.query<{last_branch: number}>(`SELECT MAX(branch) as last_branch FROM ${table}`)).unwrap();
             if (res.rowCount.isZero()) return None();
 
             return res.rows.get(0).unwrap().get("last_branch");
         },
-        create(row) {
-            return client.insertRow(table, migrationLogRowSchema, row);
+        create(row, returningColumns) {
+            return client.insertRow<TMigrationLogInsert, TMigrationLogRow>(table, row, returningColumns);
         },
+
         async migrationLastAction(name: string) {
-            const res = (await client.query(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, [name])).unwrap();
+            const res = (await client.query<{action: string}>(`SELECT action FROM ${table} WHERE name = $1 ORDER BY created_at DESC LIMIT 1`, [name])).unwrap();
 
             if (res.rowCount.isZero()) return None();
-            
+
             return res.rows.get(0).unwrap().get("action");
         },
         async migrationWillBeRuned(name: string)

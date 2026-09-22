@@ -1,24 +1,19 @@
 import { Pool } from 'pg'
 import {
     preparedSqlFromObjectToArrayParams, TableRows,
-    TDatabaseClient, TInsertManyRowResult, TInsertRow, TInsertRowResult, DBQueryError,
+    TDatabaseClient, TInsertManyRowResult, TInsertRowResult, DBQueryError,
     TQueryParams,
     TQueryResult
 } from "@smuzi/database";
 import {
-    isEmpty,
     asArray,
-    asObject, dump,
+    asObject,
     Err,
-    isArray, isOption,
-    None,
-    Ok, Option,
+    isEmpty,
+    isOption,
+    Ok,
     OptionFromNullable,
-    RecordFromKeys, Result,
-    Simplify,
-    Some, StdList, StdRecord
 } from "@smuzi/std";
-import {SchemaObject} from "@smuzi/schema";
 export * from "./migrationsLogRepository.js"
 export * from "./entityRepository.js"
 
@@ -46,7 +41,7 @@ export class PostgresClient implements TDatabaseClient {
 
     }
 
-    async query<S extends SchemaObject>( sql: string, params: TQueryParams = [], schema: Option<S> = None()): Promise<TQueryResult<S>> {
+    async query<Row extends Record<string, unknown> = Record<string, unknown>>(sql: string, params: TQueryParams = []): Promise<TQueryResult<Row>> {
         let preparedSql = sql;
         let preparedParams: unknown[] = asArray(params) ? params : [];
 
@@ -64,7 +59,7 @@ export class PostgresClient implements TDatabaseClient {
             );
 
             return Ok({
-                rows: new TableRows(schema, res.rows),
+                rows: new TableRows<Row>(res.rows),
                 rowCount: OptionFromNullable(res.rowCount),
             })
         } catch (err) {
@@ -78,12 +73,11 @@ export class PostgresClient implements TDatabaseClient {
         }
     }
 
-    async insertRow<S extends SchemaObject<any>, const RC extends string[]>(
+    async insertRow<Insert extends Record<string, unknown>, Row extends Record<string, unknown> = Insert>(
         table: string,
-        schema: S,
-        row: TInsertRow<S>,
-        returningColumns: RC = Array<string>() as RC
-    ): Promise<TInsertRowResult<S, RC>> {
+        row: Insert,
+        returningColumns: readonly (keyof Row)[] = []
+    ): Promise<TInsertRowResult<Row>> {
         //TODO: protected for injections
         const columns = Object.keys(row);
         const values = Object.values(row).map(val => isOption(val) ? val.someOr(null) : val);
@@ -92,22 +86,21 @@ export class PostgresClient implements TDatabaseClient {
         let sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
         if (!isEmpty(returningColumns)) sql += ` RETURNING ${returningColumns.join(',')}` ;
 
-        return (await this.query(sql, values, Some(schema))).mapOk(res => res.rows.get(0)) as TInsertRowResult<S, RC>;
-            
+        return (await this.query<Row>(sql, values)).mapOk(res => res.rows.get(0));
+
     }
 
-    async insertManyRows<S extends SchemaObject<any>, const RC extends string[]>(
+    async insertManyRows<Insert extends Record<string, unknown>, Row extends Record<string, unknown> = Insert>(
         table: string,
-        schema: S,
-        rows: TInsertRow<S>[],
-        returningColumns: RC = Array<string>() as RC
-    ): Promise<TInsertManyRowResult<S, RC>> {
-        if (rows.length === 0) return Ok(new TableRows(Some(schema), [])) as any;
+        rows: Insert[],
+        returningColumns: readonly (keyof Row)[] = []
+    ): Promise<TInsertManyRowResult<Row>> {
+        if (rows.length === 0) return Ok(new TableRows([]));
 
         //TODO: protected for injections
 
         const columns = Object.keys(rows[0]);
-        const values: any[] = [];
+        const values: unknown[] = [];
         const placeholders = rows.map((row, rowIndex) => {
             return `(${columns.map((_, colIndex) => {
                 const placeholderIndex = rowIndex * columns.length + colIndex + 1;
@@ -117,22 +110,21 @@ export class PostgresClient implements TDatabaseClient {
 
         rows.forEach(row => values.push(...Object.values(row).map(val => isOption(val) ? val.someOr(null) : val)));
 
-        return (await this.query(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${returningColumns.join(',')}`, values, Some(schema))).mapOk(result => result.rows) as any;
+        return (await this.query<Row>(`INSERT INTO ${table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING ${returningColumns.join(',')}`, values)).mapOk(result => result.rows);
     }
 
-    async updateRowById<S extends SchemaObject<any>>(
+    async updateRowById<Row extends Record<string, unknown>>(
         table: string,
-        schema: S,
         id: number | string,
-        row: Partial<TInsertRow<S>>,
+        row: Partial<Row>,
         idColumn: string = 'id'
-    ): Promise<TQueryResult<S>>
+    ): Promise<TQueryResult<Row>>
     {
         //TODO: protected for injections
-        return await this.updateManyRows(table, row, `${idColumn} = ${id}`);
+        return await this.updateManyRows<Row>(table, row, `${idColumn} = ${id}`);
     }
 
-    async updateManyRows<S extends SchemaObject<any>>(table: string, values: Partial<TInsertRow<S>>, where): Promise<TQueryResult<S>>
+    async updateManyRows<Row extends Record<string, unknown>>(table: string, values: Partial<Row>, where: string): Promise<TQueryResult<Row>>
     {
         //TODO: protected for injections
         const entries = Object.entries(values);
@@ -145,7 +137,7 @@ export class PostgresClient implements TDatabaseClient {
 
         const params = entries.map(([, val]) => val);
 
-        return (await this.query(sql, params));
+        return (await this.query<Row>(sql, params));
     }
 
 }
@@ -155,6 +147,5 @@ export class PostgresClient implements TDatabaseClient {
 export function postgresClient(config: Config): TDatabaseClient {
     return new PostgresClient(config);
 }
-
 
 

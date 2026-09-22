@@ -1,22 +1,10 @@
 import {
-    dump,
     None,
     Option,
-    OptionFromNullable,
-    RecordFromKeys,
     Result,
-    Simplify,
     Some, StdError,
-    StdList,
     StdRecord
 } from "@smuzi/std"
-import {
-    schema,
-    SchemaObject,
-    SchemaOption,
-    SchemaRule,
-    SchemaStorageAutoNumber,
-} from "@smuzi/schema"
 import {TMigrations, TMigrationsLogRepository} from "./migration.js";
 
 export type TQueryParams = unknown[] | Record<string, unknown>
@@ -52,66 +40,25 @@ export class DBQueryError {
     }
 }
 
-export type TQueryRawResult<S extends SchemaObject> = {
-    rows: TableRows<S>,
+export type TQueryRawResult<Row extends Record<string, unknown> = Record<string, unknown>> = {
+    rows: TableRows<Row>,
     rowCount: Option<number>
 }
-export type TQueryResult<S extends SchemaObject> = Result<TQueryRawResult<S>, DBQueryError>
-export type TInsertRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[]> = Result<Option<Simplify<RecordFromKeys<S["__infer"], Columns>>>, DBQueryError>
-export type TInsertManyRowResult<S extends SchemaObject, Columns extends readonly (keyof S["__infer"])[], Prepared extends SchemaObject = SchemaObject<RecordFromKeys<ReturnType<S["getConfig"]>, Columns>>> = Result<TableRows<Prepared>, DBQueryError>
+export type TQueryResult<Row extends Record<string, unknown> = Record<string, unknown>> = Result<TQueryRawResult<Row>, DBQueryError>
+export type TInsertRowResult<Row extends Record<string, unknown>> = Result<Option<StdRecord<Row>>, DBQueryError>
+export type TInsertManyRowResult<Row extends Record<string, unknown>> = Result<TableRows<Row>, DBQueryError>
 
 
-export class TableRows<
-    Schema extends SchemaObject,
-    TableRow extends Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : StdRecord<Schema["__infer"]> = Option<Schema> extends Option<never> ? StdRecord<Record<string, unknown>> : StdRecord<Schema["__infer"]>,
-   Rows extends Array<Record<string, unknown>> = Array<Record<string, unknown>>
-> {
-    #rows: Rows
-    #schema: Option<Schema>
+export class TableRows<Row extends Record<string, unknown> = Record<string, unknown>> {
+    #rows: Array<Record<string, unknown>>
 
-    constructor(schema: Option<Schema>, rows: Rows) {
+    constructor(rows: Array<Record<string, unknown>>) {
         this.#rows = rows;
-        this.#schema = schema;
     }
 
-    #prepareRow(row: Record<string, unknown>): TableRow {
-        return this.#schema.match({
-            None: () => new StdRecord(row) as TableRow,
-            Some: (schema) => {
-
-                const config = schema.getConfig();
-                const prepare = {} as any;
-                for (const field in config) {
-                    /**
-                     * TODO:
-                     * A database is a sufficiently reliable data source
-                     * to skip validating the retrieved data.
-                     * However, it is important to understand that type inference in this case
-                     * does not guarantee a 100% match with the actual database types.
-                     * This especially affects working with nullable fields.
-                     * For example, a field was required but later became nullable.
-                     * In this case, without changing the schema, `null` values will start flowing into your code.
-                     * This issue can be solved by `StdRecord`, but then all fields have to be handled as `Option`,
-                     * which is very inconvenient for developers.
-                    **/
-                    if (field in row) {
-                        if (config[field] instanceof SchemaOption) {
-                            prepare[field] = OptionFromNullable(row[field]);
-                        } else {
-                            prepare[field] = row[field];
-                        }
-                    }
-                }
-
-                return new StdRecord(prepare) as TableRow;
-            }
-        })
-
-    }
-
-    get(key: number): Option<TableRow> {
+    get(key: number): Option<StdRecord<Row>> {
         if (this.has(key)) {
-            return Some(this.#prepareRow(this.#rows[key]));
+            return Some(new StdRecord(this.#rows[key] as Row));
         }
 
         return None();
@@ -121,13 +68,13 @@ export class TableRows<
         return key in this.#rows;
     }
 
-    *entries(): IterableIterator<[number, TableRow]> {
+    *entries(): IterableIterator<[number, StdRecord<Row>]> {
         for (let k = 0; k < this.#rows.length; k++) {
             yield [k, this.get(k).unwrap()];
         }
     }
 
-    [Symbol.iterator](): IterableIterator<[number, TableRow]> {
+    [Symbol.iterator](): IterableIterator<[number, StdRecord<Row>]> {
         return this.entries();
     }
 
@@ -138,37 +85,31 @@ export class TableRows<
 
 
 export interface TDatabaseClient {
-    query<S extends SchemaObject<any>>(
+    query<Row extends Record<string, unknown> = Record<string, unknown>>(
         sql: string,
-        params?: TQueryParams,
-        schema?: Option<S>
-    ): Promise<TQueryResult<S>>;
-  
-    insertRow<S extends SchemaObject<any>, const RC extends string[]>(
-        table: string,
-        schema: S,
-        row: TInsertRow<S>,
-        returningColumns?: RC
-    ): Promise<TInsertRowResult<S, RC>>;
+        params?: TQueryParams
+    ): Promise<TQueryResult<Row>>;
 
-    insertManyRows<S extends SchemaObject<any>, const RC extends string[]>(
+    insertRow<Insert extends Record<string, unknown>, Row extends Record<string, unknown> = Insert>(
         table: string,
-        schema: S,
-        rows: TInsertRow<S>[],
-        returningColumns?: RC
-    ): Promise<TInsertManyRowResult<S, RC>>;
+        row: Insert,
+        returningColumns?: readonly (keyof Row)[]
+    ): Promise<TInsertRowResult<Row>>;
 
-    updateRowById<S extends SchemaObject<any>>(
+    insertManyRows<Insert extends Record<string, unknown>, Row extends Record<string, unknown> = Insert>(
         table: string,
-        schema: S,
+        rows: Insert[],
+        returningColumns?: readonly (keyof Row)[]
+    ): Promise<TInsertManyRowResult<Row>>;
+
+    updateRowById<Row extends Record<string, unknown>>(
+        table: string,
         id: number | string,
-        row: Partial<TInsertRow<S>>,
+        row: Partial<Row>,
         idColumn?: string
-    ): Promise<TQueryResult<S>>;
+    ): Promise<TQueryResult<Row>>;
 
-    updateManyRows<S extends SchemaObject<any>>(table: string, values: Partial<TInsertRow<S>>, where): Promise<TQueryResult<S>>
-
-    // updateManyRows:  <Entity = TRow>(table: string, values: TInsertRow<Entity>, where: string) => Promise<TQueryResult>,
+    updateManyRows<Row extends Record<string, unknown>>(table: string, values: Partial<Row>, where: string): Promise<TQueryResult<Row>>
 }
 
 export type TDatabaseService = {
@@ -176,14 +117,3 @@ export type TDatabaseService = {
     buildMigrations: () => TMigrations,
     buildMigrationLogRepository:  (client: TDatabaseClient) => TMigrationsLogRepository,
 }
-
-export type IsExcludeSaving<T> = T extends SchemaStorageAutoNumber ? true : false;
-
-export type ExcludeExcludeSaveKeys<T> = {
-    [K in keyof T]: IsExcludeSaving<T[K]> extends true ? never : K
-}[keyof T];
-
-export type TInsertRow<S extends SchemaObject> = S extends SchemaObject<infer U> ? {
-     [K in ExcludeExcludeSaveKeys<U>]: S["__infer"][K] 
-} : {};
-

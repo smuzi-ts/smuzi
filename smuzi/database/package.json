@@ -45,7 +45,6 @@
   },
   "peerDependencies": {
     "@smuzi/std": "workspace:^",
-    "@smuzi/schema": "workspace:^",
     "@smuzi/console": "workspace:^"
   },
   "devDependencies": {

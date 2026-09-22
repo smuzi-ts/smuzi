@@ -1,12 +1,12 @@
 import {assert, it} from "@smuzi/tests";
-import {userSchema, usersTable} from "./entities/User.js";
+import {UserInsert, UserRow, usersTable} from "./entities/User.js";
 import {faker} from "@smuzi/faker";
 import {dump, Some, StdError} from "@smuzi/std";
 import {testRunner} from "./index.js";
 
 testRunner.describe("db-postgres-update", [
     it("one row", async (globalSetup) => {
-        const insert = {
+        const insert: UserInsert = {
             name: Some(faker.string()),
             email: faker.string(),
             password: faker.string(),
@@ -16,16 +16,15 @@ testRunner.describe("db-postgres-update", [
         const resultInsert =
             (await globalSetup.unwrap()
                 .dbClient
-                .insertRow(
+                .insertRow<UserInsert, UserRow>(
                     usersTable,
-                    userSchema,
                     insert,
                     ['id', 'name']
                 ));
 
-        const insertId = resultInsert.unwrap().id;
+        const insertId = resultInsert.unwrap().unwrap().get('id').unwrap();
 
-        const update = {
+        const update: Partial<UserRow> = {
             name: Some(faker.string()),
             email: faker.string(),
             password: faker.string(),
@@ -35,9 +34,8 @@ testRunner.describe("db-postgres-update", [
         const resultUpdate =
             (await globalSetup.unwrap()
                 .dbClient
-                .updateRowById(
+                .updateRowById<UserRow>(
                     usersTable,
-                    userSchema,
                     insertId,
                     update,
                 ));
