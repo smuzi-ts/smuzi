@@ -6,7 +6,8 @@ import {
     TMigrationLogRowSchema,
     TMigrationsLogRepository
 } from "@smuzi/database";
-import { type Logger } from "./types.js";
+import { type Logger, LogDetails } from "./types.js";
+import { log } from "console";
 
 
 export class PostgresLogger implements Logger {
@@ -18,16 +19,14 @@ export class PostgresLogger implements Logger {
         this.#table = table;
     }
 
-    async insert(creds): Promise<any>{
+    async #insert(log_details: LogDetails): Promise<any>{
         return this.#dbClient.insertRow(this.#table, "", creds);
     }
 
-    async info() {
-
-    }
-
-    async error() {
+    async info(log_details: LogDetails) {
+        log_details.stream.level = "info";
         
+        this.#insert(log_details);
     }
 
 }
