@@ -21,3 +21,7 @@ dist/
 crmoz/
 projects/oeuf
 check/
+# emitted output must never live next to sources (src/ holds only .ts)
+**/src/**/*.js
+**/src/**/*.d.ts
+!smuzi/ssr/src/globals.d.ts

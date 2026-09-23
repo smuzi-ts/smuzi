@@ -9,3 +9,5 @@ variables for arrowed function names in camel case style
 all functions names in camel case style
 all types, classes, interfaces on pascal case style
 Do not use generic type "any"
+Compiled output never goes into src/: each package emits to its own build/ (tsconfig.src.json / tsconfig.build.json set "outDir": "./build").
+This is enforced by the PreToolUse hook .claude/hooks/no-js-in-src.sh (wired in .claude/settings.json).

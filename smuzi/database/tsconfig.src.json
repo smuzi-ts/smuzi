@@ -4,6 +4,7 @@
   "compilerOptions": {
     "types": ["node"],
     "rootDir": "src",
+    "outDir": "./build",
     "composite": true,
     "resolveJsonModule": true,
     "esModuleInterop": true
