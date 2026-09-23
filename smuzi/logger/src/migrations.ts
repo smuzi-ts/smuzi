@@ -10,7 +10,7 @@ export const postgresMigrations = (table: string = 'logs') => {
                 level SMALLINT,
                 tags JSONB,
                 message TEXT NOT NULL,
-                created_at TIMESTAMPTZ NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL
             );`
             ),
 
