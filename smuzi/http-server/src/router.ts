@@ -53,6 +53,7 @@ export type Context<Resp extends THttpResponse, Params = unknown,> = {
     request: HttpRequest,
     response: Resp,
     pathParams: Params,
+    trace_id: Option<string>,
 }
 
 export function processPath(path: PathParam): PathParam {

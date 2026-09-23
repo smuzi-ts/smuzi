@@ -29,7 +29,8 @@ import {
     isResult,
     isIterable,
     ResponseHttpHeaders, RequestHttpHeaders, asList, asRecord, asMap, querystring, QueryParams,
-    StdJson, uuid
+    StdJson, uuid,
+    None
 } from '@smuzi/std';
 import { HttpServer, HttpServerRunError, Http1ServerConfig } from "../index.js";
 import { log } from 'node:console';
@@ -159,6 +160,7 @@ export async function http1ServerRun(config: Http1ServerConfig): Promise<Result<
                 }),
                 response: nativeResponse,
                 pathParams: routeMatched.pathParams,
+                trace_id: None<string>(),
             };
 
             let response;
