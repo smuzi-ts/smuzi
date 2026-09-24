@@ -1,7 +1,8 @@
 import {TestRunner} from "@smuzi/tests";
 import {dump, env, main, Option, promise, scripts, Some} from "@smuzi/std";
-import usersTable from "./migrations/usersTable.js";
-import {postgresClient} from "#lib/index.js";
+import usersTableSql, {usersTable} from "./migrations/usersTable.js";
+import logsTableSql, {logsTable} from "./migrations/logsTable.js";
+import {postgresClient} from "@smuzi/db-postgres";
 import {TDatabaseClient} from "@smuzi/database";
 
 function buildClient() {
@@ -18,12 +19,21 @@ export type GlobalSetup = Option<{
     dbClient: TDatabaseClient
 }>
 
+// Tables this suite creates and owns. Cleanup hooks below must never touch
+// anything outside this list — whatever database DB_* points at may have
+// other, unrelated tables that this suite has no business clearing or dropping.
+const MANAGED_TABLES = [usersTable, logsTable] as const;
+
+function truncateManagedTablesSql(): string {
+    return `TRUNCATE TABLE ${MANAGED_TABLES.map(table => `public.${table}`).join(", ")};`;
+}
 
 export const testRunner = new TestRunner<GlobalSetup>({
     beforeGlobal: Some(async () => {
         const dbClient = buildClient();
             const migrations = [
-                usersTable,
+                usersTableSql,
+                logsTableSql,
             ].map(sql => dbClient.query(sql));
 
             const migrateResult = (await promise.all(migrations));
@@ -33,28 +43,16 @@ export const testRunner = new TestRunner<GlobalSetup>({
         return Some({dbClient});
     }
     ),
+    // Clears rows only from MANAGED_TABLES; it never drops tables and never
+    // touches anything else in the schema.
     afterGlobal: Some(async (globalSetup) => {
-       (await globalSetup.unwrap().dbClient.query(
-            `DO $$ DECLARE
-    r RECORD;
-BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-    END LOOP;
-END $$;`)).unwrap();
+        (await globalSetup.unwrap().dbClient.query(truncateManagedTablesSql())).unwrap();
     }),
     beforeEachCase: Some(async (globalSetup) => {
         dump(await scripts.runFromDir("./tests/seeds"))
     }),
     afterEachCase: Some(async (globalSetup) => {
-        (await globalSetup.unwrap().dbClient.query(
-            `DO $$ DECLARE
-    r RECORD;
-BEGIN
-    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-        EXECUTE 'TRUNCATE TABLE public.' || quote_ident(r.tablename) || '';
-    END LOOP;
-END $$;`)).unwrap();
+        (await globalSetup.unwrap().dbClient.query(truncateManagedTablesSql())).unwrap();
     }),
 });
 

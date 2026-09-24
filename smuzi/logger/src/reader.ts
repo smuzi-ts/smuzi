@@ -7,6 +7,9 @@ export type LogTagFilter = {
 
 export type LogsQuery = {
     trace_id?: string,
+    // Substring match (case-insensitive) against a log's message; matches a group
+    // if any of its logs contains it, same as a tag filter.
+    message?: string,
     tags?: LogTagFilter[],
     limit?: number,
     offset?: number,

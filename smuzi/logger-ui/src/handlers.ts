@@ -1,9 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { ServerResponse } from "node:http";
-import { Action } from "@smuzi/http-server";
-import { HttpResponse, ResponseHttpHeaders, Some } from "@smuzi/std";
+import { Action, Context } from "@smuzi/http-server";
+import { asObject, asString, HttpResponse, ResponseHttpHeaders, Some } from "@smuzi/std";
 import { LogsReader } from "@smuzi/logger";
 import { parseLogsQuery } from "./query.js";
+import { LoggerUiAuth } from "./auth.js";
 
 // Resolves to <package>/build/ui both from src/ (workspace) and from build/ (published).
 const UI_DIR = new URL("../build/ui/", import.meta.url);
@@ -50,18 +51,92 @@ function escapeHtmlAttribute(value: string): string {
         .replace(/>/g, "&gt;");
 }
 
-export function uiPageAction(base_path: string): Action<ServerResponse> {
-    return async () => {
-        const html = await readUiFile("index.html");
-        if (html === null) {
-            return assetsNotBuiltResponse();
+async function htmlPageResponse(file: string, base_path: string): Promise<HttpResponse<string>> {
+    const html = await readUiFile(file);
+    if (html === null) {
+        return assetsNotBuiltResponse();
+    }
+
+    return textResponse(
+        html.replaceAll("{{base}}", escapeHtmlAttribute(base_path)),
+        "text/html; charset=utf-8"
+    );
+}
+
+function authErrorResponse(message: string) {
+    return HttpResponse.asJson({ error: message }, 500);
+}
+
+// Runs the action only for a logged-in user; guests get `onGuest`.
+function authenticated(
+    auth: LoggerUiAuth,
+    action: Action<ServerResponse>,
+    onGuest: (context: Context<ServerResponse>) => ReturnType<Action<ServerResponse>>
+): Action<ServerResponse> {
+    return async (context) => {
+        const user = await auth.authenticate(context.request);
+        if (user.isErr()) {
+            return authErrorResponse(user.unsafeSource().message);
         }
 
-        return textResponse(
-            html.replaceAll("{{base}}", escapeHtmlAttribute(base_path)),
-            "text/html; charset=utf-8"
-        );
+        return user.unwrap().isSome() ? action(context) : onGuest(context);
     };
+}
+
+export function uiPageAction(auth: LoggerUiAuth, base_path: string): Action<ServerResponse> {
+    return authenticated(
+        auth,
+        () => htmlPageResponse("index.html", base_path),
+        () => HttpResponse.asRedirect(base_path + "/login")
+    );
+}
+
+export function loginPageAction(auth: LoggerUiAuth, base_path: string): Action<ServerResponse> {
+    return authenticated(
+        auth,
+        () => HttpResponse.asRedirect(base_path === "" ? "/" : base_path),
+        () => htmlPageResponse("login.html", base_path)
+    );
+}
+
+export function loginAction(auth: LoggerUiAuth, base_path: string): Action<ServerResponse> {
+    return async (context) => {
+        const body = await context.request.body();
+        if (body.isErr()) {
+            return HttpResponse.asJson({ error: "Unable to read request body" }, 400);
+        }
+
+        let input: unknown;
+        try {
+            input = JSON.parse(body.unwrap());
+        } catch {
+            return HttpResponse.asJson({ error: "Request body must be valid JSON" }, 400);
+        }
+
+        if (!asObject(input) || !asString(input.email) || !asString(input.password)) {
+            return HttpResponse.asJson({ error: "'email' and 'password' must be strings" }, 422);
+        }
+
+        const token = await auth.login(input.email, input.password);
+        if (token.isErr()) {
+            return authErrorResponse(token.unsafeSource().message);
+        }
+
+        return token.unwrap().match({
+            Some: (value) => HttpResponse.asJson({ ok: true }).mapOk((response) => {
+                response.headers.set("set-cookie", auth.sessionCookie(value, base_path));
+                return response;
+            }),
+            None: () => HttpResponse.asJson({ error: "Invalid email or password" }, 401),
+        });
+    };
+}
+
+export function logoutAction(auth: LoggerUiAuth, base_path: string): Action<ServerResponse> {
+    return () => HttpResponse.asJson({ ok: true }).mapOk((response) => {
+        response.headers.set("set-cookie", auth.clearSessionCookie(base_path));
+        return response;
+    });
 }
 
 export function uiAssetAction(asset: UiAsset): Action<ServerResponse> {
@@ -75,8 +150,8 @@ export function uiAssetAction(asset: UiAsset): Action<ServerResponse> {
     };
 }
 
-export function logsQueryAction(reader: LogsReader): Action<ServerResponse> {
-    return async (context) => {
+export function logsQueryAction(auth: LoggerUiAuth, reader: LogsReader): Action<ServerResponse> {
+    return authenticated(auth, async (context) => {
         const body = await context.request.body();
         if (body.isErr()) {
             return HttpResponse.asJson({ error: "Unable to read request body" }, 400);
@@ -93,5 +168,5 @@ export function logsQueryAction(reader: LogsReader): Action<ServerResponse> {
             Ok: (value) => HttpResponse.asJson(value),
             Err: (error) => HttpResponse.asJson({ error: error.message }, 500),
         });
-    };
+    }, () => HttpResponse.asJson({ error: "Unauthorized" }, 401));
 }

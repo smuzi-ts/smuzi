@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logs · Sign in</title>
+    <link rel="stylesheet" href="{{base}}/assets/app.css">
+    <script defer src="{{base}}/assets/app.js"></script>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-slate-50 p-4 text-slate-800 antialiased">
+<form x-data="loginForm" data-api="{{base}}/api/login" data-home="{{base}}/" @submit.prevent="submit()"
+      class="w-full max-w-sm space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <h1 class="text-xl font-semibold">Logs</h1>
+
+    <label class="block space-y-1">
+        <span class="text-sm text-slate-600">Email</span>
+        <input x-model="email" type="email" autocomplete="username" required autofocus
+               class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-sky-500 focus:outline-none">
+    </label>
+
+    <label class="block space-y-1">
+        <span class="text-sm text-slate-600">Password</span>
+        <input x-model="password" type="password" autocomplete="current-password" required
+               class="w-full rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
+    </label>
+
+    <div x-show="error_message !== ''" x-cloak
+         class="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800"
+         x-text="error_message"></div>
+
+    <button type="submit" :disabled="loading"
+            class="w-full rounded-md bg-sky-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-60">
+        Sign in
+    </button>
+</form>
+</body>
+</html>

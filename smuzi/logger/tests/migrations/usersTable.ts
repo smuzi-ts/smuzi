@@ -1,4 +1,6 @@
-export default `CREATE TABLE IF NOT EXISTS users (
+export const usersTable = "users";
+
+export default `CREATE TABLE IF NOT EXISTS ${usersTable} (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL UNIQUE,

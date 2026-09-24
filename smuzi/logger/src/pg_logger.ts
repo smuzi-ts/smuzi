@@ -55,6 +55,8 @@ function toIsoString(value: Date | string): string {
 
 // One group per trace_id; logs without trace_id become single-log groups.
 // Tag filters are checked per group: every tag filter must match at least one log of the trace.
+// Filters sharing the same key are OR'd together (e.g. route=orders OR route=users);
+// filters on different keys are AND'd (e.g. route=orders AND status=500).
 export function buildLogGroupsSql(table: string, query: LogsQuery): SqlWithParams {
     const params: unknown[] = [];
     const bind = (value: unknown) => {
@@ -70,17 +72,31 @@ export function buildLogGroupsSql(table: string, query: LogsQuery): SqlWithParam
         where.push(`trace_id = ${bind(trace_id)}`);
     }
 
+    const message = query.message?.trim() ?? "";
+    if (message !== "") {
+        having.push(`bool_or(message ILIKE ${bind("%" + escapeLikePattern(message) + "%")})`);
+    }
+
+    const values_by_key = new Map<string, string[]>();
     for (const tag of query.tags ?? []) {
         const key = tag.key.trim();
         if (key === "") {
             continue;
         }
 
-        const value = tag.value.trim();
-        having.push(value === ""
-            ? `bool_or(tags ? ${bind(key)})`
-            : `bool_or(tags ->> ${bind(key)} ILIKE ${bind("%" + escapeLikePattern(value) + "%")})`
+        const values = values_by_key.get(key) ?? [];
+        values.push(tag.value.trim());
+        values_by_key.set(key, values);
+    }
+
+    for (const [key, values] of values_by_key) {
+        const key_param = bind(key);
+        const conditions = values.map(value => value === ""
+            ? `tags ? ${key_param}`
+            : `tags ->> ${key_param} ILIKE ${bind("%" + escapeLikePattern(value) + "%")}`
         );
+
+        having.push(`bool_or(${conditions.join(" OR ")})`);
     }
 
     const sql = [

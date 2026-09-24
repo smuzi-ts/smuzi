@@ -1,15 +1,16 @@
 {
   "name": "@smuzi/logger-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Web UI for browsing logs",
   "scripts": {
     "build": "pnpm run build:ui && tsc --project tsconfig.build.json",
-    "build:ui": "pnpm run build:ui:js && pnpm run build:ui:css && cp ui/index.html build/ui/index.html",
+    "build:ui": "pnpm run build:ui:js && pnpm run build:ui:css && cp ui/index.html ui/login.html build/ui/",
     "build:ui:js": "esbuild ui/src/main.ts --bundle --minify --format=iife --target=es2022 --outfile=build/ui/app.js",
     "build:ui:css": "tailwindcss --input ui/src/app.css --output build/ui/app.css --minify",
     "check:ui": "tsc --project tsconfig.ui.json",
     "serve": "tsx --env-file=dev/.env dev/serve.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "console": "tsx --env-file=dev/.env dev/console.ts"
   },
   "type": "module",
   "types": "./build/index.d.ts",
@@ -52,11 +53,14 @@
     "#lib/*": "./src/*"
   },
   "peerDependencies": {
+    "@smuzi/console": "workspace:^",
+    "@smuzi/database": "workspace:^",
     "@smuzi/http-server": "workspace:^",
     "@smuzi/logger": "workspace:^",
     "@smuzi/std": "workspace:^"
   },
   "devDependencies": {
+    "@smuzi/console": "workspace:^",
     "@smuzi/database": "workspace:^",
     "@smuzi/db-postgres": "workspace:^",
     "@tailwindcss/cli": "^4.3.3",

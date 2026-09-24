@@ -70,10 +70,13 @@ let request_counter = 0;
 
 Alpine.data("logsViewer", () => ({
     api_url: "api/logs",
+    logout_url: "api/logout",
+    login_url: "login",
     trace_id: "",
-    new_tag_key: "",
-    new_tag_value: "",
+    message: "",
     tags: [] as TagFilter[],
+    tag_modal_open: false,
+    tag_draft: [] as TagFilter[],
     groups: [] as LogGroup[],
     total: 0,
     limit: PAGE_SIZE,
@@ -84,6 +87,8 @@ Alpine.data("logsViewer", () => ({
 
     init() {
         this.api_url = this.$root.dataset.api ?? this.api_url;
+        this.logout_url = this.$root.dataset.logout ?? this.logout_url;
+        this.login_url = this.$root.dataset.login ?? this.login_url;
         this.load();
     },
 
@@ -93,6 +98,7 @@ Alpine.data("logsViewer", () => ({
         this.error_message = "";
 
         const trace_id = this.trace_id.trim();
+        const message = this.message.trim();
 
         try {
             const response = await fetch(this.api_url, {
@@ -100,6 +106,7 @@ Alpine.data("logsViewer", () => ({
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
                     trace_id: trace_id === "" ? undefined : trace_id,
+                    message: message === "" ? undefined : message,
                     tags: this.tags,
                     limit: this.limit,
                     offset: this.offset,
@@ -107,6 +114,11 @@ Alpine.data("logsViewer", () => ({
             });
 
             if (request_id !== request_counter) {
+                return;
+            }
+
+            if (response.status === 401) {
+                window.location.href = this.login_url;
                 return;
             }
 
@@ -137,6 +149,14 @@ Alpine.data("logsViewer", () => ({
         }
     },
 
+    async logout() {
+        try {
+            await fetch(this.logout_url, { method: "POST" });
+        } finally {
+            window.location.href = this.login_url;
+        }
+    },
+
     search() {
         this.offset = 0;
         this.load();
@@ -146,18 +166,30 @@ Alpine.data("logsViewer", () => ({
         return this.tags.some(tag => tag.key === key && tag.value === value);
     },
 
-    addTag() {
-        const key = this.new_tag_key.trim();
-        const value = this.new_tag_value.trim();
-        if (key === "") {
-            return;
-        }
+    openTagModal() {
+        this.tag_draft = this.tags.length > 0
+            ? this.tags.map(tag => ({ ...tag }))
+            : [{ key: "", value: "" }];
+        this.tag_modal_open = true;
+    },
 
-        if (!this.hasTag(key, value)) {
-            this.tags.push({ key, value });
-        }
-        this.new_tag_key = "";
-        this.new_tag_value = "";
+    closeTagModal() {
+        this.tag_modal_open = false;
+    },
+
+    addDraftTag() {
+        this.tag_draft.push({ key: "", value: "" });
+    },
+
+    removeDraftTag(index: number) {
+        this.tag_draft.splice(index, 1);
+    },
+
+    applyTagModal() {
+        this.tags = this.tag_draft
+            .map(tag => ({ key: tag.key.trim(), value: tag.value.trim() }))
+            .filter(tag => tag.key !== "");
+        this.tag_modal_open = false;
         this.search();
     },
 
@@ -187,12 +219,13 @@ Alpine.data("logsViewer", () => ({
 
     clearFilters() {
         this.trace_id = "";
+        this.message = "";
         this.tags = [];
         this.search();
     },
 
     hasFilters(): boolean {
-        return this.trace_id.trim() !== "" || this.tags.length > 0;
+        return this.trace_id.trim() !== "" || this.message.trim() !== "" || this.tags.length > 0;
     },
 
     hasPrevPage(): boolean {
@@ -287,6 +320,44 @@ Alpine.data("logsViewer", () => ({
             return JSON.stringify(JSON.parse(trimmed), null, 2);
         } catch {
             return message;
+        }
+    },
+}));
+
+Alpine.data("loginForm", () => ({
+    api_url: "api/login",
+    home_url: "./",
+    email: "",
+    password: "",
+    loading: false,
+    error_message: "",
+
+    init() {
+        this.api_url = this.$root.dataset.api ?? this.api_url;
+        this.home_url = this.$root.dataset.home ?? this.home_url;
+    },
+
+    async submit() {
+        this.loading = true;
+        this.error_message = "";
+
+        try {
+            const response = await fetch(this.api_url, {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ email: this.email, password: this.password }),
+            });
+
+            if (!response.ok) {
+                this.error_message = await readError(response);
+                return;
+            }
+
+            window.location.href = this.home_url;
+        } catch (error) {
+            this.error_message = error instanceof Error ? error.message : String(error);
+        } finally {
+            this.loading = false;
         }
     },
 }));

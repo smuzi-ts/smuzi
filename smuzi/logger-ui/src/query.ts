@@ -51,6 +51,13 @@ export function parseLogsQuery(body: string): Result<LogsQuery, string> {
         query.trace_id = input.trace_id;
     }
 
+    if (input.message !== undefined && input.message !== null) {
+        if (!asString(input.message)) {
+            return Err("'message' must be a string");
+        }
+        query.message = input.message;
+    }
+
     if (input.tags !== undefined && input.tags !== null) {
         if (!asArray(input.tags)) {
             return Err("'tags' must be an array of {key, value}");

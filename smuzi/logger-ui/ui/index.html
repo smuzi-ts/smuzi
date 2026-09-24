@@ -8,7 +8,7 @@
     <script defer src="{{base}}/assets/app.js"></script>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
-<div x-data="logsViewer" data-api="{{base}}/api/logs" class="mx-auto max-w-6xl space-y-4 p-4">
+<div x-data="logsViewer" data-api="{{base}}/api/logs" data-logout="{{base}}/api/logout" data-login="{{base}}/login" class="mx-auto max-w-6xl space-y-4 p-4">
 
     <header class="flex items-center gap-3">
         <h1 class="text-xl font-semibold">Logs</h1>
@@ -20,28 +20,42 @@
                 class="ml-auto rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100">
             Refresh
         </button>
+        <button type="button" @click="logout()"
+                class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100">
+            Log out
+        </button>
     </header>
 
     <section class="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <form @submit.prevent="search()" class="flex gap-2">
-            <input x-model="trace_id" type="search" placeholder="trace_id"
-                   class="flex-1 rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
+        <form @submit.prevent="search()" class="flex flex-wrap items-end gap-3">
+            <label class="flex min-w-[12rem] flex-1 flex-col gap-1">
+                <span class="text-xs font-medium text-slate-600">Trace ID</span>
+                <input x-model="trace_id" type="search" placeholder="exact match"
+                       class="rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
+            </label>
+
+            <label class="flex min-w-[12rem] flex-1 flex-col gap-1">
+                <span class="text-xs font-medium text-slate-600">Message</span>
+                <input x-model="message" type="search" placeholder="contains…"
+                       class="rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
+            </label>
+
             <button type="submit"
                     class="rounded-md bg-sky-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-sky-700">
                 Search
             </button>
         </form>
 
-        <form @submit.prevent="addTag()" class="flex gap-2">
-            <input x-model="new_tag_key" placeholder="tag field"
-                   class="w-48 rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
-            <input x-model="new_tag_value" placeholder="value contains (empty = field exists)"
-                   class="flex-1 rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
-            <button type="submit" title="Add tag filter" :disabled="new_tag_key.trim() === ''"
-                    class="w-10 rounded-md border border-slate-300 text-lg leading-none hover:bg-slate-100 disabled:opacity-40">
-                +
+        <div class="flex flex-col gap-1">
+            <span class="text-xs font-medium text-slate-600">Tags</span>
+            <button type="button" @click="openTagModal()"
+                    class="flex w-fit items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100">
+                Filter by tags
+                <span x-show="tags.length > 0" x-cloak
+                      class="rounded-full bg-sky-100 px-1.5 py-0.5 text-xs font-medium text-sky-800"
+                      x-text="tags.length"></span>
             </button>
-        </form>
+        </div>
 
         <div x-show="hasFilters()" x-cloak class="flex flex-wrap items-center gap-2">
             <template x-if="trace_id.trim() !== ''">
@@ -49,6 +63,13 @@
                     trace_id=<span x-text="trace_id"></span>
                     <button type="button" title="Remove" @click="trace_id = ''; search()"
                             class="h-5 w-5 rounded-full leading-none hover:bg-violet-200">−</button>
+                </span>
+            </template>
+            <template x-if="message.trim() !== ''">
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 py-0.5 pl-3 pr-1 font-mono text-xs text-amber-800">
+                    message~<span x-text="message"></span>
+                    <button type="button" title="Remove" @click="message = ''; search()"
+                            class="h-5 w-5 rounded-full leading-none hover:bg-amber-200">−</button>
                 </span>
             </template>
             <template x-for="(tag, index) in tags" :key="tag.key + '=' + tag.value">
@@ -63,6 +84,55 @@
             </button>
         </div>
     </section>
+
+    <div x-show="tag_modal_open" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+         @keydown.escape.window="closeTagModal()">
+        <div @click.outside="closeTagModal()"
+             class="w-full max-w-lg space-y-4 rounded-lg bg-white p-5 shadow-lg">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-semibold">Filter by tags</h2>
+                <button type="button" title="Close" @click="closeTagModal()"
+                        class="text-slate-400 hover:text-slate-700">✕</button>
+            </div>
+
+            <div class="space-y-2">
+                <div x-show="tag_draft.length > 0" x-cloak
+                     class="flex gap-2 text-xs font-medium text-slate-500">
+                    <span class="w-40">Tag name</span>
+                    <span class="flex-1">Value contains</span>
+                    <span class="w-10"></span>
+                </div>
+                <template x-for="(tag, index) in tag_draft" :key="index">
+                    <div class="flex gap-2">
+                        <input x-model="tag.key" aria-label="Tag name" placeholder="e.g. route"
+                               class="w-40 rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
+                        <input x-model="tag.value" aria-label="Value contains" placeholder="empty = field exists"
+                               class="flex-1 rounded-md border border-slate-300 px-3 py-1.5 font-mono text-sm focus:border-sky-500 focus:outline-none">
+                        <button type="button" title="Remove tag" @click="removeDraftTag(index)"
+                                class="w-10 rounded-md border border-slate-300 text-lg leading-none hover:bg-slate-100">
+                            −
+                        </button>
+                    </div>
+                </template>
+
+                <button type="button" @click="addDraftTag()" class="text-sm text-sky-700 hover:underline">
+                    + Add tag
+                </button>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-slate-100 pt-3">
+                <button type="button" @click="closeTagModal()"
+                        class="rounded-md border border-slate-300 bg-white px-4 py-1.5 text-sm hover:bg-slate-100">
+                    Cancel
+                </button>
+                <button type="button" @click="applyTagModal()"
+                        class="rounded-md bg-sky-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-sky-700">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div x-show="error_message !== ''" x-cloak
          class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
@@ -107,8 +177,6 @@
                                       :class="levelBadge(log.level)" x-text="levelName(log.level)"></span>
                             </span>
                             <div class="min-w-0 space-y-1">
-                                <pre class="whitespace-pre-wrap break-words font-mono text-xs text-slate-800"
-                                     x-text="formatMessage(log.message)"></pre>
                                 <div class="flex flex-wrap gap-1">
                                     <template x-for="tag in tagEntries(log.tags)" :key="tag.key">
                                         <button type="button" title="Add to filter"
@@ -118,6 +186,8 @@
                                         </button>
                                     </template>
                                 </div>
+                                <pre class="whitespace-pre-wrap break-words font-mono text-xs text-slate-800"
+                                     x-text="formatMessage(log.message)"></pre>
                             </div>
                         </li>
                     </template>

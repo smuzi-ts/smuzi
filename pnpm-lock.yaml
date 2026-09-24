@@ -243,6 +243,9 @@ importers:
         specifier: workspace:^
         version: link:../std
     devDependencies:
+      '@smuzi/console':
+        specifier: workspace:^
+        version: link:../console
       '@smuzi/database':
         specifier: workspace:^
         version: link:../database
