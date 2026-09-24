@@ -1,7 +1,7 @@
 {
   "name": "@smuzi/logger-ui",
   "version": "0.0.1",
-  "description": "Web UI for browsing logs grouped by trace_id",
+  "description": "Web UI for browsing logs",
   "scripts": {
     "build": "pnpm run build:ui && tsc --project tsconfig.build.json",
     "build:ui": "pnpm run build:ui:js && pnpm run build:ui:css && cp ui/index.html build/ui/index.html",
