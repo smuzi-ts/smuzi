@@ -15,7 +15,7 @@ export type LogDetails = {
 }
 
 
-export interface Logger {
-    info(log_details: LogDetails): Promise<void>
-    error(log_details: LogDetails): Promise<void>
+export interface Logger<R> {
+    info(log_details: LogDetails): Promise<R>
+    error(log_details: LogDetails): Promise<R>
 }
