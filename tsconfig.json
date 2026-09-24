@@ -12,6 +12,7 @@
     { "path": "smuzi/http-server" },
     { "path": "smuzi/http-client" },
     { "path": "smuzi/ssr" },
+    { "path": "smuzi/logger-ui" },
     { "path": "smuzi/oauth" },
     { "path": "smuzi/shopify-sdk" },
 

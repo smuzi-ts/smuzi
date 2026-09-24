@@ -4,4 +4,5 @@ packages:
   - 'crmoz/*'
 
 allowBuilds:
+  '@parcel/watcher': false
   esbuild: false
