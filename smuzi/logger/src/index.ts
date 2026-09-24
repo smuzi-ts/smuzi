@@ -1,6 +1,7 @@
 export * from "./migrations.js";
 export * from "./pg_logger.js";
 export * from "./console_logger.js";
+export * from "./reader.js";
 
 export enum LogLevel {
     info = 200,
