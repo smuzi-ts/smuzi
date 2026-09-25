@@ -1,4 +1,4 @@
-import { Result, StdError } from "@smuzi/std";
+import { Option, Result, StdError } from "@smuzi/std";
 
 export type LogTagFilter = {
     key: string,
@@ -15,12 +15,20 @@ export type LogsQuery = {
     offset?: number,
 }
 
+// Where a log's message gets resent when the user retries it from the UI.
+export type RetryConfig = {
+    url: string,
+}
+
 export type LogEntry = {
     id: number,
     trace_id: string | null,
     level: number,
     tags: Record<string, string | boolean | number>,
     message: string,
+    stack_trace: string | null,
+    retry: RetryConfig | null,
+    retries_count: number,
     created_at: string,
 }
 
@@ -45,4 +53,6 @@ export const LOGS_QUERY_MAX_LIMIT = 500;
 // Only storages that can be queried implement it (Postgres); console output can't be read back.
 export interface LogsReader {
     queryGroups(query: LogsQuery): Promise<Result<LogGroupsPage, StdError>>;
+    getById(id: number): Promise<Result<Option<LogEntry>, StdError>>;
+    incrementRetryCount(id: number): Promise<Result<number, StdError>>;
 }

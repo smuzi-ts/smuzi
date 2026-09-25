@@ -11,6 +11,9 @@ export const postgresMigrations = (table: string = 'logs') => {
                 level SMALLINT,
                 tags JSONB,
                 message TEXT NOT NULL,
+                stack_trace TEXT,
+                retry JSONB,
+                retries_count INTEGER NOT NULL DEFAULT 0,
                 created_at TIMESTAMPTZ NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_${table}_trace_id ON ${table} (trace_id);`

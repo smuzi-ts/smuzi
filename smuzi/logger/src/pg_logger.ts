@@ -1,4 +1,4 @@
-import { Err, Ok, Result, StdError } from "@smuzi/std";
+import { Err, None, Ok, Option, Result, Some, StdError } from "@smuzi/std";
 import {
     TDatabaseClient,
     TInsertRowResult,
@@ -12,7 +12,10 @@ import {
     LOGS_QUERY_MAX_LIMIT,
     LogsQuery,
     LogsReader,
+    RetryConfig,
 } from "./reader.js";
+
+const LOG_COLUMNS = "id, trace_id, level, tags, message, stack_trace, retry, retries_count, created_at";
 
 type SqlWithParams = {
     sql: string,
@@ -30,7 +33,24 @@ type LogRow = {
     level: number,
     tags: Record<string, string | boolean | number> | null,
     message: string,
+    stack_trace: string | null,
+    retry: RetryConfig | null,
+    retries_count: number,
     created_at: Date | string,
+}
+
+function toLogEntry(row: LogRow): LogEntry {
+    return {
+        id: row.id,
+        trace_id: row.trace_id,
+        level: row.level,
+        tags: row.tags ?? {},
+        message: row.message,
+        stack_trace: row.stack_trace,
+        retry: row.retry,
+        retries_count: row.retries_count,
+        created_at: toIsoString(row.created_at),
+    };
 }
 
 function escapeLikePattern(value: string): string {
@@ -170,7 +190,7 @@ export class PostgresLogger implements Logger<TInsertRowResult<LogDetails>>, Log
         const single_ids = group_keys.filter(row => row.single_id !== null).map(row => row.single_id);
 
         const logs_result = await this.#dbClient.query<LogRow>(
-            `SELECT id, trace_id, level, tags, message, created_at FROM ${this.#table}
+            `SELECT ${LOG_COLUMNS} FROM ${this.#table}
              WHERE trace_id = ANY($1) OR id = ANY($2)
              ORDER BY created_at, id`,
             [trace_ids, single_ids]
@@ -196,14 +216,7 @@ export class PostgresLogger implements Logger<TInsertRowResult<LogDetails>>, Log
                 continue;
             }
 
-            const entry: LogEntry = {
-                id: row.id,
-                trace_id: row.trace_id,
-                level: row.level,
-                tags: row.tags ?? {},
-                message: row.message,
-                created_at: toIsoString(row.created_at),
-            };
+            const entry: LogEntry = toLogEntry(row);
 
             if (group.logs.length === 0) {
                 group.started_at = entry.created_at;
@@ -214,5 +227,31 @@ export class PostgresLogger implements Logger<TInsertRowResult<LogDetails>>, Log
         }
 
         return Ok({ total, limit, offset, groups: [...groups.values()] });
+    }
+
+    async getById(id: number): Promise<Result<Option<LogEntry>, StdError>> {
+        const result = await this.#dbClient.query<LogRow>(
+            `SELECT ${LOG_COLUMNS} FROM ${this.#table} WHERE id = $1`,
+            [id]
+        );
+        if (result.isErr()) {
+            return Err(result.unsafeSource().toError());
+        }
+
+        const row = (result.unwrap().rows.unsafeSource() as LogRow[])[0];
+
+        return Ok(row === undefined ? None() : Some(toLogEntry(row)));
+    }
+
+    async incrementRetryCount(id: number): Promise<Result<number, StdError>> {
+        const result = await this.#dbClient.query<{ retries_count: number }>(
+            `UPDATE ${this.#table} SET retries_count = retries_count + 1 WHERE id = $1 RETURNING retries_count`,
+            [id]
+        );
+        if (result.isErr()) {
+            return Err(result.unsafeSource().toError());
+        }
+
+        return Ok((result.unwrap().rows.unsafeSource() as { retries_count: number }[])[0]?.retries_count ?? 0);
     }
 }

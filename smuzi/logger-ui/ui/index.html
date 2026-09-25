@@ -134,6 +134,33 @@
         </div>
     </div>
 
+    <div x-show="retry_modal_open" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+         @keydown.escape.window="closeRetryModal()">
+        <div @click.outside="closeRetryModal()"
+             class="w-full max-w-2xl space-y-4 rounded-lg bg-white p-5 shadow-lg">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-semibold">Retry result</h2>
+                <button type="button" title="Close" @click="closeRetryModal()"
+                        class="text-slate-400 hover:text-slate-700">✕</button>
+            </div>
+
+            <span class="inline-flex rounded px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset"
+                  :class="retryStatusClass(retry_modal_status)"
+                  x-text="retry_modal_status === null ? 'no response' : retry_modal_status"></span>
+
+            <pre class="max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-md bg-slate-50 p-3 font-mono text-xs text-slate-800"
+                 x-text="retry_modal_body"></pre>
+
+            <div class="flex justify-end border-t border-slate-100 pt-3">
+                <button type="button" @click="closeRetryModal()"
+                        class="rounded-md border border-slate-300 bg-white px-4 py-1.5 text-sm hover:bg-slate-100">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div x-show="error_message !== ''" x-cloak
          class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
          x-text="error_message"></div>
@@ -188,6 +215,20 @@
                                 </div>
                                 <pre class="whitespace-pre-wrap break-words font-mono text-xs text-slate-800"
                                      x-text="formatMessage(log.message)"></pre>
+                                <details x-show="log.stack_trace !== null" x-cloak>
+                                    <summary class="cursor-pointer select-none text-xs text-slate-500 hover:text-slate-800">
+                                        Stack trace
+                                    </summary>
+                                    <pre class="mt-1 whitespace-pre-wrap break-words font-mono text-xs text-rose-800"
+                                         x-text="log.stack_trace"></pre>
+                                </details>
+                                <div x-show="log.retry !== null" x-cloak class="flex items-center gap-2">
+                                    <button type="button" @click.stop="retryLog(log)" :disabled="retrying_id === log.id"
+                                            class="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-100 disabled:opacity-40">
+                                        <span x-text="retrying_id === log.id ? 'Retrying…' : 'Retry'"></span>
+                                    </button>
+                                    <span class="text-xs text-slate-400" x-text="'retries: ' + log.retries_count"></span>
+                                </div>
                             </div>
                         </li>
                     </template>

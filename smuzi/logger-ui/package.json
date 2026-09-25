@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/logger-ui",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Web UI for browsing logs",
   "scripts": {
     "build": "pnpm run build:ui && tsc --project tsconfig.build.json",
@@ -55,6 +55,7 @@
   "peerDependencies": {
     "@smuzi/console": "workspace:^",
     "@smuzi/database": "workspace:^",
+    "@smuzi/http-client": "workspace:^",
     "@smuzi/http-server": "workspace:^",
     "@smuzi/logger": "workspace:^",
     "@smuzi/std": "workspace:^"
@@ -63,6 +64,7 @@
     "@smuzi/console": "workspace:^",
     "@smuzi/database": "workspace:^",
     "@smuzi/db-postgres": "workspace:^",
+    "@smuzi/http-client": "workspace:^",
     "@tailwindcss/cli": "^4.3.3",
     "@types/alpinejs": "^3.13.11",
     "@types/node": "^22.15.21",

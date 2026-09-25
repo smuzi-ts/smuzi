@@ -252,6 +252,9 @@ importers:
       '@smuzi/db-postgres':
         specifier: workspace:^
         version: link:../db-postgres
+      '@smuzi/http-client':
+        specifier: workspace:^
+        version: link:../http-client
       '@tailwindcss/cli':
         specifier: ^4.3.3
         version: 4.3.3

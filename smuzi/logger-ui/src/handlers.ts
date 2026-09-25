@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { ServerResponse } from "node:http";
 import { Action, Context } from "@smuzi/http-server";
-import { asObject, asString, HttpResponse, ResponseHttpHeaders, Some } from "@smuzi/std";
+import { asObject, asString, HttpResponse, Option, ResponseHttpHeaders, Some } from "@smuzi/std";
 import { LogsReader } from "@smuzi/logger";
+import { HttpClient } from "@smuzi/http-client";
 import { parseLogsQuery } from "./query.js";
 import { LoggerUiAuth } from "./auth.js";
 
@@ -167,6 +168,60 @@ export function logsQueryAction(auth: LoggerUiAuth, reader: LogsReader): Action<
         return page.match({
             Ok: (value) => HttpResponse.asJson(value),
             Err: (error) => HttpResponse.asJson({ error: error.message }, 500),
+        });
+    }, () => HttpResponse.asJson({ error: "Unauthorized" }, 401));
+}
+
+function pathParam(context: Context<ServerResponse>, name: string): Option<string> {
+    return (context.pathParams as Option<Record<string, string>>).get(name);
+}
+
+export function logRetryAction(auth: LoggerUiAuth, reader: LogsReader, http_client: HttpClient): Action<ServerResponse> {
+    return authenticated(auth, async (context) => {
+        const id = Number(pathParam(context, "id").someOr(""));
+        if (!Number.isInteger(id) || id <= 0) {
+            return HttpResponse.asJson({ error: "Invalid log id" }, 400);
+        }
+
+        const found = await reader.getById(id);
+        if (found.isErr()) {
+            return HttpResponse.asJson({ error: found.unsafeSource().message }, 500);
+        }
+
+        const log = found.unwrap();
+        if (log.isNone()) {
+            return HttpResponse.asJson({ error: "Log not found" }, 404);
+        }
+
+        const retry = log.unwrap().retry;
+        if (retry === null) {
+            return HttpResponse.asJson({ error: "Log has no retry configuration" }, 422);
+        }
+
+        // Resends the original message as JSON; the http-client sets the correct
+        // "application/json" content-type itself for an object body. Uses plain
+        // fetch, so this goes out over HTTP/1 by default (no HTTP/2 dispatcher configured).
+        const response = await http_client.post<string, string>(retry.url, {
+            body: Some({ message: log.unwrap().message }),
+            rawResponse: true,
+        });
+
+        const retries_count = await reader.incrementRetryCount(id);
+        const retries_count_value = retries_count.okOr(log.unwrap().retries_count);
+
+        return response.match({
+            Ok: (ok_response) => HttpResponse.asJson({
+                status: ok_response.status,
+                body: ok_response.body.someOr(""),
+                retries_count: retries_count_value,
+            }),
+            Err: (error) => error instanceof HttpResponse
+                ? HttpResponse.asJson({
+                    status: error.status,
+                    body: error.body.someOr(""),
+                    retries_count: retries_count_value,
+                })
+                : HttpResponse.asJson({ error: "Retry request failed: " + String(error) }, 502),
         });
     }, () => HttpResponse.asJson({ error: "Unauthorized" }, 401));
 }

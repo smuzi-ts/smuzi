@@ -3,6 +3,8 @@ export * from "./pg_logger.js";
 export * from "./console_logger.js";
 export * from "./reader.js";
 
+import type { RetryConfig } from "./reader.js";
+
 export enum LogLevel {
     info = 200,
     error = 400,
@@ -14,6 +16,8 @@ export type LogDetails = {
     trace_id?: string,
     level?: number,
     created_at?: Temporal.Instant,
+    stack_trace?: string,
+    retry?: RetryConfig,
 }
 
 

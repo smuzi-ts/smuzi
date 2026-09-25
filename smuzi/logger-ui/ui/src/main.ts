@@ -8,13 +8,26 @@ type TagFilter = {
 
 type TagValue = string | boolean | number;
 
+type RetryConfig = {
+    url: string,
+}
+
 type LogEntry = {
     id: number,
     trace_id: string | null,
     level: number,
     tags: Record<string, TagValue>,
     message: string,
+    stack_trace: string | null,
+    retry: RetryConfig | null,
+    retries_count: number,
     created_at: string,
+}
+
+type RetryResult = {
+    status: number,
+    body: string,
+    retries_count: number,
 }
 
 type LogGroup = {
@@ -84,6 +97,10 @@ Alpine.data("logsViewer", () => ({
     loading: false,
     error_message: "",
     expanded: {} as Record<string, boolean>,
+    retrying_id: null as number | null,
+    retry_modal_open: false,
+    retry_modal_status: null as number | null,
+    retry_modal_body: "",
 
     init() {
         this.api_url = this.$root.dataset.api ?? this.api_url;
@@ -215,6 +232,62 @@ Alpine.data("logsViewer", () => ({
 
         this.trace_id = trace_id;
         this.search();
+    },
+
+    async retryLog(log: LogEntry) {
+        if (log.retry === null || this.retrying_id !== null) {
+            return;
+        }
+
+        this.retrying_id = log.id;
+
+        try {
+            const response = await fetch(`${this.api_url}/${log.id}/retry`, { method: "POST" });
+
+            if (response.status === 401) {
+                window.location.href = this.login_url;
+                return;
+            }
+
+            if (!response.ok) {
+                this.openRetryModal(null, await readError(response));
+                return;
+            }
+
+            const result: RetryResult = await response.json();
+            log.retries_count = result.retries_count;
+            this.openRetryModal(result.status, result.body);
+        } catch (error) {
+            this.openRetryModal(null, error instanceof Error ? error.message : String(error));
+        } finally {
+            this.retrying_id = null;
+        }
+    },
+
+    openRetryModal(status: number | null, body: string) {
+        this.retry_modal_open = true;
+        this.retry_modal_status = status;
+        this.retry_modal_body = body;
+    },
+
+    closeRetryModal() {
+        this.retry_modal_open = false;
+    },
+
+    retryStatusClass(status: number | null): string {
+        if (status === null) {
+            return UNKNOWN_LEVEL_BADGE;
+        }
+        if (status >= 200 && status < 300) {
+            return "bg-emerald-100 text-emerald-800 ring-emerald-200";
+        }
+        if (status >= 300 && status < 400) {
+            return "bg-sky-100 text-sky-800 ring-sky-200";
+        }
+        if (status >= 400 && status < 500) {
+            return "bg-amber-100 text-amber-800 ring-amber-200";
+        }
+        return "bg-rose-100 text-rose-800 ring-rose-200";
     },
 
     clearFilters() {
