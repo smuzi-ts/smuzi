@@ -15,7 +15,7 @@ import {
     RetryConfig,
 } from "./reader.js";
 
-const LOG_COLUMNS = "id, trace_id, level, tags, message, stack_trace, retry, retries_count, created_at";
+const LOG_COLUMNS = "id, trace_id, level, tags, message, content_type, stack_trace, retry, retries_count, created_at";
 
 type SqlWithParams = {
     sql: string,
@@ -33,6 +33,7 @@ type LogRow = {
     level: number,
     tags: Record<string, string | boolean | number> | null,
     message: string,
+    content_type: string | null,
     stack_trace: string | null,
     retry: RetryConfig | null,
     retries_count: number,
@@ -46,6 +47,7 @@ function toLogEntry(row: LogRow): LogEntry {
         level: row.level,
         tags: row.tags ?? {},
         message: row.message,
+        content_type: row.content_type,
         stack_trace: row.stack_trace,
         retry: row.retry,
         retries_count: row.retries_count,

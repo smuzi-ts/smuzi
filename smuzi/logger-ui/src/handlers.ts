@@ -198,11 +198,10 @@ export function logRetryAction(auth: LoggerUiAuth, reader: LogsReader, http_clie
             return HttpResponse.asJson({ error: "Log has no retry configuration" }, 422);
         }
 
-        // Resends the original message as JSON; the http-client sets the correct
-        // "application/json" content-type itself for an object body. Uses plain
+        // Resends the original message as-is (raw string body, no wrapping). Uses plain
         // fetch, so this goes out over HTTP/1 by default (no HTTP/2 dispatcher configured).
         const response = await http_client.post<string, string>(retry.url, {
-            body: Some({ message: log.unwrap().message }),
+            body: Some(log.unwrap().message),
             rawResponse: true,
         });
 

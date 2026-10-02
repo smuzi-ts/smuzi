@@ -20,12 +20,16 @@ export type RetryConfig = {
     url: string,
 }
 
+// How a log's message is encoded; null means plain text.
+export type LogContentType = "json";
+
 export type LogEntry = {
     id: number,
     trace_id: string | null,
     level: number,
     tags: Record<string, string | boolean | number>,
     message: string,
+    content_type: string | null,
     stack_trace: string | null,
     retry: RetryConfig | null,
     retries_count: number,

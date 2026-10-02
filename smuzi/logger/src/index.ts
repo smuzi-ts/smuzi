@@ -3,7 +3,7 @@ export * from "./pg_logger.js";
 export * from "./console_logger.js";
 export * from "./reader.js";
 
-import type { RetryConfig } from "./reader.js";
+import type { LogContentType, RetryConfig } from "./reader.js";
 
 export enum LogLevel {
     info = 200,
@@ -12,6 +12,7 @@ export enum LogLevel {
 
 export type LogDetails = {
     message: unknown,
+    content_type?: LogContentType,
     tags?: Record<string, string | boolean | number>,
     trace_id?: string,
     level?: number,

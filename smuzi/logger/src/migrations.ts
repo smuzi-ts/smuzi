@@ -11,6 +11,7 @@ export const postgresMigrations = (table: string = 'logs') => {
                 level SMALLINT,
                 tags JSONB,
                 message TEXT NOT NULL,
+                content_type VARCHAR(32),
                 stack_trace TEXT,
                 retry JSONB,
                 retries_count SMALLINT NOT NULL DEFAULT 0,

@@ -6,3 +6,66 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* JSON message tree (content_type = "json"), built in main.ts renderJsonNode(). */
+.json-tree {
+    @apply whitespace-pre-wrap break-words font-mono text-xs text-slate-800;
+}
+
+.json-row {
+    @apply pl-4;
+}
+
+.json-children {
+    @apply ml-1.5 border-l border-slate-200 pl-2;
+}
+
+.json-node > summary {
+    @apply cursor-pointer select-none list-none pl-0 hover:bg-slate-100;
+}
+
+.json-node > summary::-webkit-details-marker {
+    display: none;
+}
+
+.json-node > summary::before {
+    @apply inline-block w-4 text-slate-400;
+    content: "▾";
+}
+
+.json-node:not([open]) > summary::before {
+    content: "▸";
+}
+
+.json-node[open] > summary > .json-preview,
+.json-node[open] > summary > .json-count {
+    display: none;
+}
+
+.json-preview {
+    @apply text-slate-400;
+}
+
+.json-count {
+    @apply ml-2 text-[11px] italic text-slate-400;
+}
+
+.json-key {
+    @apply text-violet-700;
+}
+
+.json-string {
+    @apply text-emerald-700;
+}
+
+.json-number {
+    @apply text-sky-700;
+}
+
+.json-boolean {
+    @apply text-amber-700;
+}
+
+.json-null {
+    @apply italic text-slate-400;
+}

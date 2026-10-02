@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/logger",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Logs",
   "scripts": {
     "test": "tsx  --env-file=.env tests/index.ts",

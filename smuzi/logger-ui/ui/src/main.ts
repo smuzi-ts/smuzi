@@ -18,6 +18,7 @@ type LogEntry = {
     level: number,
     tags: Record<string, TagValue>,
     message: string,
+    content_type: string | null,
     stack_trace: string | null,
     retry: RetryConfig | null,
     retries_count: number,
@@ -77,6 +78,105 @@ async function readError(response: Response): Promise<string> {
     }
 
     return `Request failed: ${response.status} ${response.statusText}`;
+}
+
+const JSON_CONTENT_TYPE = "json";
+
+// Keeps a number's original source text, so ids beyond 2^53 aren't rounded on display.
+class JsonNumber {
+    constructor(readonly source: string) {}
+}
+
+type JsonPrimitive = string | boolean | null | JsonNumber;
+
+type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+
+type JsonReviverContext = {
+    source?: string,
+};
+
+function parseJson(text: string): { value: JsonValue } | null {
+    try {
+        // The reviver's context.source (where supported) holds the raw number literal.
+        const value: JsonValue = JSON.parse(text, (_key: string, value: unknown, context?: JsonReviverContext) =>
+            typeof value === "number" ? new JsonNumber(context?.source ?? String(value)) : value
+        );
+
+        return { value };
+    } catch {
+        return null;
+    }
+}
+
+function jsonElement(tag: string, class_name: string, text?: string): HTMLElement {
+    const element = document.createElement(tag);
+    element.className = class_name;
+    if (text !== undefined) {
+        element.textContent = text;
+    }
+
+    return element;
+}
+
+function renderJsonPrimitive(value: JsonPrimitive): HTMLElement {
+    if (value === null) {
+        return jsonElement("span", "json-null", "null");
+    }
+    if (value instanceof JsonNumber) {
+        return jsonElement("span", "json-number", value.source);
+    }
+    if (typeof value === "boolean") {
+        return jsonElement("span", "json-boolean", String(value));
+    }
+
+    return jsonElement("span", "json-string", JSON.stringify(value));
+}
+
+// Objects/arrays become <details> so every property can be collapsed independently.
+function renderJsonNode(key: string | null, value: JsonValue, is_last: boolean): HTMLElement {
+    const comma = is_last ? "" : ",";
+    const label: Node[] = key === null
+        ? []
+        : [jsonElement("span", "json-key", JSON.stringify(key)), document.createTextNode(": ")];
+
+    if (value === null || typeof value !== "object" || value instanceof JsonNumber) {
+        const row = jsonElement("div", "json-row");
+        row.append(...label, renderJsonPrimitive(value), comma);
+        return row;
+    }
+
+    const is_array = Array.isArray(value);
+    const entries: [string | null, JsonValue][] = is_array
+        ? value.map(item => [null, item])
+        : Object.entries(value);
+    const open_bracket = is_array ? "[" : "{";
+    const close_bracket = is_array ? "]" : "}";
+
+    if (entries.length === 0) {
+        const row = jsonElement("div", "json-row");
+        row.append(...label, open_bracket + close_bracket + comma);
+        return row;
+    }
+
+    const details = document.createElement("details");
+    details.className = "json-node";
+    details.open = true;
+
+    const summary = jsonElement("summary", "json-row");
+    summary.append(
+        ...label,
+        open_bracket,
+        jsonElement("span", "json-preview", ` … ${close_bracket}${comma}`),
+        jsonElement("span", "json-count", `${entries.length} ${is_array ? "items" : "keys"}`),
+    );
+
+    const children = jsonElement("div", "json-children");
+    entries.forEach(([child_key, child], index) =>
+        children.append(renderJsonNode(child_key, child, index === entries.length - 1))
+    );
+
+    details.append(summary, children, jsonElement("div", "json-row", close_bracket + comma));
+    return details;
 }
 
 let request_counter = 0;
@@ -394,6 +494,21 @@ Alpine.data("logsViewer", () => ({
         } catch {
             return message;
         }
+    },
+
+    isJsonMessage(log: LogEntry): boolean {
+        return log.content_type === JSON_CONTENT_TYPE;
+    },
+
+    // Falls back to the raw text when a message marked as json doesn't parse.
+    renderJsonMessage(el: HTMLElement, message: string) {
+        const parsed = parseJson(message);
+        if (parsed === null) {
+            el.textContent = message;
+            return;
+        }
+
+        el.replaceChildren(renderJsonNode(null, parsed.value, true));
     },
 }));
 

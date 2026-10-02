@@ -213,8 +213,13 @@
                                         </button>
                                     </template>
                                 </div>
-                                <pre class="whitespace-pre-wrap break-words font-mono text-xs text-slate-800"
-                                     x-text="formatMessage(log.message)"></pre>
+                                <template x-if="isJsonMessage(log)">
+                                    <div class="json-tree" x-effect="renderJsonMessage($el, log.message)"></div>
+                                </template>
+                                <template x-if="!isJsonMessage(log)">
+                                    <pre class="whitespace-pre-wrap break-words font-mono text-xs text-slate-800"
+                                         x-text="formatMessage(log.message)"></pre>
+                                </template>
                                 <details x-show="log.stack_trace !== null" x-cloak>
                                     <summary class="cursor-pointer select-none text-xs text-slate-500 hover:text-slate-800">
                                         Stack trace
