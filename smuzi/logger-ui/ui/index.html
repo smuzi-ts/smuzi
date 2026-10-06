@@ -213,6 +213,8 @@
                                         </button>
                                     </template>
                                 </div>
+                                <button type="button" @click.stop="copyText($el, log.message)"
+                                        class="rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] text-slate-600 hover:bg-slate-100">Copy message</button>
                                 <template x-if="isJsonMessage(log)">
                                     <div class="json-tree" x-effect="renderJsonMessage($el, log.message)"></div>
                                 </template>
@@ -224,6 +226,8 @@
                                     <summary class="cursor-pointer select-none text-xs text-slate-500 hover:text-slate-800">
                                         Stack trace
                                     </summary>
+                                    <button type="button" @click.stop="copyText($el, log.stack_trace ?? '')"
+                                            class="mt-1 rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] text-slate-600 hover:bg-slate-100">Copy stack trace</button>
                                     <pre class="mt-1 whitespace-pre-wrap break-words font-mono text-xs text-rose-800"
                                          x-text="log.stack_trace"></pre>
                                 </details>

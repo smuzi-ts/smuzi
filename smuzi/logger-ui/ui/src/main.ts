@@ -496,6 +496,20 @@ Alpine.data("logsViewer", () => ({
         }
     },
 
+    async copyText(button: HTMLElement, text: string) {
+        const original_label = button.textContent ?? "";
+        try {
+            await navigator.clipboard.writeText(text);
+            button.textContent = "Copied!";
+        } catch {
+            button.textContent = "Copy failed";
+        }
+
+        setTimeout(() => {
+            button.textContent = original_label;
+        }, 1500);
+    },
+
     isJsonMessage(log: LogEntry): boolean {
         return log.content_type === JSON_CONTENT_TYPE;
     },
