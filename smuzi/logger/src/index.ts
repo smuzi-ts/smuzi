@@ -2,6 +2,9 @@ export * from "./migrations.js";
 export * from "./pg_logger.js";
 export * from "./console_logger.js";
 export * from "./reader.js";
+export * from "./query.js";
+export * from "./actions.js";
+export * from "./router.js";
 
 import type { LogContentType, RetryConfig } from "./reader.js";
 

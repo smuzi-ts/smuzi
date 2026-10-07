@@ -1,6 +1,6 @@
 {
   "name": "@smuzi/logger",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Logs",
   "scripts": {
     "test": "tsx  --env-file=.env tests/index.ts",
@@ -48,11 +48,15 @@
   },
   "peerDependencies": {
     "@smuzi/db-postgres": "workspace:^",
+    "@smuzi/http-client": "workspace:^",
+    "@smuzi/http-server": "workspace:^",
     "@smuzi/std": "workspace:^",
     "@smuzi/schema": "workspace:^"
   },
   "devDependencies": {
     "@smuzi/faker": "workspace:^",
+    "@smuzi/http-client": "workspace:^",
+    "@smuzi/http-server": "workspace:^",
     "@smuzi/tests": "workspace:^",
     "@types/node": "^22.15.21",
     "@types/pg": "^8.11.10",

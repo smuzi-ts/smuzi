@@ -218,6 +218,12 @@ importers:
       '@smuzi/faker':
         specifier: workspace:^
         version: link:../faker
+      '@smuzi/http-client':
+        specifier: workspace:^
+        version: link:../http-client
+      '@smuzi/http-server':
+        specifier: workspace:^
+        version: link:../http-server
       '@smuzi/tests':
         specifier: workspace:^
         version: link:../tests

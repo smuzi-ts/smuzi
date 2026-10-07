@@ -1,5 +1,6 @@
 import { Migration, Migrations } from "@smuzi/database";
 
+
 export const postgresMigrations = (table: string = 'logs') => {
     const migrations = Migrations('smuzi:logger:');
     migrations.add('create_'+table, Migration(

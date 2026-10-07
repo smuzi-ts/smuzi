@@ -1,5 +1,5 @@
 import { asArray, asNumber, asObject, asString, Err, Ok, Result } from "@smuzi/std";
-import { LogsQuery, LogTagFilter } from "@smuzi/logger";
+import type { LogsQuery, LogTagFilter } from "./reader.js";
 
 function parseOptionalInteger(value: unknown, field: string): Result<number | undefined, string> {
     if (value === undefined || value === null) {
