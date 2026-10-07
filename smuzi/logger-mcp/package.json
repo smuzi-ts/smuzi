@@ -1,0 +1,66 @@
+{
+  "name": "@smuzi/logger-mcp",
+  "version": "0.0.1",
+  "description": "MCP server (Streamable HTTP) for querying and retrying logs straight from the logger database",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "start": "tsx --env-file=.env src/bin.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "type": "module",
+  "types": "./build/index.d.ts",
+  "bin": {
+    "logger-mcp": "./build/bin.js"
+  },
+  "keywords": [
+    "logs",
+    "logger",
+    "mcp",
+    "observability"
+  ],
+  "author": "Denis Ratushniak <dinisimys2018@gmail.com>",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./*": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      }
+    }
+  },
+  "files": [
+    "build/**/*.js",
+    "build/**/*.d.ts"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "imports": {
+    "#lib/*": "./src/*"
+  },
+  "peerDependencies": {
+    "@smuzi/db-postgres": "workspace:^",
+    "@smuzi/http-client": "workspace:^",
+    "@smuzi/logger": "workspace:^",
+    "@smuzi/std": "workspace:^"
+  },
+  "devDependencies": {
+    "@smuzi/db-postgres": "workspace:^",
+    "@smuzi/http-client": "workspace:^",
+    "@smuzi/logger": "workspace:^",
+    "@smuzi/std": "workspace:^",
+    "@types/node": "^22.15.21",
+    "tsx": "^4.20.6",
+    "typescript": "^7.0.2"
+  }
+}

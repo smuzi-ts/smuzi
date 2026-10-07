@@ -237,6 +237,30 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  smuzi/logger-mcp:
+    devDependencies:
+      '@smuzi/db-postgres':
+        specifier: workspace:^
+        version: link:../db-postgres
+      '@smuzi/http-client':
+        specifier: workspace:^
+        version: link:../http-client
+      '@smuzi/logger':
+        specifier: workspace:^
+        version: link:../logger
+      '@smuzi/std':
+        specifier: workspace:^
+        version: link:../std
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.19.0
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+
   smuzi/logger-ui:
     dependencies:
       '@smuzi/http-server':
