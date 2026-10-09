@@ -41,7 +41,7 @@ export class StdList<T = unknown> {
         return this.#list?.length ?? 0;
     }
 
-    findFirst(criteria: () => boolean): Result<T, StdError> {
+    findFirst(criteria: (element) => boolean): Result<T, StdError> {
         const element = this.#list.find(criteria);
         return element == undefined ? Err(new StdError("Not finded element via criteria")) : Ok(element);
     }
