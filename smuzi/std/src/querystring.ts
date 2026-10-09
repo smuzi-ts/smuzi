@@ -23,7 +23,7 @@ function toString(params: QueryParams): Result<string, StdError> {
             if (asList(value)) {
                 for (const [key, item] of value) {
                     pairs.push(
-                        encodeURIComponent(field) + '=' + encodeURIComponent(String(item.someOr('')))
+                        encodeURIComponent(field) + '=' + encodeURIComponent(String(item.okOr('')))
                     );
                 }
             } else if (asArray(value)) {
