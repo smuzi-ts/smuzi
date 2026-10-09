@@ -1,5 +1,6 @@
 import { Option, OptionFromNullable } from "./option.js";
 import {dump} from "./debug.js";
+import { Err, Ok, Result } from "./result.js";
 
 export class StdList<T = unknown> {
     #list: Array<T>;
@@ -8,8 +9,8 @@ export class StdList<T = unknown> {
         this.#list = array;
     }
 
-    get(key: number): Option<T> {
-        return OptionFromNullable(this.#list[key]);
+    get(key: number): Result<T, string> {
+        return key in this.#list ? Ok(this.#list[key]) : Err("Element with key ["+key+"] does not exist in StdList.");
     }
 
     has(key: number): boolean {
@@ -37,5 +38,9 @@ export class StdList<T = unknown> {
 
     count(): number {
         return this.#list?.length ?? 0;
+    }
+
+    findFirst(checker: () => boolean): Option<T> {
+        return OptionFromNullable(this.#list.find(checker));
     }
 }
