@@ -56,6 +56,9 @@ export type Context<Resp extends THttpResponse, Params = unknown,> = {
     trace_id: Option<string>,
 }
 
+export type ContextHttp1<Params = unknown> = Context<ServerResponse, Params>;
+export type ContextHttp2<Params = unknown> = Context<ServerHttp2Stream, Params>;
+
 export function processPath(path: PathParam): PathParam {
     if (!asString(path)) return path;
     if (! /\{[a-zA-Z0-9_]+\}/g.test(path)) return path;
