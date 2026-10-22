@@ -32,17 +32,15 @@ export class SchemaList<C extends SchemaListConfig> implements SchemaRule {
 
         for (const [key, val] of input as StdList) {
             val.match({
-                Some(value) {
+                Ok(value) {
                     self.#config.validate(value).runThenErr(err => {
                         hasErrors = true;
                         errors.set(key, err);
                     })
                 },
-                None() {
-                    if (! (self.#config[key] instanceof SchemaOption)) {
-                        hasErrors = true;
-                        errors.set(key, {msg: "Required", data: new StdRecord()});
-                    }
+                Err() {
+                    hasErrors = true;
+                    errors.set(key, {msg: "Required", data: new StdRecord()});
                 }
             })
         }
